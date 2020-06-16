@@ -1,33 +1,20 @@
-body {
-  cursor: url("/images/mouse.cur"), auto;
+.gt-container {
+  max-width: 780px;
+  margin: auto;
 }
-.sidebar {
-  left: -8rem;
-  width: 8rem;
+.gutter {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
 }
-.sidebar.on {
-  left: 0;
+.post-content figure.highlight figcaption {
+  text-align: left;
 }
-.content.on {
-  margin-left: 0 !important;
+.footer {
+  height: 3rem;
+  line-height: 1.2rem;
 }
-.navbar-toggle {
-  left: 9.5rem;
-}
-.search-form-wrap {
-  right: 8rem;
-}
-@media (min-width: 768px) {
-  .outer,
-  .wrap {
-    width: 80rem !important;
-  }
-}
-@media (max-width: 768px) {
-  .tocbot {
-    display: none !important;
-  }
-  .content.on {
-    transform: translateX(8rem);
-  }
+footer {
+  text-align: right;
 }
