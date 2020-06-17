@@ -3,11 +3,11 @@
   <title>CodeMan的博客</title>
   
   
-  <link href="/atom.xml" rel="self"/>
+  <link href="/bloc/atom.xml" rel="self"/>
   
-  <link href="https://codeman.netlify.app/"/>
+  <link href="http://zhangguoliang.gitee.io/bloc/"/>
   <updated>2020-06-16T07:19:54.809Z</updated>
-  <id>https://codeman.netlify.app/</id>
+  <id>http://zhangguoliang.gitee.io/bloc/</id>
   
   <author>
     <name>CodeMan</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>搭建博客</title>
-    <link href="https://codeman.netlify.app/2020/06/16/init_bloc/"/>
-    <id>https://codeman.netlify.app/2020/06/16/init_bloc/</id>
+    <link href="http://zhangguoliang.gitee.io/bloc/2020/06/16/init_bloc/"/>
+    <id>http://zhangguoliang.gitee.io/bloc/2020/06/16/init_bloc/</id>
     <published>2020-06-16T02:35:22.240Z</published>
     <updated>2020-06-16T07:19:54.809Z</updated>
     
