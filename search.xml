@@ -1,6 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Widget Element RenderObject 三者的关系与作用</title>
+    <url>/2020/06/20/flutter-widget/</url>
+    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
+<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
+</ul>
+<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
+<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
+<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
+<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
+</ul>
+<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
+<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
+<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
+<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
+<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
+</ul>
+<blockquote>
+<p>如图所示</p>
+</blockquote>
+<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
+]]></content>
+      <categories>
+        <category>Flutter</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Objective-C Runtime</title>
+    <url>/2018/04/15/oc-runtime/</url>
+    <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
+<li>Objective-C是一门动态性比较强的编程语言，跟C、C++等语言有着很大的不同, 很多操作会推迟到运行时再进行</li>
+<li>OC的动态性就是有Runtime来支撑和实现的, 它是一套C语言API, 封装了很多动态性相关的函数</li>
+<li>平时编写的OC代码底层都是转换成了Runtime API进行调用</li>
+</ul>
+<h3 id="64位CPU架构下的-isa-指针详解"><a href="#64位CPU架构下的-isa-指针详解" class="headerlink" title="64位CPU架构下的 isa 指针详解"></a>64位CPU架构下的 isa 指针详解</h3><ul>
+<li>64位CPU架构之前,isa指针仅仅是存储者当前类对象的地址值</li>
+<li>64位CPU架构下, 对isa进行了优化, 变成了共用体结构, 使用位域操作来存储更多的内容<blockquote>
+<p>如是否有过关联对象, 是否有C++析构函数, 是否有弱引用指向过, 是否正在析构, 引用计数 等等</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="OC的消息机制"><a href="#OC的消息机制" class="headerlink" title="OC的消息机制"></a>OC的消息机制</h3><ul>
+<li><p>OC中的方法, 其实就是给消息接受者发送一条消息, 底层实现是Runtime 的 objc_msgSend() 传入消息的接受者receiver和方法名selector</p>
+</li>
+<li><p>objc_msgSend 底层有三大阶段<br>   1.消息发送(缓存, 当前方法列表, 父类循环查找)<br>   2.动态方法解析(resoveInstanceMethod, 可以动态的添加方法, 如果实现了动态方法解析, 那么会重新走一次消息发送)<br>   3.消息转发 </p>
+<pre><code>`forwardingTargetForSelector`
+`methodSignatureForSelector:`
+`forwardInvocation`</code></pre></li>
+<li><p>流程如下图所示</p>
+<ul>
+<li><p>消息发送<br><img src="https://wx2.sbimg.cn/2020/06/24/image5b82c619bc9ddefc.png" alt="image5b82c619bc9ddefc.png">  </p>
+<br>
+</li>
+<li><p>动态方法解析<br><img src="https://wx1.sbimg.cn/2020/06/24/image4be831b95b960c31.png" alt="image4be831b95b960c31.png"></p>
+<br>
+</li>
+<li><p>消息转发<br><img src="https://wx2.sbimg.cn/2020/06/24/imagea19574eb69c22e47.png" alt="imagea19574eb69c22e47.png"></p>
+<br>
+
+
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="super调用的本质"><a href="#super调用的本质" class="headerlink" title="super调用的本质"></a>super调用的本质</h3><ul>
+<li>super的本质是底层的 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objc_msgSendSuper2(</span><br><span class="line">    &#123;self, Class&#125;,</span><br><span class="line">    @selector())</span><br></pre></td></tr></table></figure></li>
+<li>相当于还是当前对象为消息接受者, 只不过消息查找从superclass 中开始查找</li>
+</ul>
+<h3 id="Runtime在实际开发中的应用举例"><a href="#Runtime在实际开发中的应用举例" class="headerlink" title="Runtime在实际开发中的应用举例"></a>Runtime在实际开发中的应用举例</h3><ul>
+<li>查找并不公开的成员变量, 来进行想要的操作,比如通过KVC进行修改, 或获取值</li>
+<li>可以遍历成员变量来进行json转数据实体</li>
+<li>可以进行方法交换来拦截系统或者第三方库中的方法,来进行修改达到想要的操作</li>
+</ul>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Objective-C 语言底层原理</title>
     <url>/2018/03/15/init_bloc/</url>
     <content><![CDATA[<h3 id="我们平时编写的Objective-C代码，底层实现其实都是C-C-代码"><a href="#我们平时编写的Objective-C代码，底层实现其实都是C-C-代码" class="headerlink" title="我们平时编写的Objective-C代码，底层实现其实都是C\C++代码"></a>我们平时编写的Objective-C代码，底层实现其实都是C\C++代码</h3><ul>
@@ -62,34 +142,6 @@
 ]]></content>
       <categories>
         <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Widget Element RenderObject 三者的关系与作用</title>
-    <url>/2020/06/20/flutter-widget/</url>
-    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
-<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
-</ul>
-<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
-<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
-<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
-<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
-</ul>
-<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
-<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
-<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
-<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
-</ul>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
-<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
-</ul>
-<blockquote>
-<p>如图所示</p>
-</blockquote>
-<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
-]]></content>
-      <categories>
-        <category>Flutter</category>
       </categories>
   </entry>
 </search>
