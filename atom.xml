@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://codeman.netlify.app/"/>
-  <updated>2020-06-20T08:14:09.033Z</updated>
+  <updated>2020-06-28T12:12:48.492Z</updated>
   <id>https://codeman.netlify.app/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Widget Element RenderObject 三者的关系与作用</title>
+    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
     <link href="https://codeman.netlify.app/2020/06/20/flutter-widget/"/>
     <id>https://codeman.netlify.app/2020/06/20/flutter-widget/</id>
     <published>2020-06-20T06:26:40.000Z</published>
-    <updated>2020-06-20T08:14:09.033Z</updated>
+    <updated>2020-06-28T12:12:48.492Z</updated>
     
     <content type="html"><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul><li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li></ul><h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul><li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li><li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li><li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li></ul><h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul><li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li><li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li><li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li></ul><h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul><li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li></ul><blockquote><p>如图所示</p></blockquote><p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>]]></content>
     
