@@ -1,29 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>博客搬家了</title>
-    <url>/2016/05/13/new-bloc/</url>
-    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
-<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
-<li>多记录整块的知识体系,而不是分散的知识点</li>
-<li>每个分类或标签下的知识体系可以串联</li>
-</ul>
-<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
-<li>iOS应用开发, Objective-C、Swift</li>
-<li>跨平台方向</li>
-<li>Android相关(了解), Java</li>
-<li>脚本语言 Shell、Ruby、Python</li>
-<li>Linux 常用命令</li>
-<li>网络</li>
-<li>算法</li>
-<li>数据结构基础、编译原理</li>
-</ul>
-<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
-<li>设计 <code>Pixelmator pro</code></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>Widget Element RenderObject 三者的关系与作用</title>
     <url>/2020/06/20/flutter-widget/</url>
     <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
@@ -116,12 +93,27 @@
       </categories>
   </entry>
   <entry>
-    <title>iOS 线程同步方案</title>
-    <url>/2018/06/15/oc-thread/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
+    <title>博客搬家了</title>
+    <url>/2016/05/13/new-bloc/</url>
+    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
+<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
+<li>多记录整块的知识体系,而不是分散的知识点</li>
+<li>每个分类或标签下的知识体系可以串联</li>
+</ul>
+<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
+<li>iOS应用开发, Objective-C、Swift</li>
+<li>跨平台方向</li>
+<li>Android相关(了解), Java</li>
+<li>脚本语言 Shell、Ruby、Python</li>
+<li>Linux 常用命令</li>
+<li>网络</li>
+<li>算法</li>
+<li>数据结构基础、编译原理</li>
+</ul>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li>设计 <code>Pixelmator pro</code></li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>iOS RunLoop</title>
@@ -337,6 +329,105 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 获得一个实例方法、类方法</span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name)</span><br><span class="line">Method class_getClassMethod(Class cls, SEL name)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 方法实现相关操作</span><br><span class="line">IMP class_getMethodImplementation(Class cls, SEL name) </span><br><span class="line">IMP method_setImplementation(Method m, IMP imp)</span><br><span class="line">void method_exchangeImplementations(Method m1, Method m2) </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拷贝方法列表（最后需要调用free释放）</span><br><span class="line">Method *class_copyMethodList(Class cls, unsigned int *outCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态添加方法</span><br><span class="line">BOOL class_addMethod(Class cls, SEL name, IMP imp, const char *types)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态替换方法</span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, const char *types)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取方法的相关信息（带有copy的需要调用free去释放）</span><br><span class="line">SEL method_getName(Method m)</span><br><span class="line">IMP method_getImplementation(Method m)</span><br><span class="line">const char *method_getTypeEncoding(Method m)</span><br><span class="line">unsigned int method_getNumberOfArguments(Method m)</span><br><span class="line">char *method_copyReturnType(Method m)</span><br><span class="line">char *method_copyArgumentType(Method m, unsigned int index)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 选择器相关</span><br><span class="line">const char *sel_getName(SEL sel)</span><br><span class="line">SEL sel_registerName(const char *str)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 用block作为方法实现</span><br><span class="line">IMP imp_implementationWithBlock(id block)</span><br><span class="line">id imp_getBlock(IMP anImp)</span><br><span class="line">BOOL imp_removeBlock(IMP anImp)</span><br></pre></td></tr></table></figure>
 
 ]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 线程以及线程同步方案</title>
+    <url>/2018/06/15/oc-thread/</url>
+    <content><![CDATA[<h4 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h4><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
+<h4 id="同步、异步-串行、并发"><a href="#同步、异步-串行、并发" class="headerlink" title="同步、异步, 串行、并发"></a>同步、异步, 串行、并发</h4><ul>
+<li><em>同步</em> 和 <em>异步</em> 主要是能否开启新的线程<ol>
+<li>同步: 在当前线程中执行任务, 不具备开启新线程的能力</li>
+<li>异步: 在新的线程中执行任务, 具备开启新线程的能力</li>
+</ol>
+</li>
+<li><em>串行</em> 和 <em>并发</em> 主要决定任务的执行方式<ol>
+<li>串行: 一个任务执行完毕再执行下一个任务</li>
+<li>并发: 多个任务同时执行</li>
+</ol>
+</li>
+</ul>
+<h4 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h4><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p>
+<h5 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h5><blockquote>
+<p>通过dispatch_group_t 队列组可以实现 所有异步任务共同并发, 任务都处理完毕, 统一触发 通过dispatch_group_notify来进行接下来的任务</p>
+</blockquote>
+<h4 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h4><ul>
+<li><p><font color=grey>OSSpinLock</font> </p>
+<ul>
+<li><code>#import &lt;libkern/OSAtomic.h&gt;</code></li>
+<li>自旋, 不推荐使用, 会有优先级反转的问题, 如果等待锁的线程优先级较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁</li>
+</ul>
+</li>
+<li><p><font color=blue>os_unfair_lock</font> </p>
+<ul>
+<li>互斥, 推荐效率较高</li>
+<li><code>os_unfair_lock</code>用于取代不安全的<code>OSSpinLock</code> ，从iOS10开始才支持</li>
+</ul>
+</li>
+<li><p><font color=blue>pthread_mutex</font>  </p>
+<ul>
+<li><code>#import &lt;pthread.h&gt;</code></li>
+<li>互斥, 推荐跨平台</li>
+</ul>
+</li>
+<li><p><font color=blue>dispatch_semaphore</font></p>
+<ul>
+<li>互斥, 推荐, 兼容性好</li>
+</ul>
+</li>
+<li><p>dispatch_queue(DISPATCH_QUEUE_SERIAL)</p>
+<ul>
+<li>串行队列同样可以线程同步</li>
+</ul>
+</li>
+<li><p>NSLock</p>
+<ul>
+<li>对pthread_mutex的OC包装</li>
+</ul>
+</li>
+<li><p>NSRecursiveLock</p>
+<ul>
+<li>对pthread_mutex递归锁的OC包装</li>
+</ul>
+</li>
+<li><p>NSCondition</p>
+<ul>
+<li>对pthread_mutex条件锁的OC包装</li>
+</ul>
+</li>
+<li><p>NSConditionLock</p>
+</li>
+<li><p>@synchronized </p>
+<ul>
+<li>对pthread_mutex递归锁的OC包装</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>死锁<br>当线程加锁之后忘记解锁, 那么这把锁就相当于死锁<br> 如果当前加锁采用的是自旋锁方式, 那么就会一直占用着CPU资源,让其他线程处于忙等状态<br> 如果当前加锁采用的是互斥锁方式, 那么就会让再次获取锁的线程处于休眠状态</p>
+</blockquote>
+<h4 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h4><ul>
+<li><p>场景</p>
+<ul>
+<li>同一时间，只能有1个线程进行写的操作</li>
+<li>同一时间，允许有多个线程进行读的操作</li>
+<li>同一时间，不允许既有写的操作，又有读的操作</li>
+</ul>
+</li>
+<li><p>解决方案:</p>
+<ul>
+<li><code>pthread_rwlock</code> 读写锁</li>
+<li><code>dispatch_barrier_async</code> GCD异步栅栏</li>
+</ul>
+</li>
+</ul>
+<h4 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h4><details>
+<summary>参考内容</summary>
+
+<p><strong>1. 可以添加任务依赖, 方便控制执行顺序</strong><br><strong>2. 可以设置任务的优先级</strong><br><strong>3. 可以设置最大并发数</strong><br><strong>2. 可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</strong></p>
+</details>]]></content>
       <categories>
         <category>iOS</category>
       </categories>

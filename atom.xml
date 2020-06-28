@@ -42,13 +42,20 @@
   </entry>
   
   <entry>
-    <title>iOS 线程同步方案</title>
+    <title>iOS 线程以及线程同步方案</title>
     <link href="https://codeman.netlify.app/2018/06/15/oc-thread/"/>
     <id>https://codeman.netlify.app/2018/06/15/oc-thread/</id>
     <published>2018-06-15T14:00:40.000Z</published>
-    <updated>2020-06-28T08:18:18.727Z</updated>
+    <updated>2020-06-28T12:09:58.506Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h4><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p><h4 id="同步、异步-串行、并发"><a href="#同步、异步-串行、并发" class="headerlink" title="同步、异步, 串行、并发"></a>同步、异步, 串行、并发</h4><ul><li><em>同步</em> 和 <em>异步</em> 主要是能否开启新的线程<ol><li>同步: 在当前线程中执行任务, 不具备开启新线程的能力</li><li>异步: 在新的线程中执行任务, 具备开启新线程的能力</li></ol></li><li><em>串行</em> 和 <em>并发</em> 主要决定任务的执行方式<ol><li>串行: 一个任务执行完毕再执行下一个任务</li><li>并发: 多个任务同时执行</li></ol></li></ul><h4 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h4><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p><h5 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h5><blockquote><p>通过dispatch_group_t 队列组可以实现 所有异步任务共同并发, 任务都处理完毕, 统一触发 通过dispatch_group_notify来进行接下来的任务</p></blockquote><h4 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h4><ul><li><p><font color=grey>OSSpinLock</font> </p><ul><li><code>#import &lt;libkern/OSAtomic.h&gt;</code></li><li>自旋, 不推荐使用, 会有优先级反转的问题, 如果等待锁的线程优先级较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁</li></ul></li><li><p><font color=blue>os_unfair_lock</font> </p><ul><li>互斥, 推荐效率较高</li><li><code>os_unfair_lock</code>用于取代不安全的<code>OSSpinLock</code> ，从iOS10开始才支持</li></ul></li><li><p><font color=blue>pthread_mutex</font>  </p><ul><li><code>#import &lt;pthread.h&gt;</code></li><li>互斥, 推荐跨平台</li></ul></li><li><p><font color=blue>dispatch_semaphore</font></p><ul><li>互斥, 推荐, 兼容性好</li></ul></li><li><p>dispatch_queue(DISPATCH_QUEUE_SERIAL)</p><ul><li>串行队列同样可以线程同步</li></ul></li><li><p>NSLock</p><ul><li>对pthread_mutex的OC包装</li></ul></li><li><p>NSRecursiveLock</p><ul><li>对pthread_mutex递归锁的OC包装</li></ul></li><li><p>NSCondition</p><ul><li>对pthread_mutex条件锁的OC包装</li></ul></li><li><p>NSConditionLock</p></li><li><p>@synchronized </p><ul><li>对pthread_mutex递归锁的OC包装</li></ul></li></ul><blockquote><p>死锁<br>当线程加锁之后忘记解锁, 那么这把锁就相当于死锁<br> 如果当前加锁采用的是自旋锁方式, 那么就会一直占用着CPU资源,让其他线程处于忙等状态<br> 如果当前加锁采用的是互斥锁方式, 那么就会让再次获取锁的线程处于休眠状态</p></blockquote><h4 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h4><ul><li><p>场景</p><ul><li>同一时间，只能有1个线程进行写的操作</li><li>同一时间，允许有多个线程进行读的操作</li><li>同一时间，不允许既有写的操作，又有读的操作</li></ul></li><li><p>解决方案:</p><ul><li><code>pthread_rwlock</code> 读写锁</li><li><code>dispatch_barrier_async</code> GCD异步栅栏</li></ul></li></ul><h4 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h4><details><summary>参考内容</summary><p><strong>1. 可以添加任务依赖, 方便控制执行顺序</strong><br><strong>2. 可以设置任务的优先级</strong><br><strong>3. 可以设置最大并发数</strong><br><strong>2. 可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</strong></p></details>]]></content>
     
     <summary type="html">
+    
+      
+      
+        &lt;h4 id=&quot;iOS-中常见的多线程方案&quot;&gt;&lt;a href=&quot;#iOS-中常见的多线程方案&quot; class=&quot;headerlink&quot; title=&quot;iOS 中常见的多线程方案&quot;&gt;&lt;/a&gt;iOS 中常见的多线程方案&lt;/h4&gt;&lt;p&gt;&lt;img src=&quot;https://s1.ax1x.
+      
     
     </summary>
     
