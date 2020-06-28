@@ -336,8 +336,8 @@
   <entry>
     <title>iOS 线程以及线程同步方案</title>
     <url>/2018/06/15/oc-thread/</url>
-    <content><![CDATA[<h4 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h4><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
-<h4 id="同步、异步-串行、并发"><a href="#同步、异步-串行、并发" class="headerlink" title="同步、异步, 串行、并发"></a>同步、异步, 串行、并发</h4><ul>
+    <content><![CDATA[<h3 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
+<h3 id="同步、异步-串行、并发"><a href="#同步、异步-串行、并发" class="headerlink" title="同步、异步, 串行、并发"></a>同步、异步, 串行、并发</h3><ul>
 <li><em>同步</em> 和 <em>异步</em> 主要是能否开启新的线程<ol>
 <li>同步: 在当前线程中执行任务, 不具备开启新线程的能力</li>
 <li>异步: 在新的线程中执行任务, 具备开启新线程的能力</li>
@@ -349,11 +349,11 @@
 </ol>
 </li>
 </ul>
-<h4 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h4><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p>
-<h5 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h5><blockquote>
+<h3 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p>
+<h3 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h3><blockquote>
 <p>通过dispatch_group_t 队列组可以实现 所有异步任务共同并发, 任务都处理完毕, 统一触发 通过dispatch_group_notify来进行接下来的任务</p>
 </blockquote>
-<h4 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h4><ul>
+<h3 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h3><ul>
 <li><p><font color=grey>OSSpinLock</font> </p>
 <ul>
 <li><code>#import &lt;libkern/OSAtomic.h&gt;</code></li>
@@ -408,7 +408,7 @@
 <blockquote>
 <p>死锁<br>当线程加锁之后忘记解锁, 那么这把锁就相当于死锁<br> 如果当前加锁采用的是自旋锁方式, 那么就会一直占用着CPU资源,让其他线程处于忙等状态<br> 如果当前加锁采用的是互斥锁方式, 那么就会让再次获取锁的线程处于休眠状态</p>
 </blockquote>
-<h4 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h4><ul>
+<h3 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h3><ul>
 <li><p>场景</p>
 <ul>
 <li>同一时间，只能有1个线程进行写的操作</li>
@@ -423,7 +423,7 @@
 </ul>
 </li>
 </ul>
-<h4 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h4><details>
+<h3 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h3><details>
 <summary>参考内容</summary>
 
 <p><strong>1. 可以添加任务依赖, 方便控制执行顺序</strong><br><strong>2. 可以设置任务的优先级</strong><br><strong>3. 可以设置最大并发数</strong><br><strong>2. 可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</strong></p>
