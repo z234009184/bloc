@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>博客搬家了</title>
+    <url>/2016/05/13/new-bloc/</url>
+    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
+<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
+<li>多记录整块的知识体系,而不是分散的知识点</li>
+<li>每个分类或标签下的知识体系可以串联</li>
+</ul>
+<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
+<li>iOS应用开发, Objective-C、Swift</li>
+<li>跨平台方向</li>
+<li>Android相关(了解), Java</li>
+<li>脚本语言 Shell、Ruby、Python</li>
+<li>Linux 常用命令</li>
+<li>网络</li>
+<li>算法</li>
+<li>数据结构基础、编译原理</li>
+</ul>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li>设计 <code>Pixelmator pro</code></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>Widget Element RenderObject 三者的关系与作用</title>
     <url>/2020/06/20/flutter-widget/</url>
     <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
@@ -27,29 +50,6 @@
       <categories>
         <category>Flutter</category>
       </categories>
-  </entry>
-  <entry>
-    <title>博客搬家了</title>
-    <url>/2016/05/13/new-bloc/</url>
-    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
-<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
-<li>多记录整块的知识体系,而不是分散的知识点</li>
-<li>每个分类或标签下的知识体系可以串联</li>
-</ul>
-<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
-<li>iOS应用开发, Objective-C、Swift</li>
-<li>跨平台方向</li>
-<li>Android相关(了解), Java</li>
-<li>脚本语言 Shell、Ruby、Python</li>
-<li>Linux 常用命令</li>
-<li>网络</li>
-<li>算法</li>
-<li>数据结构基础、编译原理</li>
-</ul>
-<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
-<li>设计 <code>Pixelmator pro</code></li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>Objective-C 语言底层原理</title>
@@ -111,6 +111,14 @@
 <li>循环引用主要是指外部变量对Block进行多了retain操作, Block内部又对外部变量进行了retain操作, 导致双方的引用计数无法release到0释放, 所以常驻内存导致内存泄漏, 常用的解决方法是将Block内部引用的外部变量进行__weak弱引用, 这样便不会retain操作,可以销毁.</li>
 </ul>
 ]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 线程同步方案</title>
+    <url>/2018/06/15/oc-thread/</url>
+    <content><![CDATA[]]></content>
       <categories>
         <category>iOS</category>
       </categories>
