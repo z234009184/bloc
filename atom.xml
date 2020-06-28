@@ -115,4 +115,26 @@
     
   </entry>
   
+  <entry>
+    <title>博客搬家了</title>
+    <link href="https://codeman.netlify.app/2016/05/13/new-bloc/"/>
+    <id>https://codeman.netlify.app/2016/05/13/new-bloc/</id>
+    <published>2016-05-13T02:26:44.000Z</published>
+    <updated>2020-06-28T06:10:49.471Z</updated>
+    
+    <content type="html"><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p><h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul><li>多记录整块的知识体系,而不是分散的知识点</li><li>每个分类或标签下的知识体系可以串联</li></ul><h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul><li>iOS应用开发, Objective-C、Swift</li><li>跨平台方向</li><li>Android相关(了解), Java</li><li>脚本语言 Shell、Ruby、Python</li><li>Linux 常用命令</li><li>网络</li><li>算法</li><li>数据结构基础、编译原理</li></ul><h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul><li>设计 <code>Pixelmator pro</code></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;之前的博客地址&lt;a href=&quot;https://home.cnblogs.com/u/zhangguoliang1992&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;博客园&lt;/a&gt;已不在更新,&lt;br&gt;本博客采用 &lt;code&gt;Hexo&lt;/code&gt; + &lt;
+      
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
 </feed>
