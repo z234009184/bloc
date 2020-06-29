@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
+    <url>/2020/06/20/flutter-widget/</url>
+    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
+<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
+</ul>
+<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
+<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
+<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
+<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
+</ul>
+<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
+<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
+<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
+<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
+<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
+</ul>
+<blockquote>
+<p>如图所示</p>
+</blockquote>
+<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
+]]></content>
+      <categories>
+        <category>Flutter</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Objective-C 语言底层原理</title>
     <url>/2018/03/15/init_bloc/</url>
     <content><![CDATA[<h3 id="我们平时编写的Objective-C代码，底层实现其实都是C-C-代码"><a href="#我们平时编写的Objective-C代码，底层实现其实都是C-C-代码" class="headerlink" title="我们平时编写的Objective-C代码，底层实现其实都是C\C++代码"></a>我们平时编写的Objective-C代码，底层实现其实都是C\C++代码</h3><ul>
@@ -86,6 +114,171 @@
 <li>设计 <code>Pixelmator pro</code></li>
 </ul>
 ]]></content>
+  </entry>
+  <entry>
+    <title>iOS Runtime</title>
+    <url>/2018/04/15/oc-runtime/</url>
+    <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
+<li>Objective-C是一门动态性比较强的编程语言，跟C、C++等语言有着很大的不同, 很多操作会推迟到运行时再进行</li>
+<li>OC的动态性就是有Runtime来支撑和实现的, 它是一套C语言API, 封装了很多动态性相关的函数</li>
+<li>平时编写的OC代码底层都是转换成了Runtime API进行调用</li>
+</ul>
+<h3 id="64位CPU架构下的-isa-指针详解"><a href="#64位CPU架构下的-isa-指针详解" class="headerlink" title="64位CPU架构下的 isa 指针详解"></a>64位CPU架构下的 isa 指针详解</h3><ul>
+<li>64位CPU架构之前,isa指针仅仅是存储者当前类对象的地址值</li>
+<li>64位CPU架构下, 对isa进行了优化, 变成了共用体结构, 使用位域操作来存储更多的内容<blockquote>
+<p>如是否有过关联对象, 是否有C++析构函数, 是否有弱引用指向过, 是否正在析构, 引用计数 等等</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="OC的消息机制"><a href="#OC的消息机制" class="headerlink" title="OC的消息机制"></a>OC的消息机制</h3><ul>
+<li><p>OC中的方法, 其实就是给消息接受者发送一条消息, 底层实现是Runtime 的 objc_msgSend() 传入消息的接受者receiver和方法名selector</p>
+</li>
+<li><p>objc_msgSend 底层有三大阶段<br>   1.消息发送(缓存, 当前方法列表, 父类循环查找)<br>   2.动态方法解析(resoveInstanceMethod, 可以动态的添加方法, 如果实现了动态方法解析, 那么会重新走一次消息发送)<br>   3.消息转发 </p>
+<pre><code>`forwardingTargetForSelector`
+`methodSignatureForSelector:`
+`forwardInvocation`</code></pre></li>
+<li><p>流程如下图所示</p>
+<ul>
+<li><p>消息发送<br><img src="https://wx2.sbimg.cn/2020/06/24/image5b82c619bc9ddefc.png" alt="image5b82c619bc9ddefc.png">  </p>
+<br>
+</li>
+<li><p>动态方法解析<br><img src="https://wx1.sbimg.cn/2020/06/24/image4be831b95b960c31.png" alt="image4be831b95b960c31.png"></p>
+<br>
+</li>
+<li><p>消息转发<br><img src="https://wx2.sbimg.cn/2020/06/24/imagea19574eb69c22e47.png" alt="imagea19574eb69c22e47.png"></p>
+<br>
+
+
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="super调用的本质"><a href="#super调用的本质" class="headerlink" title="super调用的本质"></a>super调用的本质</h3><ul>
+<li>super的本质是底层的 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objc_msgSendSuper2(</span><br><span class="line">    &#123;self, Class&#125;,</span><br><span class="line">    @selector())</span><br></pre></td></tr></table></figure></li>
+<li>相当于还是当前对象为消息接受者, 只不过消息查找从superclass 中开始查找</li>
+</ul>
+<h3 id="Runtime在实际开发中的应用举例"><a href="#Runtime在实际开发中的应用举例" class="headerlink" title="Runtime在实际开发中的应用举例"></a>Runtime在实际开发中的应用举例</h3><ul>
+<li>查找并不公开的成员变量, 来进行想要的操作,比如通过KVC进行修改, 或获取值</li>
+<li>可以遍历成员变量来进行json转数据实体</li>
+<li>可以进行方法交换来拦截系统或者第三方库中的方法,来进行修改达到想要的操作</li>
+</ul>
+<h4 id="RunTime常用API"><a href="#RunTime常用API" class="headerlink" title="RunTime常用API"></a>RunTime常用API</h4><p><em>类</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 动态创建一个类（参数：父类，类名，额外的内存空间）</span><br><span class="line">Class objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 注册一个类（要在类注册之前添加成员变量）</span><br><span class="line">void objc_registerClassPair(Class cls) </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 销毁一个类</span><br><span class="line">void objc_disposeClassPair(Class cls)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取isa指向的Class</span><br><span class="line">Class object_getClass(id obj)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 设置isa指向的Class</span><br><span class="line">Class object_setClass(id obj, Class cls)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 判断一个OC对象是否为Class</span><br><span class="line">BOOL object_isClass(id obj)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 判断一个Class是否为元类</span><br><span class="line">BOOL class_isMetaClass(Class cls)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取父类</span><br><span class="line">Class class_getSuperclass(Class cls)</span><br></pre></td></tr></table></figure>
+<p><em>成员变量</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 获取一个实例变量信息</span><br><span class="line">Ivar class_getInstanceVariable(Class cls, const char *name)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拷贝实例变量列表（最后需要调用free释放）</span><br><span class="line">Ivar *class_copyIvarList(Class cls, unsigned int *outCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 设置和获取成员变量的值</span><br><span class="line">void object_setIvar(id obj, Ivar ivar, id value)</span><br><span class="line">id object_getIvar(id obj, Ivar ivar)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态添加成员变量（已经注册的类是不能动态添加成员变量的）</span><br><span class="line">BOOL class_addIvar(Class cls, const char * name, size_t size, uint8_t alignment, const char * types)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取成员变量的相关信息</span><br><span class="line">const char *ivar_getName(Ivar v)</span><br><span class="line">const char *ivar_getTypeEncoding(Ivar v)</span><br></pre></td></tr></table></figure>
+<p><em>属性</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 获取一个属性</span><br><span class="line">objc_property_t class_getProperty(Class cls, const char *name)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拷贝属性列表（最后需要调用free释放）</span><br><span class="line">objc_property_t *class_copyPropertyList(Class cls, unsigned int *outCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态添加属性</span><br><span class="line">BOOL class_addProperty(Class cls, const char *name, const objc_property_attribute_t *attributes,</span><br><span class="line">                  unsigned int attributeCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态替换属性</span><br><span class="line">void class_replaceProperty(Class cls, const char *name, const objc_property_attribute_t *attributes,</span><br><span class="line">                      unsigned int attributeCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取属性的一些信息</span><br><span class="line">const char *property_getName(objc_property_t property)</span><br><span class="line">const char *property_getAttributes(objc_property_t property)</span><br></pre></td></tr></table></figure>
+<p><em>方法</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 获得一个实例方法、类方法</span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name)</span><br><span class="line">Method class_getClassMethod(Class cls, SEL name)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 方法实现相关操作</span><br><span class="line">IMP class_getMethodImplementation(Class cls, SEL name) </span><br><span class="line">IMP method_setImplementation(Method m, IMP imp)</span><br><span class="line">void method_exchangeImplementations(Method m1, Method m2) </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拷贝方法列表（最后需要调用free释放）</span><br><span class="line">Method *class_copyMethodList(Class cls, unsigned int *outCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态添加方法</span><br><span class="line">BOOL class_addMethod(Class cls, SEL name, IMP imp, const char *types)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态替换方法</span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, const char *types)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取方法的相关信息（带有copy的需要调用free去释放）</span><br><span class="line">SEL method_getName(Method m)</span><br><span class="line">IMP method_getImplementation(Method m)</span><br><span class="line">const char *method_getTypeEncoding(Method m)</span><br><span class="line">unsigned int method_getNumberOfArguments(Method m)</span><br><span class="line">char *method_copyReturnType(Method m)</span><br><span class="line">char *method_copyArgumentType(Method m, unsigned int index)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 选择器相关</span><br><span class="line">const char *sel_getName(SEL sel)</span><br><span class="line">SEL sel_registerName(const char *str)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 用block作为方法实现</span><br><span class="line">IMP imp_implementationWithBlock(id block)</span><br><span class="line">id imp_getBlock(IMP anImp)</span><br><span class="line">BOOL imp_removeBlock(IMP anImp)</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 线程以及线程同步方案</title>
+    <url>/2018/06/15/oc-thread/</url>
+    <content><![CDATA[<h3 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
+<h3 id="同步、异步、串行、并发"><a href="#同步、异步、串行、并发" class="headerlink" title="同步、异步、串行、并发"></a>同步、异步、串行、并发</h3><ul>
+<li><em>同步</em> 和 <em>异步</em> 主要是能否开启新的线程<ol>
+<li>同步: 在当前线程中执行任务, 不具备开启新线程的能力</li>
+<li>异步: 在新的线程中执行任务, 具备开启新线程的能力</li>
+</ol>
+</li>
+<li><em>串行</em> 和 <em>并发</em> 主要决定任务的执行方式<ol>
+<li>串行: 一个任务执行完毕再执行下一个任务</li>
+<li>并发: 多个任务同时执行</li>
+</ol>
+</li>
+</ul>
+<h3 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p>
+<h3 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h3><blockquote>
+<p>通过dispatch_group_t 队列组可以实现 所有异步任务共同并发, 任务都处理完毕, 统一触发 通过dispatch_group_notify来进行接下来的任务</p>
+</blockquote>
+<h3 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h3><ul>
+<li><p><font color=grey>OSSpinLock</font> </p>
+<ul>
+<li><code>#import &lt;libkern/OSAtomic.h&gt;</code></li>
+<li>自旋, 不推荐使用, 会有优先级反转的问题, 如果等待锁的线程优先级较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁</li>
+</ul>
+</li>
+<li><p><font color=blue>os_unfair_lock</font> </p>
+<ul>
+<li>互斥, 推荐效率较高</li>
+<li><code>os_unfair_lock</code>用于取代不安全的<code>OSSpinLock</code> ，从iOS10开始才支持</li>
+</ul>
+</li>
+<li><p><font color=blue>pthread_mutex</font>  </p>
+<ul>
+<li><code>#import &lt;pthread.h&gt;</code></li>
+<li>互斥, 推荐跨平台</li>
+</ul>
+</li>
+<li><p><font color=blue>dispatch_semaphore</font></p>
+<ul>
+<li>互斥, 推荐, 兼容性好</li>
+</ul>
+</li>
+<li><p>dispatch_queue(DISPATCH_QUEUE_SERIAL)</p>
+<ul>
+<li>串行队列同样可以线程同步</li>
+</ul>
+</li>
+<li><p>NSLock</p>
+<ul>
+<li>对pthread_mutex的OC包装</li>
+</ul>
+</li>
+<li><p>NSRecursiveLock</p>
+<ul>
+<li>对pthread_mutex递归锁的OC包装</li>
+</ul>
+</li>
+<li><p>NSCondition</p>
+<ul>
+<li>对pthread_mutex条件锁的OC包装</li>
+</ul>
+</li>
+<li><p>NSConditionLock</p>
+</li>
+<li><p>@synchronized </p>
+<ul>
+<li>对pthread_mutex递归锁的OC包装</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>死锁<br>当线程加锁之后忘记解锁, 那么这把锁就相当于死锁<br> 如果当前加锁采用的是自旋锁方式, 那么就会一直占用着CPU资源,让其他线程处于忙等状态<br> 如果当前加锁采用的是互斥锁方式, 那么就会让再次获取锁的线程处于休眠状态</p>
+</blockquote>
+<h3 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h3><ul>
+<li><p>场景</p>
+<ul>
+<li>同一时间，只能有1个线程进行写的操作</li>
+<li>同一时间，允许有多个线程进行读的操作</li>
+<li>同一时间，不允许既有写的操作，又有读的操作</li>
+</ul>
+</li>
+<li><p>解决方案:</p>
+<ul>
+<li><code>pthread_rwlock</code> 读写锁</li>
+<li><code>dispatch_barrier_async</code> GCD异步栅栏</li>
+</ul>
+</li>
+</ul>
+<h3 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h3><details>
+<summary>参考内容</summary>
+
+<ol>
+<li>可以添加任务依赖, 方便控制执行顺序</li>
+<li>可以设置任务的优先级</li>
+<li>可以设置最大并发数</li>
+<li>可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</details></li>
+</ol>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
   </entry>
   <entry>
     <title>iOS RunLoop</title>
@@ -239,199 +432,6 @@
 <p>另外: AFNetWorking内部单独创建了一个线程，并在这个线程中启动了一个 RunLoop, RunLoop 启动前内部必须要有至少一个 Timer/Observer/Source，所以 AFNetworking 在 [runLoop run] 之前先创建了一个新的 NSMachPort 添加进去了。通常情况下，调用者需要持有这个 NSMachPort (mach_port) 并在外部线程通过这个 port 发送消息到 loop 内；但此处添加 port 只是为了让 RunLoop 不至于退出，并没有用于实际的发送消息。</p>
 <hr>
 <p>参考链接:<br><a href="https://blog.ibireme.com/2015/05/18/runloop/#more-41710" target="_blank" rel="noopener">深入理解RunLoop</a><br><a href="https://ke.qq.com/course/314526" target="_blank" rel="noopener">iOS底层原理讲解</a></p>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
-    <url>/2020/06/20/flutter-widget/</url>
-    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
-<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
-</ul>
-<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
-<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
-<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
-<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
-</ul>
-<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
-<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
-<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
-<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
-</ul>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
-<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
-</ul>
-<blockquote>
-<p>如图所示</p>
-</blockquote>
-<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
-]]></content>
-      <categories>
-        <category>Flutter</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS Runtime</title>
-    <url>/2018/04/15/oc-runtime/</url>
-    <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
-<li>Objective-C是一门动态性比较强的编程语言，跟C、C++等语言有着很大的不同, 很多操作会推迟到运行时再进行</li>
-<li>OC的动态性就是有Runtime来支撑和实现的, 它是一套C语言API, 封装了很多动态性相关的函数</li>
-<li>平时编写的OC代码底层都是转换成了Runtime API进行调用</li>
-</ul>
-<h3 id="64位CPU架构下的-isa-指针详解"><a href="#64位CPU架构下的-isa-指针详解" class="headerlink" title="64位CPU架构下的 isa 指针详解"></a>64位CPU架构下的 isa 指针详解</h3><ul>
-<li>64位CPU架构之前,isa指针仅仅是存储者当前类对象的地址值</li>
-<li>64位CPU架构下, 对isa进行了优化, 变成了共用体结构, 使用位域操作来存储更多的内容<blockquote>
-<p>如是否有过关联对象, 是否有C++析构函数, 是否有弱引用指向过, 是否正在析构, 引用计数 等等</p>
-</blockquote>
-</li>
-</ul>
-<h3 id="OC的消息机制"><a href="#OC的消息机制" class="headerlink" title="OC的消息机制"></a>OC的消息机制</h3><ul>
-<li><p>OC中的方法, 其实就是给消息接受者发送一条消息, 底层实现是Runtime 的 objc_msgSend() 传入消息的接受者receiver和方法名selector</p>
-</li>
-<li><p>objc_msgSend 底层有三大阶段<br>   1.消息发送(缓存, 当前方法列表, 父类循环查找)<br>   2.动态方法解析(resoveInstanceMethod, 可以动态的添加方法, 如果实现了动态方法解析, 那么会重新走一次消息发送)<br>   3.消息转发 </p>
-<pre><code>`forwardingTargetForSelector`
-`methodSignatureForSelector:`
-`forwardInvocation`</code></pre></li>
-<li><p>流程如下图所示</p>
-<ul>
-<li><p>消息发送<br><img src="https://wx2.sbimg.cn/2020/06/24/image5b82c619bc9ddefc.png" alt="image5b82c619bc9ddefc.png">  </p>
-<br>
-</li>
-<li><p>动态方法解析<br><img src="https://wx1.sbimg.cn/2020/06/24/image4be831b95b960c31.png" alt="image4be831b95b960c31.png"></p>
-<br>
-</li>
-<li><p>消息转发<br><img src="https://wx2.sbimg.cn/2020/06/24/imagea19574eb69c22e47.png" alt="imagea19574eb69c22e47.png"></p>
-<br>
-
-
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="super调用的本质"><a href="#super调用的本质" class="headerlink" title="super调用的本质"></a>super调用的本质</h3><ul>
-<li>super的本质是底层的 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objc_msgSendSuper2(</span><br><span class="line">    &#123;self, Class&#125;,</span><br><span class="line">    @selector())</span><br></pre></td></tr></table></figure></li>
-<li>相当于还是当前对象为消息接受者, 只不过消息查找从superclass 中开始查找</li>
-</ul>
-<h3 id="Runtime在实际开发中的应用举例"><a href="#Runtime在实际开发中的应用举例" class="headerlink" title="Runtime在实际开发中的应用举例"></a>Runtime在实际开发中的应用举例</h3><ul>
-<li>查找并不公开的成员变量, 来进行想要的操作,比如通过KVC进行修改, 或获取值</li>
-<li>可以遍历成员变量来进行json转数据实体</li>
-<li>可以进行方法交换来拦截系统或者第三方库中的方法,来进行修改达到想要的操作</li>
-</ul>
-<h4 id="RunTime常用API"><a href="#RunTime常用API" class="headerlink" title="RunTime常用API"></a>RunTime常用API</h4><p><em>类</em></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 动态创建一个类（参数：父类，类名，额外的内存空间）</span><br><span class="line">Class objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 注册一个类（要在类注册之前添加成员变量）</span><br><span class="line">void objc_registerClassPair(Class cls) </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 销毁一个类</span><br><span class="line">void objc_disposeClassPair(Class cls)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取isa指向的Class</span><br><span class="line">Class object_getClass(id obj)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 设置isa指向的Class</span><br><span class="line">Class object_setClass(id obj, Class cls)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 判断一个OC对象是否为Class</span><br><span class="line">BOOL object_isClass(id obj)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 判断一个Class是否为元类</span><br><span class="line">BOOL class_isMetaClass(Class cls)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取父类</span><br><span class="line">Class class_getSuperclass(Class cls)</span><br></pre></td></tr></table></figure>
-<p><em>成员变量</em></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 获取一个实例变量信息</span><br><span class="line">Ivar class_getInstanceVariable(Class cls, const char *name)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拷贝实例变量列表（最后需要调用free释放）</span><br><span class="line">Ivar *class_copyIvarList(Class cls, unsigned int *outCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 设置和获取成员变量的值</span><br><span class="line">void object_setIvar(id obj, Ivar ivar, id value)</span><br><span class="line">id object_getIvar(id obj, Ivar ivar)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态添加成员变量（已经注册的类是不能动态添加成员变量的）</span><br><span class="line">BOOL class_addIvar(Class cls, const char * name, size_t size, uint8_t alignment, const char * types)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取成员变量的相关信息</span><br><span class="line">const char *ivar_getName(Ivar v)</span><br><span class="line">const char *ivar_getTypeEncoding(Ivar v)</span><br></pre></td></tr></table></figure>
-<p><em>属性</em></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 获取一个属性</span><br><span class="line">objc_property_t class_getProperty(Class cls, const char *name)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拷贝属性列表（最后需要调用free释放）</span><br><span class="line">objc_property_t *class_copyPropertyList(Class cls, unsigned int *outCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态添加属性</span><br><span class="line">BOOL class_addProperty(Class cls, const char *name, const objc_property_attribute_t *attributes,</span><br><span class="line">                  unsigned int attributeCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态替换属性</span><br><span class="line">void class_replaceProperty(Class cls, const char *name, const objc_property_attribute_t *attributes,</span><br><span class="line">                      unsigned int attributeCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取属性的一些信息</span><br><span class="line">const char *property_getName(objc_property_t property)</span><br><span class="line">const char *property_getAttributes(objc_property_t property)</span><br></pre></td></tr></table></figure>
-<p><em>方法</em></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 获得一个实例方法、类方法</span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name)</span><br><span class="line">Method class_getClassMethod(Class cls, SEL name)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 方法实现相关操作</span><br><span class="line">IMP class_getMethodImplementation(Class cls, SEL name) </span><br><span class="line">IMP method_setImplementation(Method m, IMP imp)</span><br><span class="line">void method_exchangeImplementations(Method m1, Method m2) </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拷贝方法列表（最后需要调用free释放）</span><br><span class="line">Method *class_copyMethodList(Class cls, unsigned int *outCount)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态添加方法</span><br><span class="line">BOOL class_addMethod(Class cls, SEL name, IMP imp, const char *types)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态替换方法</span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, const char *types)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取方法的相关信息（带有copy的需要调用free去释放）</span><br><span class="line">SEL method_getName(Method m)</span><br><span class="line">IMP method_getImplementation(Method m)</span><br><span class="line">const char *method_getTypeEncoding(Method m)</span><br><span class="line">unsigned int method_getNumberOfArguments(Method m)</span><br><span class="line">char *method_copyReturnType(Method m)</span><br><span class="line">char *method_copyArgumentType(Method m, unsigned int index)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 选择器相关</span><br><span class="line">const char *sel_getName(SEL sel)</span><br><span class="line">SEL sel_registerName(const char *str)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 用block作为方法实现</span><br><span class="line">IMP imp_implementationWithBlock(id block)</span><br><span class="line">id imp_getBlock(IMP anImp)</span><br><span class="line">BOOL imp_removeBlock(IMP anImp)</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 线程以及线程同步方案</title>
-    <url>/2018/06/15/oc-thread/</url>
-    <content><![CDATA[<h3 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
-<h3 id="同步、异步-串行、并发"><a href="#同步、异步-串行、并发" class="headerlink" title="同步、异步, 串行、并发"></a>同步、异步, 串行、并发</h3><ul>
-<li><em>同步</em> 和 <em>异步</em> 主要是能否开启新的线程<ol>
-<li>同步: 在当前线程中执行任务, 不具备开启新线程的能力</li>
-<li>异步: 在新的线程中执行任务, 具备开启新线程的能力</li>
-</ol>
-</li>
-<li><em>串行</em> 和 <em>并发</em> 主要决定任务的执行方式<ol>
-<li>串行: 一个任务执行完毕再执行下一个任务</li>
-<li>并发: 多个任务同时执行</li>
-</ol>
-</li>
-</ul>
-<h3 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p>
-<h3 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h3><blockquote>
-<p>通过dispatch_group_t 队列组可以实现 所有异步任务共同并发, 任务都处理完毕, 统一触发 通过dispatch_group_notify来进行接下来的任务</p>
-</blockquote>
-<h3 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h3><ul>
-<li><p><font color=grey>OSSpinLock</font> </p>
-<ul>
-<li><code>#import &lt;libkern/OSAtomic.h&gt;</code></li>
-<li>自旋, 不推荐使用, 会有优先级反转的问题, 如果等待锁的线程优先级较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁</li>
-</ul>
-</li>
-<li><p><font color=blue>os_unfair_lock</font> </p>
-<ul>
-<li>互斥, 推荐效率较高</li>
-<li><code>os_unfair_lock</code>用于取代不安全的<code>OSSpinLock</code> ，从iOS10开始才支持</li>
-</ul>
-</li>
-<li><p><font color=blue>pthread_mutex</font>  </p>
-<ul>
-<li><code>#import &lt;pthread.h&gt;</code></li>
-<li>互斥, 推荐跨平台</li>
-</ul>
-</li>
-<li><p><font color=blue>dispatch_semaphore</font></p>
-<ul>
-<li>互斥, 推荐, 兼容性好</li>
-</ul>
-</li>
-<li><p>dispatch_queue(DISPATCH_QUEUE_SERIAL)</p>
-<ul>
-<li>串行队列同样可以线程同步</li>
-</ul>
-</li>
-<li><p>NSLock</p>
-<ul>
-<li>对pthread_mutex的OC包装</li>
-</ul>
-</li>
-<li><p>NSRecursiveLock</p>
-<ul>
-<li>对pthread_mutex递归锁的OC包装</li>
-</ul>
-</li>
-<li><p>NSCondition</p>
-<ul>
-<li>对pthread_mutex条件锁的OC包装</li>
-</ul>
-</li>
-<li><p>NSConditionLock</p>
-</li>
-<li><p>@synchronized </p>
-<ul>
-<li>对pthread_mutex递归锁的OC包装</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>死锁<br>当线程加锁之后忘记解锁, 那么这把锁就相当于死锁<br> 如果当前加锁采用的是自旋锁方式, 那么就会一直占用着CPU资源,让其他线程处于忙等状态<br> 如果当前加锁采用的是互斥锁方式, 那么就会让再次获取锁的线程处于休眠状态</p>
-</blockquote>
-<h3 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h3><ul>
-<li><p>场景</p>
-<ul>
-<li>同一时间，只能有1个线程进行写的操作</li>
-<li>同一时间，允许有多个线程进行读的操作</li>
-<li>同一时间，不允许既有写的操作，又有读的操作</li>
-</ul>
-</li>
-<li><p>解决方案:</p>
-<ul>
-<li><code>pthread_rwlock</code> 读写锁</li>
-<li><code>dispatch_barrier_async</code> GCD异步栅栏</li>
-</ul>
-</li>
-</ul>
-<h3 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h3><details>
-<summary>参考内容</summary>
-
-<ol>
-<li>可以添加任务依赖, 方便控制执行顺序</li>
-<li>可以设置任务的优先级</li>
-<li>可以设置最大并发数</li>
-<li>可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</details></li>
-</ol>
 ]]></content>
       <categories>
         <category>iOS</category>
