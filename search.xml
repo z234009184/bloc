@@ -29,20 +29,43 @@
       </categories>
   </entry>
   <entry>
+    <title>博客搬家了</title>
+    <url>/2016/05/13/new-bloc/</url>
+    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
+<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
+<li>多记录整块的知识体系,而不是分散的知识点</li>
+<li>每个分类或标签下的知识体系可以串联</li>
+</ul>
+<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
+<li>iOS应用开发, Objective-C、Swift</li>
+<li>跨平台方向</li>
+<li>Android相关(了解), Java</li>
+<li>脚本语言 Shell、Ruby、Python</li>
+<li>Linux 常用命令</li>
+<li>网络</li>
+<li>算法</li>
+<li>数据结构基础、编译原理</li>
+</ul>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li>设计 <code>Pixelmator pro</code></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>iOS 内存布局以及管理</title>
     <url>/2018/06/15/oc-memory/</url>
-    <content><![CDATA[<h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h5 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h5><ul>
+    <content><![CDATA[<h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
 <li>编译之后的代码存储的区域</li>
 </ul>
-<h5 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h5><ul>
+<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
 <li>字符串常量</li>
 <li>已初始化的全局变量, 静态变量</li>
 <li>未初始化的全局变量, 静态变量</li>
 </ul>
-<h5 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h5><ul>
+<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
 <li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
 </ul>
-<h5 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h5><ul>
+<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
 <li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
 </ul>
 <h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
@@ -53,13 +76,13 @@
 <li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
 <li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
 </ul>
-<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h5 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h5><ul>
+<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
 <li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
 </ul>
-<h5 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h5><ul>
+<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
 <li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
 </ul>
-<h4 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h4><table>
+<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
 <thead>
 <tr>
 <th></th>
@@ -112,7 +135,9 @@
 <li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
 <li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
 </ol>
-<h4 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h4><ul>
+<p>如图所示</p>
+<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
+<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
 <li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
 </ul>
 ]]></content>
@@ -280,70 +305,6 @@
       </categories>
   </entry>
   <entry>
-    <title>Objective-C 语言底层原理</title>
-    <url>/2018/03/15/init_bloc/</url>
-    <content><![CDATA[<h3 id="我们平时编写的Objective-C代码，底层实现其实都是C-C-代码"><a href="#我们平时编写的Objective-C代码，底层实现其实都是C-C-代码" class="headerlink" title="我们平时编写的Objective-C代码，底层实现其实都是C\C++代码"></a>我们平时编写的Objective-C代码，底层实现其实都是C\C++代码</h3><ul>
-<li>Objective-C -&gt; C/C++ -&gt; 汇编 -&gt; 机器语言</li>
-<li>所以Objective-C的面向对象都是基于C\C++的数据结构实现的(结构体)</li>
-</ul>
-<h3 id="对象的isa指针指向哪里？"><a href="#对象的isa指针指向哪里？" class="headerlink" title="对象的isa指针指向哪里？"></a>对象的isa指针指向哪里？</h3><ul>
-<li>instance对象的isa指向class对象</li>
-<li>class对象的isa指向meta-class对象</li>
-<li>meta-class对象的isa指向基类的meta-class对象</li>
-</ul>
-<h3 id="OC的类信息存放在哪里？"><a href="#OC的类信息存放在哪里？" class="headerlink" title="OC的类信息存放在哪里？"></a>OC的类信息存放在哪里？</h3><ul>
-<li>成员变量的具体值，存放在instance对象</li>
-<li>对象方法、属性、成员变量、协议信息，存放在class对象中</li>
-<li>类方法，存放在meta-class对象中</li>
-</ul>
-<p><strong>如图所示</strong></p>
-<p><img src="https://wx1.sbimg.cn/2020/06/17/WX20200617-2204452x.png" alt="RUNOOB 图标"></p>
-<h3 id="KVO本质是什么"><a href="#KVO本质是什么" class="headerlink" title="KVO本质是什么?"></a>KVO本质是什么?</h3><ul>
-<li><p>利用RuntimeAPI动态生成一个子类，并且让instance对象的isa指向这个全新的子类</p>
-</li>
-<li><p>当修改instance对象的属性时，会调用Foundation的_NSSetXXXValueAndNotify函数</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">_NSSetXXXValueAndNotify 函数内部大致如下:</span><br><span class="line">willChangeValueForKey:</span><br><span class="line">父类原来的setter</span><br><span class="line">didChangeValueForKey:</span><br><span class="line">内部会触发监听器（Oberser）的监听方法( observeValueForKeyPath:ofObject:change:context:）</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="KVC的赋值和取值过程是怎样的？原理是什么？"><a href="#KVC的赋值和取值过程是怎样的？原理是什么？" class="headerlink" title="KVC的赋值和取值过程是怎样的？原理是什么？"></a>KVC的赋值和取值过程是怎样的？原理是什么？</h3><ul>
-<li><img src="https://wx2.sbimg.cn/2020/06/17/WX20200617-2222362x.png" alt="WX20200617-2222362x.png"></li>
-</ul>
-<h3 id="Category的实现原理"><a href="#Category的实现原理" class="headerlink" title="Category的实现原理"></a>Category的实现原理</h3><ul>
-<li>Category编译之后的底层结构是struct category_t，里面存储着分类的对象方法、类方法、属性、协议信息<br>在程序运行的时候，runtime会将Category的数据，合并到类信息中（类对象、元类对象中）, 分类按编译顺序来合并, 后编译的方法属性等会排在列表的前面</li>
-</ul>
-<h3 id="关联对象的本质"><a href="#关联对象的本质" class="headerlink" title="关联对象的本质"></a>关联对象的本质</h3><ul>
-<li>关联对象并不是存储在被关联对象本身内存中<br>关联对象存储在全局的统一的一个AssociationsManager中(全局的字典)</li>
-</ul>
-<h3 id="Block的本质"><a href="#Block的本质" class="headerlink" title="Block的本质"></a>Block的本质</h3><ul>
-<li>Block是封装了函数以及函数调用的OC对象<br>其内部构造如图所示:<br><img src="https://wx1.sbimg.cn/2020/06/22/image.png" alt="image.png"></li>
-</ul>
-<h5 id="Block的捕获类型"><a href="#Block的捕获类型" class="headerlink" title="Block的捕获类型"></a>Block的捕获类型</h5><ul>
-<li>auto局部变量是值捕获<br>如果是基本数据类型: 值捕获只会将数值拷贝一份到内部存储<br>如果是对象数据类型: 根据外面对象是否为retain来进行是否retain操作</li>
-<li>static局部静态是引用捕获</li>
-<li>全局变量 不进行捕获</li>
-</ul>
-<h5 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h5><ul>
-<li>默认情况下是NSGlobalBlock</li>
-<li>访问了auto变量为NSStackBlock</li>
-<li>NSStackBlock进行了Copy操作则变成NSMallocBlock</li>
-</ul>
-<h5 id="block-修饰符"><a href="#block-修饰符" class="headerlink" title="__block 修饰符"></a>__block 修饰符</h5><ul>
-<li>会将auto变量进行包装成block内部的 OC对象<br>如果是基本数据类型:Block内部的OC对象内部会拷贝一份外面的数值<br>如果是对象数据类型:Block内部的OC对象内部会对外面的对象根据外面对象是否为retain来进行是否retain操作</li>
-<li>被<strong>block修饰的外部变量 在block内部访问时 本质是通过 Block内部生成的</strong>Block对象内部的forwarding指针指向的自己来进行访问, 主要是解决当Block在栈存储区时,确保访问的外部变量是在堆上</li>
-</ul>
-<h5 id="Block本身的拷贝操作对外面引用变量的影响"><a href="#Block本身的拷贝操作对外面引用变量的影响" class="headerlink" title="Block本身的拷贝操作对外面引用变量的影响"></a>Block本身的拷贝操作对外面引用变量的影响</h5><ul>
-<li>如果Block从栈存储区拷贝的堆存储区则会调用desc结构体内部的copy操作(被__block修饰的同样, 只是多了一层对象包装)</li>
-</ul>
-<h5 id="Block引起的循环引用"><a href="#Block引起的循环引用" class="headerlink" title="Block引起的循环引用"></a>Block引起的循环引用</h5><ul>
-<li>循环引用主要是指外部变量对Block进行多了retain操作, Block内部又对外部变量进行了retain操作, 导致双方的引用计数无法release到0释放, 所以常驻内存导致内存泄漏, 常用的解决方法是将Block内部引用的外部变量进行__weak弱引用, 这样便不会retain操作,可以销毁.</li>
-</ul>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
     <title>iOS Runtime</title>
     <url>/2018/04/15/oc-runtime/</url>
     <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
@@ -403,29 +364,6 @@
       <categories>
         <category>iOS</category>
       </categories>
-  </entry>
-  <entry>
-    <title>博客搬家了</title>
-    <url>/2016/05/13/new-bloc/</url>
-    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
-<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
-<li>多记录整块的知识体系,而不是分散的知识点</li>
-<li>每个分类或标签下的知识体系可以串联</li>
-</ul>
-<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
-<li>iOS应用开发, Objective-C、Swift</li>
-<li>跨平台方向</li>
-<li>Android相关(了解), Java</li>
-<li>脚本语言 Shell、Ruby、Python</li>
-<li>Linux 常用命令</li>
-<li>网络</li>
-<li>算法</li>
-<li>数据结构基础、编译原理</li>
-</ul>
-<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
-<li>设计 <code>Pixelmator pro</code></li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>iOS 线程以及线程同步方案</title>
@@ -526,6 +464,70 @@
 <li>可以设置最大并发数</li>
 <li>可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</details></li>
 </ol>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Objective-C 语言底层原理</title>
+    <url>/2018/03/15/init_bloc/</url>
+    <content><![CDATA[<h3 id="我们平时编写的Objective-C代码，底层实现其实都是C-C-代码"><a href="#我们平时编写的Objective-C代码，底层实现其实都是C-C-代码" class="headerlink" title="我们平时编写的Objective-C代码，底层实现其实都是C\C++代码"></a>我们平时编写的Objective-C代码，底层实现其实都是C\C++代码</h3><ul>
+<li>Objective-C -&gt; C/C++ -&gt; 汇编 -&gt; 机器语言</li>
+<li>所以Objective-C的面向对象都是基于C\C++的数据结构实现的(结构体)</li>
+</ul>
+<h3 id="对象的isa指针指向哪里？"><a href="#对象的isa指针指向哪里？" class="headerlink" title="对象的isa指针指向哪里？"></a>对象的isa指针指向哪里？</h3><ul>
+<li>instance对象的isa指向class对象</li>
+<li>class对象的isa指向meta-class对象</li>
+<li>meta-class对象的isa指向基类的meta-class对象</li>
+</ul>
+<h3 id="OC的类信息存放在哪里？"><a href="#OC的类信息存放在哪里？" class="headerlink" title="OC的类信息存放在哪里？"></a>OC的类信息存放在哪里？</h3><ul>
+<li>成员变量的具体值，存放在instance对象</li>
+<li>对象方法、属性、成员变量、协议信息，存放在class对象中</li>
+<li>类方法，存放在meta-class对象中</li>
+</ul>
+<p><strong>如图所示</strong></p>
+<p><img src="https://wx1.sbimg.cn/2020/06/17/WX20200617-2204452x.png" alt="RUNOOB 图标"></p>
+<h3 id="KVO本质是什么"><a href="#KVO本质是什么" class="headerlink" title="KVO本质是什么?"></a>KVO本质是什么?</h3><ul>
+<li><p>利用RuntimeAPI动态生成一个子类，并且让instance对象的isa指向这个全新的子类</p>
+</li>
+<li><p>当修改instance对象的属性时，会调用Foundation的_NSSetXXXValueAndNotify函数</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">_NSSetXXXValueAndNotify 函数内部大致如下:</span><br><span class="line">willChangeValueForKey:</span><br><span class="line">父类原来的setter</span><br><span class="line">didChangeValueForKey:</span><br><span class="line">内部会触发监听器（Oberser）的监听方法( observeValueForKeyPath:ofObject:change:context:）</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="KVC的赋值和取值过程是怎样的？原理是什么？"><a href="#KVC的赋值和取值过程是怎样的？原理是什么？" class="headerlink" title="KVC的赋值和取值过程是怎样的？原理是什么？"></a>KVC的赋值和取值过程是怎样的？原理是什么？</h3><ul>
+<li><img src="https://wx2.sbimg.cn/2020/06/17/WX20200617-2222362x.png" alt="WX20200617-2222362x.png"></li>
+</ul>
+<h3 id="Category的实现原理"><a href="#Category的实现原理" class="headerlink" title="Category的实现原理"></a>Category的实现原理</h3><ul>
+<li>Category编译之后的底层结构是struct category_t，里面存储着分类的对象方法、类方法、属性、协议信息<br>在程序运行的时候，runtime会将Category的数据，合并到类信息中（类对象、元类对象中）, 分类按编译顺序来合并, 后编译的方法属性等会排在列表的前面</li>
+</ul>
+<h3 id="关联对象的本质"><a href="#关联对象的本质" class="headerlink" title="关联对象的本质"></a>关联对象的本质</h3><ul>
+<li>关联对象并不是存储在被关联对象本身内存中<br>关联对象存储在全局的统一的一个AssociationsManager中(全局的字典)</li>
+</ul>
+<h3 id="Block的本质"><a href="#Block的本质" class="headerlink" title="Block的本质"></a>Block的本质</h3><ul>
+<li>Block是封装了函数以及函数调用的OC对象<br>其内部构造如图所示:<br><img src="https://wx1.sbimg.cn/2020/06/22/image.png" alt="image.png"></li>
+</ul>
+<h5 id="Block的捕获类型"><a href="#Block的捕获类型" class="headerlink" title="Block的捕获类型"></a>Block的捕获类型</h5><ul>
+<li>auto局部变量是值捕获<br>如果是基本数据类型: 值捕获只会将数值拷贝一份到内部存储<br>如果是对象数据类型: 根据外面对象是否为retain来进行是否retain操作</li>
+<li>static局部静态是引用捕获</li>
+<li>全局变量 不进行捕获</li>
+</ul>
+<h5 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h5><ul>
+<li>默认情况下是NSGlobalBlock</li>
+<li>访问了auto变量为NSStackBlock</li>
+<li>NSStackBlock进行了Copy操作则变成NSMallocBlock</li>
+</ul>
+<h5 id="block-修饰符"><a href="#block-修饰符" class="headerlink" title="__block 修饰符"></a>__block 修饰符</h5><ul>
+<li>会将auto变量进行包装成block内部的 OC对象<br>如果是基本数据类型:Block内部的OC对象内部会拷贝一份外面的数值<br>如果是对象数据类型:Block内部的OC对象内部会对外面的对象根据外面对象是否为retain来进行是否retain操作</li>
+<li>被<strong>block修饰的外部变量 在block内部访问时 本质是通过 Block内部生成的</strong>Block对象内部的forwarding指针指向的自己来进行访问, 主要是解决当Block在栈存储区时,确保访问的外部变量是在堆上</li>
+</ul>
+<h5 id="Block本身的拷贝操作对外面引用变量的影响"><a href="#Block本身的拷贝操作对外面引用变量的影响" class="headerlink" title="Block本身的拷贝操作对外面引用变量的影响"></a>Block本身的拷贝操作对外面引用变量的影响</h5><ul>
+<li>如果Block从栈存储区拷贝的堆存储区则会调用desc结构体内部的copy操作(被__block修饰的同样, 只是多了一层对象包装)</li>
+</ul>
+<h5 id="Block引起的循环引用"><a href="#Block引起的循环引用" class="headerlink" title="Block引起的循环引用"></a>Block引起的循环引用</h5><ul>
+<li>循环引用主要是指外部变量对Block进行多了retain操作, Block内部又对外部变量进行了retain操作, 导致双方的引用计数无法release到0释放, 所以常驻内存导致内存泄漏, 常用的解决方法是将Block内部引用的外部变量进行__weak弱引用, 这样便不会retain操作,可以销毁.</li>
+</ul>
 ]]></content>
       <categories>
         <category>iOS</category>

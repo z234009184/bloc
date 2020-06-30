@@ -197,18 +197,18 @@
         </header>
 
         <div class="post-content">
-            <h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h5 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h5><ul>
+            <h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
 <li>编译之后的代码存储的区域</li>
 </ul>
-<h5 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h5><ul>
+<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
 <li>字符串常量</li>
 <li>已初始化的全局变量, 静态变量</li>
 <li>未初始化的全局变量, 静态变量</li>
 </ul>
-<h5 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h5><ul>
+<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
 <li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
 </ul>
-<h5 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h5><ul>
+<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
 <li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
 </ul>
 <h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
@@ -219,13 +219,13 @@
 <li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
 <li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
 </ul>
-<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h5 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h5><ul>
+<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
 <li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
 </ul>
-<h5 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h5><ul>
+<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
 <li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
 </ul>
-<h4 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h4><table>
+<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
 <thead>
 <tr>
 <th></th>
@@ -278,7 +278,9 @@
 <li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
 <li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
 </ol>
-<h4 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h4><ul>
+<p>如图所示</p>
+<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
+<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
 <li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
 </ul>
 
