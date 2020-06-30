@@ -14,7 +14,7 @@
     <meta name="keywords" content="CodeMan">
 
 
-<title>Flutter中Widget、Element、RenderObject三者的关系与作用 | CodeMan的博客</title>
+<title>iOS 内存布局以及管理 | CodeMan的博客</title>
 
 
 
@@ -172,7 +172,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Flutter中Widget、Element、RenderObject三者的关系与作用</h1>
+            <h1 class="post-title">iOS 内存布局以及管理</h1>
             
                 <div class="post-meta">
                     
@@ -181,14 +181,14 @@
 
                     
                         <span class="post-time">
-                        日期: <a href="#">六月 20, 2020&nbsp;&nbsp;14:26:40</a>
+                        日期: <a href="#">六月 15, 2018&nbsp;&nbsp;22:00:40</a>
                         </span>
                     
                     
                         <span class="post-category">
                     分类:
                             
-                                <a href="/categories/Flutter/">Flutter</a>
+                                <a href="/categories/iOS/">iOS</a>
                             
                         </span>
                     
@@ -197,26 +197,90 @@
         </header>
 
         <div class="post-content">
-            <h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
-<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
+            <h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h5 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h5><ul>
+<li>编译之后的代码存储的区域</li>
 </ul>
-<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
-<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
-<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
-<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
+<h5 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h5><ul>
+<li>字符串常量</li>
+<li>已初始化的全局变量, 静态变量</li>
+<li>未初始化的全局变量, 静态变量</li>
 </ul>
-<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
-<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
-<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
-<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
+<h5 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h5><ul>
+<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
 </ul>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
-<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
+<h5 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h5><ul>
+<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
 </ul>
+<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
+<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
+<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
+</ul>
+<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
+<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
+<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
+</ul>
+<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h5 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h5><ul>
+<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
+</ul>
+<h5 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h5><ul>
+<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
+</ul>
+<h4 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h4><table>
+<thead>
+<tr>
+<th></th>
+<th>copy操作</th>
+<th>mutableCopy操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NSString</code></td>
+<td><code>NSString</code>浅拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+<tr>
+<td><code>NSMutableString</code></td>
+<td><code>NSMutableString</code>深拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+</tbody></table>
 <blockquote>
-<p>如图所示</p>
+<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
 </blockquote>
-<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
+<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
+<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
+</li>
+<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
+</li>
+<li><p>SideTable结构如下:</p>
+<ul>
+<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
+<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
+<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
+</ul>
+</li>
+</ul>
+<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
+<li>_objc_rootDealloc()<ol>
+<li>内部会判断是否有c++析构函数</li>
+<li>是否有关联对象</li>
+<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
+</ol>
+</li>
+</ul>
+<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
+<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
+<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
+<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
+</ul>
+<ol>
+<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
+<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
+<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
+</ol>
+<h4 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h4><ul>
+<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
+</ul>
 
         </div>
 
@@ -231,7 +295,7 @@
                 
                     <p class="copyright-item">
                         <span>原文链接:</span>
-                        <span><a href="https://codeman.netlify.app/2020/06/20/flutter-widget/">https://codeman.netlify.app/2020/06/20/flutter-widget/</a></span>
+                        <span><a href="https://codeman.netlify.app/2018/06/15/oc-memory/">https://codeman.netlify.app/2018/06/15/oc-memory/</a></span>
                     </p>
                 
                 
@@ -264,8 +328,10 @@
         </section>
         <section class="post-nav">
             
+                <a class="prev" rel="prev" href="/2020/06/20/flutter-widget/">Flutter中Widget、Element、RenderObject三者的关系与作用</a>
             
-            <a class="next" rel="next" href="/2018/06/15/oc-memory/">iOS 内存布局以及管理</a>
+            
+            <a class="next" rel="next" href="/2018/06/15/oc-thread/">iOS 线程以及线程同步方案</a>
             
         </section>
         
