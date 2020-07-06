@@ -1,6 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
+    <url>/2020/06/20/flutter-widget/</url>
+    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
+<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
+</ul>
+<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
+<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
+<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
+<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
+</ul>
+<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
+<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
+<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
+<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
+<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
+</ul>
+<blockquote>
+<p>如图所示</p>
+</blockquote>
+<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
+]]></content>
+      <categories>
+        <category>Flutter</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 逆向-越狱环境搭建</title>
+    <url>/2017/03/20/ios-reverse-1/</url>
+    <content><![CDATA[<p>首先逆向需要一台Mac电脑, 还有一台已经越狱的iOS设备</p>
+<h2 id="越狱工具"><a href="#越狱工具" class="headerlink" title="越狱工具"></a>越狱工具</h2><p>市面上的越狱工具有很多, 例如:</p>
+<ul>
+<li><a href="https://unc0ver.dev/" target="_blank" rel="noopener">uncOver</a></li>
+<li><a href="https://checkra.in/" target="_blank" rel="noopener">checkra1n</a><blockquote>
+<p>可以自行选择越狱工具, 通过越狱工具官网查看支持的设备以及系统版本号来进行选择, 然后通过官网步骤即可完成越狱</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="通过-Cydia-安装逆向所需插件"><a href="#通过-Cydia-安装逆向所需插件" class="headerlink" title="通过 Cydia 安装逆向所需插件"></a>通过 <code>Cydia</code> 安装逆向所需插件</h2><p>越狱成功的手机, 会自动安装一个叫 <code>Cydia</code> 的软件, 它相当于一个软件商店, 可以下载一些好用的插件或软件来让越狱的手机更方便, 前提需要添加一些好用的“源”(可以自行搜索).<br>越狱之后逆向所需插件如下:</p>
+<ul>
+<li><code>Apple File Conduit &quot;2&quot;</code>    可以访问整个iOS设备的文系统, 类似的补丁还有：<code>afc2</code>、<code>afc2add</code></li>
+<li><code>AppSync Unified</code>  可以绕过系统验证，随意安装、运行破解的ipa安装包</li>
+</ul>
+<h2 id="通过-SSH-登录iOS设备"><a href="#通过-SSH-登录iOS设备" class="headerlink" title="通过 SSH 登录iOS设备"></a>通过 SSH 登录iOS设备</h2><ul>
+<li>在iOS设备上上通过<code>Cydia</code>安装<code>OpenSSH</code>工具</li>
+<li>在Mac的终端输入 <code>ssh 账户名@服务器主机地址</code><br>比如 <code>ssh root@10.1.1.168</code>（这里的服务器是手机）<br>初始密码 <code>alpine</code></li>
+<li>退出登录命令是 <code>exit</code><blockquote>
+<p>root：最高权限账户，$HOME 是 /var/root</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="ssh-一些其他操作"><a href="#ssh-一些其他操作" class="headerlink" title="ssh 一些其他操作"></a>ssh 一些其他操作</h3><ul>
+<li>删掉之前的服务器公钥信息<ul>
+<li><code>ssh-keygen -R 服务器IP地址</code></li>
+</ul>
+</li>
+<li>或者直接打开known_hosts文件删除服务器的公钥信息就行<ul>
+<li><code>vim ~/.ssh/known_hosts</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="ssh-基于密钥方式的客户端认证"><a href="#ssh-基于密钥方式的客户端认证" class="headerlink" title="ssh 基于密钥方式的客户端认证"></a>ssh 基于密钥方式的客户端认证</h3><ul>
+<li>在客户端生成一对相关联的密钥（Key Pair）：一个公钥（Public Key），一个私钥（Private Key）<ul>
+<li><code>ssh-keygen</code>  一路敲回车键（Enter）即可</li>
+</ul>
+</li>
+<li>把客户端的公钥内容追加到服务器的授权文件（~/.ssh/authorized_keys）尾部<ul>
+<li><code>ssh-copy-id root@服务器主机地址</code><blockquote>
+<p>ssh-copy-id会将客户端<del>/.ssh/id_rsa.pub的内容自动追加到服务器的</del>/.ssh/authorized_keys尾部<br>如果配置了免密码登录后，还是需要输入密码，需要在服务器端设置文件权限 <code>chmod 644 ~/.ssh/authorized_keys</code></p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="通过-USB-连接线连接-iOS-设备"><a href="#通过-USB-连接线连接-iOS-设备" class="headerlink" title="通过 USB 连接线连接 iOS 设备"></a>通过 USB 连接线连接 iOS 设备</h2><ul>
+<li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的一个python脚本：<code>tcprelay.py</code> 来进行端口映射</li>
+<li>将iPhone的22端口（SSH端口）映射到Mac本地的10010端口(10010也可以换成其他系统未占用的端口)<ul>
+<li><code>python tcprelay.py -t 22:10010</code></li>
+</ul>
+</li>
+<li>端口映射完毕后，以后如果想跟iPhone的22端口通信，直接跟Mac本地的10010端口通信就可以了<ul>
+<li><code>ssh root@localhost -p 10010</code><blockquote>
+<p>远程拷贝文件也可以直接跟Mac本地的10010端口通信<br>scp -P 10010 <del>/Desktop/1.txt root@localhost:</del>/test<br>我们可以将经常执行的一系列终端命令行放到sh脚本文件中（shell），然后执行脚本文件</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<p>至此, 逆向所需要的环境基本搭建完成</p>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Objective-C 语言底层原理</title>
+    <url>/2018/03/15/init_bloc/</url>
+    <content><![CDATA[<h3 id="我们平时编写的Objective-C代码，底层实现其实都是C-C-代码"><a href="#我们平时编写的Objective-C代码，底层实现其实都是C-C-代码" class="headerlink" title="我们平时编写的Objective-C代码，底层实现其实都是C\C++代码"></a>我们平时编写的Objective-C代码，底层实现其实都是C\C++代码</h3><ul>
+<li>Objective-C -&gt; C/C++ -&gt; 汇编 -&gt; 机器语言</li>
+<li>所以Objective-C的面向对象都是基于C\C++的数据结构实现的(结构体)</li>
+</ul>
+<h3 id="对象的isa指针指向哪里？"><a href="#对象的isa指针指向哪里？" class="headerlink" title="对象的isa指针指向哪里？"></a>对象的isa指针指向哪里？</h3><ul>
+<li>instance对象的isa指向class对象</li>
+<li>class对象的isa指向meta-class对象</li>
+<li>meta-class对象的isa指向基类的meta-class对象</li>
+</ul>
+<h3 id="OC的类信息存放在哪里？"><a href="#OC的类信息存放在哪里？" class="headerlink" title="OC的类信息存放在哪里？"></a>OC的类信息存放在哪里？</h3><ul>
+<li>成员变量的具体值，存放在instance对象</li>
+<li>对象方法、属性、成员变量、协议信息，存放在class对象中</li>
+<li>类方法，存放在meta-class对象中</li>
+</ul>
+<p><strong>如图所示</strong></p>
+<p><img src="https://wx1.sbimg.cn/2020/06/17/WX20200617-2204452x.png" alt="RUNOOB 图标"></p>
+<h3 id="KVO本质是什么"><a href="#KVO本质是什么" class="headerlink" title="KVO本质是什么?"></a>KVO本质是什么?</h3><ul>
+<li><p>利用RuntimeAPI动态生成一个子类，并且让instance对象的isa指向这个全新的子类</p>
+</li>
+<li><p>当修改instance对象的属性时，会调用Foundation的_NSSetXXXValueAndNotify函数</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">_NSSetXXXValueAndNotify 函数内部大致如下:</span><br><span class="line">willChangeValueForKey:</span><br><span class="line">父类原来的setter</span><br><span class="line">didChangeValueForKey:</span><br><span class="line">内部会触发监听器（Oberser）的监听方法( observeValueForKeyPath:ofObject:change:context:）</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="KVC的赋值和取值过程是怎样的？原理是什么？"><a href="#KVC的赋值和取值过程是怎样的？原理是什么？" class="headerlink" title="KVC的赋值和取值过程是怎样的？原理是什么？"></a>KVC的赋值和取值过程是怎样的？原理是什么？</h3><ul>
+<li><img src="https://wx2.sbimg.cn/2020/06/17/WX20200617-2222362x.png" alt="WX20200617-2222362x.png"></li>
+</ul>
+<h3 id="Category的实现原理"><a href="#Category的实现原理" class="headerlink" title="Category的实现原理"></a>Category的实现原理</h3><ul>
+<li>Category编译之后的底层结构是struct category_t，里面存储着分类的对象方法、类方法、属性、协议信息<br>在程序运行的时候，runtime会将Category的数据，合并到类信息中（类对象、元类对象中）, 分类按编译顺序来合并, 后编译的方法属性等会排在列表的前面</li>
+</ul>
+<h3 id="关联对象的本质"><a href="#关联对象的本质" class="headerlink" title="关联对象的本质"></a>关联对象的本质</h3><ul>
+<li>关联对象并不是存储在被关联对象本身内存中<br>关联对象存储在全局的统一的一个AssociationsManager中(全局的字典)</li>
+</ul>
+<h3 id="Block的本质"><a href="#Block的本质" class="headerlink" title="Block的本质"></a>Block的本质</h3><ul>
+<li>Block是封装了函数以及函数调用的OC对象<br>其内部构造如图所示:<br><img src="https://wx1.sbimg.cn/2020/06/22/image.png" alt="image.png"></li>
+</ul>
+<h5 id="Block的捕获类型"><a href="#Block的捕获类型" class="headerlink" title="Block的捕获类型"></a>Block的捕获类型</h5><ul>
+<li>auto局部变量是值捕获<br>如果是基本数据类型: 值捕获只会将数值拷贝一份到内部存储<br>如果是对象数据类型: 根据外面对象是否为retain来进行是否retain操作</li>
+<li>static局部静态是引用捕获</li>
+<li>全局变量 不进行捕获</li>
+</ul>
+<h5 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h5><ul>
+<li>默认情况下是NSGlobalBlock</li>
+<li>访问了auto变量为NSStackBlock</li>
+<li>NSStackBlock进行了Copy操作则变成NSMallocBlock</li>
+</ul>
+<h5 id="block-修饰符"><a href="#block-修饰符" class="headerlink" title="__block 修饰符"></a>__block 修饰符</h5><ul>
+<li>会将auto变量进行包装成block内部的 OC对象<br>如果是基本数据类型:Block内部的OC对象内部会拷贝一份外面的数值<br>如果是对象数据类型:Block内部的OC对象内部会对外面的对象根据外面对象是否为retain来进行是否retain操作</li>
+<li>被<strong>block修饰的外部变量 在block内部访问时 本质是通过 Block内部生成的</strong>Block对象内部的forwarding指针指向的自己来进行访问, 主要是解决当Block在栈存储区时,确保访问的外部变量是在堆上</li>
+</ul>
+<h5 id="Block本身的拷贝操作对外面引用变量的影响"><a href="#Block本身的拷贝操作对外面引用变量的影响" class="headerlink" title="Block本身的拷贝操作对外面引用变量的影响"></a>Block本身的拷贝操作对外面引用变量的影响</h5><ul>
+<li>如果Block从栈存储区拷贝的堆存储区则会调用desc结构体内部的copy操作(被__block修饰的同样, 只是多了一层对象包装)</li>
+</ul>
+<h5 id="Block引起的循环引用"><a href="#Block引起的循环引用" class="headerlink" title="Block引起的循环引用"></a>Block引起的循环引用</h5><ul>
+<li>循环引用主要是指外部变量对Block进行多了retain操作, Block内部又对外部变量进行了retain操作, 导致双方的引用计数无法release到0释放, 所以常驻内存导致内存泄漏, 常用的解决方法是将Block内部引用的外部变量进行__weak弱引用, 这样便不会retain操作,可以销毁.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
     <title>iOS 性能优化</title>
     <url>/2018/08/20/ios-opitimize/</url>
     <content><![CDATA[<p>在屏幕成像的过程中，CPU和GPU起着至关重要的作用</p>
@@ -153,215 +313,6 @@
 <p>参考链接: </p>
 <ul>
 <li><a href="https://blog.ibireme.com/2015/11/12/smooth_user_interfaces_for_ios/#more-41893" target="_blank" rel="noopener">iOS 保持界面流畅的技巧</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>博客搬家了</title>
-    <url>/2016/05/13/new-bloc/</url>
-    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
-<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
-<li>多记录整块的知识体系,而不是分散的知识点</li>
-<li>每个分类或标签下的知识体系可以串联</li>
-</ul>
-<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
-<li>iOS应用开发, Objective-C、Swift</li>
-<li>跨平台方向</li>
-<li>Android相关(了解), Java</li>
-<li>脚本语言 Shell、Ruby、Python</li>
-<li>Linux 常用命令</li>
-<li>网络</li>
-<li>算法</li>
-<li>数据结构基础、编译原理</li>
-</ul>
-<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
-<li>设计 <code>Pixelmator pro</code></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
-    <url>/2020/06/20/flutter-widget/</url>
-    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
-<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
-</ul>
-<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
-<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
-<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
-<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
-</ul>
-<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
-<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
-<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
-<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
-</ul>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
-<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
-</ul>
-<blockquote>
-<p>如图所示</p>
-</blockquote>
-<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
-]]></content>
-      <categories>
-        <category>Flutter</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Objective-C 语言底层原理</title>
-    <url>/2018/03/15/init_bloc/</url>
-    <content><![CDATA[<h3 id="我们平时编写的Objective-C代码，底层实现其实都是C-C-代码"><a href="#我们平时编写的Objective-C代码，底层实现其实都是C-C-代码" class="headerlink" title="我们平时编写的Objective-C代码，底层实现其实都是C\C++代码"></a>我们平时编写的Objective-C代码，底层实现其实都是C\C++代码</h3><ul>
-<li>Objective-C -&gt; C/C++ -&gt; 汇编 -&gt; 机器语言</li>
-<li>所以Objective-C的面向对象都是基于C\C++的数据结构实现的(结构体)</li>
-</ul>
-<h3 id="对象的isa指针指向哪里？"><a href="#对象的isa指针指向哪里？" class="headerlink" title="对象的isa指针指向哪里？"></a>对象的isa指针指向哪里？</h3><ul>
-<li>instance对象的isa指向class对象</li>
-<li>class对象的isa指向meta-class对象</li>
-<li>meta-class对象的isa指向基类的meta-class对象</li>
-</ul>
-<h3 id="OC的类信息存放在哪里？"><a href="#OC的类信息存放在哪里？" class="headerlink" title="OC的类信息存放在哪里？"></a>OC的类信息存放在哪里？</h3><ul>
-<li>成员变量的具体值，存放在instance对象</li>
-<li>对象方法、属性、成员变量、协议信息，存放在class对象中</li>
-<li>类方法，存放在meta-class对象中</li>
-</ul>
-<p><strong>如图所示</strong></p>
-<p><img src="https://wx1.sbimg.cn/2020/06/17/WX20200617-2204452x.png" alt="RUNOOB 图标"></p>
-<h3 id="KVO本质是什么"><a href="#KVO本质是什么" class="headerlink" title="KVO本质是什么?"></a>KVO本质是什么?</h3><ul>
-<li><p>利用RuntimeAPI动态生成一个子类，并且让instance对象的isa指向这个全新的子类</p>
-</li>
-<li><p>当修改instance对象的属性时，会调用Foundation的_NSSetXXXValueAndNotify函数</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">_NSSetXXXValueAndNotify 函数内部大致如下:</span><br><span class="line">willChangeValueForKey:</span><br><span class="line">父类原来的setter</span><br><span class="line">didChangeValueForKey:</span><br><span class="line">内部会触发监听器（Oberser）的监听方法( observeValueForKeyPath:ofObject:change:context:）</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="KVC的赋值和取值过程是怎样的？原理是什么？"><a href="#KVC的赋值和取值过程是怎样的？原理是什么？" class="headerlink" title="KVC的赋值和取值过程是怎样的？原理是什么？"></a>KVC的赋值和取值过程是怎样的？原理是什么？</h3><ul>
-<li><img src="https://wx2.sbimg.cn/2020/06/17/WX20200617-2222362x.png" alt="WX20200617-2222362x.png"></li>
-</ul>
-<h3 id="Category的实现原理"><a href="#Category的实现原理" class="headerlink" title="Category的实现原理"></a>Category的实现原理</h3><ul>
-<li>Category编译之后的底层结构是struct category_t，里面存储着分类的对象方法、类方法、属性、协议信息<br>在程序运行的时候，runtime会将Category的数据，合并到类信息中（类对象、元类对象中）, 分类按编译顺序来合并, 后编译的方法属性等会排在列表的前面</li>
-</ul>
-<h3 id="关联对象的本质"><a href="#关联对象的本质" class="headerlink" title="关联对象的本质"></a>关联对象的本质</h3><ul>
-<li>关联对象并不是存储在被关联对象本身内存中<br>关联对象存储在全局的统一的一个AssociationsManager中(全局的字典)</li>
-</ul>
-<h3 id="Block的本质"><a href="#Block的本质" class="headerlink" title="Block的本质"></a>Block的本质</h3><ul>
-<li>Block是封装了函数以及函数调用的OC对象<br>其内部构造如图所示:<br><img src="https://wx1.sbimg.cn/2020/06/22/image.png" alt="image.png"></li>
-</ul>
-<h5 id="Block的捕获类型"><a href="#Block的捕获类型" class="headerlink" title="Block的捕获类型"></a>Block的捕获类型</h5><ul>
-<li>auto局部变量是值捕获<br>如果是基本数据类型: 值捕获只会将数值拷贝一份到内部存储<br>如果是对象数据类型: 根据外面对象是否为retain来进行是否retain操作</li>
-<li>static局部静态是引用捕获</li>
-<li>全局变量 不进行捕获</li>
-</ul>
-<h5 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h5><ul>
-<li>默认情况下是NSGlobalBlock</li>
-<li>访问了auto变量为NSStackBlock</li>
-<li>NSStackBlock进行了Copy操作则变成NSMallocBlock</li>
-</ul>
-<h5 id="block-修饰符"><a href="#block-修饰符" class="headerlink" title="__block 修饰符"></a>__block 修饰符</h5><ul>
-<li>会将auto变量进行包装成block内部的 OC对象<br>如果是基本数据类型:Block内部的OC对象内部会拷贝一份外面的数值<br>如果是对象数据类型:Block内部的OC对象内部会对外面的对象根据外面对象是否为retain来进行是否retain操作</li>
-<li>被<strong>block修饰的外部变量 在block内部访问时 本质是通过 Block内部生成的</strong>Block对象内部的forwarding指针指向的自己来进行访问, 主要是解决当Block在栈存储区时,确保访问的外部变量是在堆上</li>
-</ul>
-<h5 id="Block本身的拷贝操作对外面引用变量的影响"><a href="#Block本身的拷贝操作对外面引用变量的影响" class="headerlink" title="Block本身的拷贝操作对外面引用变量的影响"></a>Block本身的拷贝操作对外面引用变量的影响</h5><ul>
-<li>如果Block从栈存储区拷贝的堆存储区则会调用desc结构体内部的copy操作(被__block修饰的同样, 只是多了一层对象包装)</li>
-</ul>
-<h5 id="Block引起的循环引用"><a href="#Block引起的循环引用" class="headerlink" title="Block引起的循环引用"></a>Block引起的循环引用</h5><ul>
-<li>循环引用主要是指外部变量对Block进行多了retain操作, Block内部又对外部变量进行了retain操作, 导致双方的引用计数无法release到0释放, 所以常驻内存导致内存泄漏, 常用的解决方法是将Block内部引用的外部变量进行__weak弱引用, 这样便不会retain操作,可以销毁.</li>
-</ul>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 内存布局以及管理</title>
-    <url>/2018/07/13/oc-memory/</url>
-    <content><![CDATA[<h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
-<li>编译之后的代码存储的区域</li>
-</ul>
-<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
-<li>字符串常量</li>
-<li>已初始化的全局变量, 静态变量</li>
-<li>未初始化的全局变量, 静态变量</li>
-</ul>
-<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
-<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
-</ul>
-<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
-<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
-</ul>
-<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
-<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
-<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
-</ul>
-<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
-<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
-<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
-</ul>
-<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
-<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
-</ul>
-<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
-<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
-</ul>
-<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
-<thead>
-<tr>
-<th></th>
-<th>copy操作</th>
-<th>mutableCopy操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>NSString</code></td>
-<td><code>NSString</code>浅拷贝</td>
-<td><code>NSMutableString</code>深拷贝</td>
-</tr>
-<tr>
-<td><code>NSMutableString</code></td>
-<td><code>NSMutableString</code>深拷贝</td>
-<td><code>NSMutableString</code>深拷贝</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
-</blockquote>
-<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
-<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
-</li>
-<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
-</li>
-<li><p>SideTable结构如下:</p>
-<ul>
-<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
-<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
-<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
-</ul>
-</li>
-</ul>
-<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
-<li>_objc_rootDealloc()<ol>
-<li>内部会判断是否有c++析构函数</li>
-<li>是否有关联对象</li>
-<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
-</ol>
-</li>
-</ul>
-<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
-<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
-<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
-<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
-</ul>
-<ol>
-<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
-<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
-<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
-</ol>
-<p>如图所示</p>
-<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
-<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
-<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
 </ul>
 ]]></content>
       <categories>
@@ -522,6 +473,123 @@
 <p>另外: AFNetWorking内部单独创建了一个线程，并在这个线程中启动了一个 RunLoop, RunLoop 启动前内部必须要有至少一个 Timer/Observer/Source，所以 AFNetworking 在 [runLoop run] 之前先创建了一个新的 NSMachPort 添加进去了。通常情况下，调用者需要持有这个 NSMachPort (mach_port) 并在外部线程通过这个 port 发送消息到 loop 内；但此处添加 port 只是为了让 RunLoop 不至于退出，并没有用于实际的发送消息。</p>
 <hr>
 <p>参考链接:<br><a href="https://blog.ibireme.com/2015/05/18/runloop/#more-41710" target="_blank" rel="noopener">深入理解RunLoop</a><br><a href="https://ke.qq.com/course/314526" target="_blank" rel="noopener">iOS底层原理讲解</a></p>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>博客搬家了</title>
+    <url>/2016/05/13/new-bloc/</url>
+    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
+<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
+<li>多记录整块的知识体系,而不是分散的知识点</li>
+<li>每个分类或标签下的知识体系可以串联</li>
+</ul>
+<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
+<li>iOS应用开发, Objective-C、Swift</li>
+<li>跨平台方向</li>
+<li>Android相关(了解), Java</li>
+<li>脚本语言 Shell、Ruby、Python</li>
+<li>Linux 常用命令</li>
+<li>网络</li>
+<li>算法</li>
+<li>数据结构基础、编译原理</li>
+</ul>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li>设计 <code>Pixelmator pro</code></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>iOS 内存布局以及管理</title>
+    <url>/2018/07/13/oc-memory/</url>
+    <content><![CDATA[<h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
+<li>编译之后的代码存储的区域</li>
+</ul>
+<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
+<li>字符串常量</li>
+<li>已初始化的全局变量, 静态变量</li>
+<li>未初始化的全局变量, 静态变量</li>
+</ul>
+<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
+<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
+</ul>
+<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
+<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
+</ul>
+<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
+<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
+<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
+</ul>
+<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
+<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
+<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
+</ul>
+<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
+<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
+</ul>
+<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
+<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
+</ul>
+<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>copy操作</th>
+<th>mutableCopy操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NSString</code></td>
+<td><code>NSString</code>浅拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+<tr>
+<td><code>NSMutableString</code></td>
+<td><code>NSMutableString</code>深拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
+</blockquote>
+<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
+<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
+</li>
+<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
+</li>
+<li><p>SideTable结构如下:</p>
+<ul>
+<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
+<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
+<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
+</ul>
+</li>
+</ul>
+<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
+<li>_objc_rootDealloc()<ol>
+<li>内部会判断是否有c++析构函数</li>
+<li>是否有关联对象</li>
+<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
+</ol>
+</li>
+</ul>
+<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
+<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
+<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
+<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
+</ul>
+<ol>
+<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
+<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
+<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
+</ol>
+<p>如图所示</p>
+<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
+<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
+<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
+</ul>
 ]]></content>
       <categories>
         <category>iOS</category>

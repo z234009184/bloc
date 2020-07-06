@@ -190,6 +190,32 @@
   </entry>
   
   <entry>
+    <title>iOS 逆向-越狱环境搭建</title>
+    <link href="https://codeman.netlify.app/2017/03/20/ios-reverse-1/"/>
+    <id>https://codeman.netlify.app/2017/03/20/ios-reverse-1/</id>
+    <published>2017-03-20T15:00:40.000Z</published>
+    <updated>2020-07-06T01:11:05.945Z</updated>
+    
+    <content type="html"><![CDATA[<p>首先逆向需要一台Mac电脑, 还有一台已经越狱的iOS设备</p><h2 id="越狱工具"><a href="#越狱工具" class="headerlink" title="越狱工具"></a>越狱工具</h2><p>市面上的越狱工具有很多, 例如:</p><ul><li><a href="https://unc0ver.dev/" target="_blank" rel="noopener">uncOver</a></li><li><a href="https://checkra.in/" target="_blank" rel="noopener">checkra1n</a><blockquote><p>可以自行选择越狱工具, 通过越狱工具官网查看支持的设备以及系统版本号来进行选择, 然后通过官网步骤即可完成越狱</p></blockquote></li></ul><h2 id="通过-Cydia-安装逆向所需插件"><a href="#通过-Cydia-安装逆向所需插件" class="headerlink" title="通过 Cydia 安装逆向所需插件"></a>通过 <code>Cydia</code> 安装逆向所需插件</h2><p>越狱成功的手机, 会自动安装一个叫 <code>Cydia</code> 的软件, 它相当于一个软件商店, 可以下载一些好用的插件或软件来让越狱的手机更方便, 前提需要添加一些好用的“源”(可以自行搜索).<br>越狱之后逆向所需插件如下:</p><ul><li><code>Apple File Conduit &quot;2&quot;</code>    可以访问整个iOS设备的文系统, 类似的补丁还有：<code>afc2</code>、<code>afc2add</code></li><li><code>AppSync Unified</code>  可以绕过系统验证，随意安装、运行破解的ipa安装包</li></ul><h2 id="通过-SSH-登录iOS设备"><a href="#通过-SSH-登录iOS设备" class="headerlink" title="通过 SSH 登录iOS设备"></a>通过 SSH 登录iOS设备</h2><ul><li>在iOS设备上上通过<code>Cydia</code>安装<code>OpenSSH</code>工具</li><li>在Mac的终端输入 <code>ssh 账户名@服务器主机地址</code><br>比如 <code>ssh root@10.1.1.168</code>（这里的服务器是手机）<br>初始密码 <code>alpine</code></li><li>退出登录命令是 <code>exit</code><blockquote><p>root：最高权限账户，$HOME 是 /var/root</p></blockquote></li></ul><h3 id="ssh-一些其他操作"><a href="#ssh-一些其他操作" class="headerlink" title="ssh 一些其他操作"></a>ssh 一些其他操作</h3><ul><li>删掉之前的服务器公钥信息<ul><li><code>ssh-keygen -R 服务器IP地址</code></li></ul></li><li>或者直接打开known_hosts文件删除服务器的公钥信息就行<ul><li><code>vim ~/.ssh/known_hosts</code></li></ul></li></ul><h3 id="ssh-基于密钥方式的客户端认证"><a href="#ssh-基于密钥方式的客户端认证" class="headerlink" title="ssh 基于密钥方式的客户端认证"></a>ssh 基于密钥方式的客户端认证</h3><ul><li>在客户端生成一对相关联的密钥（Key Pair）：一个公钥（Public Key），一个私钥（Private Key）<ul><li><code>ssh-keygen</code>  一路敲回车键（Enter）即可</li></ul></li><li>把客户端的公钥内容追加到服务器的授权文件（~/.ssh/authorized_keys）尾部<ul><li><code>ssh-copy-id root@服务器主机地址</code><blockquote><p>ssh-copy-id会将客户端<del>/.ssh/id_rsa.pub的内容自动追加到服务器的</del>/.ssh/authorized_keys尾部<br>如果配置了免密码登录后，还是需要输入密码，需要在服务器端设置文件权限 <code>chmod 644 ~/.ssh/authorized_keys</code></p></blockquote></li></ul></li></ul><h2 id="通过-USB-连接线连接-iOS-设备"><a href="#通过-USB-连接线连接-iOS-设备" class="headerlink" title="通过 USB 连接线连接 iOS 设备"></a>通过 USB 连接线连接 iOS 设备</h2><ul><li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的一个python脚本：<code>tcprelay.py</code> 来进行端口映射</li><li>将iPhone的22端口（SSH端口）映射到Mac本地的10010端口(10010也可以换成其他系统未占用的端口)<ul><li><code>python tcprelay.py -t 22:10010</code></li></ul></li><li>端口映射完毕后，以后如果想跟iPhone的22端口通信，直接跟Mac本地的10010端口通信就可以了<ul><li><code>ssh root@localhost -p 10010</code><blockquote><p>远程拷贝文件也可以直接跟Mac本地的10010端口通信<br>scp -P 10010 <del>/Desktop/1.txt root@localhost:</del>/test<br>我们可以将经常执行的一系列终端命令行放到sh脚本文件中（shell），然后执行脚本文件</p></blockquote></li></ul></li></ul><p>至此, 逆向所需要的环境基本搭建完成</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;首先逆向需要一台Mac电脑, 还有一台已经越狱的iOS设备&lt;/p&gt;
+&lt;h2 id=&quot;越狱工具&quot;&gt;&lt;a href=&quot;#越狱工具&quot; class=&quot;headerlink&quot; title=&quot;越狱工具&quot;&gt;&lt;/a&gt;越狱工具&lt;/h2&gt;&lt;p&gt;市面上的越狱工具有很多, 例如:&lt;/p&gt;
+&lt;ul&gt;
+      
+    
+    </summary>
+    
+    
+      <category term="iOS" scheme="https://codeman.netlify.app/categories/iOS/"/>
+    
+    
+  </entry>
+  
+  <entry>
     <title>博客搬家了</title>
     <link href="https://codeman.netlify.app/2016/05/13/new-bloc/"/>
     <id>https://codeman.netlify.app/2016/05/13/new-bloc/</id>
