@@ -190,6 +190,30 @@
   </entry>
   
   <entry>
+    <title>iOS Mach-O 格式文件</title>
+    <link href="https://codeman.netlify.app/2017/05/20/ios/ios-reverse-3/"/>
+    <id>https://codeman.netlify.app/2017/05/20/ios/ios-reverse-3/</id>
+    <published>2017-05-20T15:00:40.000Z</published>
+    <updated>2020-07-11T09:19:42.599Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Mach-O-介绍"><a href="#Mach-O-介绍" class="headerlink" title="Mach-O 介绍"></a>Mach-O 介绍</h2><p><code>Mach-O</code> 其实是 <code>Mach Object</code> 文件格式的缩写, 属于<code>Mach-O</code>格式的常见文件有</p><ul><li>目标文件.o</li><li>库文件<ul><li>.a 静态库其实就是多个.o链接到一起</li><li>.dylib </li><li>framework</li></ul></li><li>可执行文件</li><li>dyld (动态链接器)</li><li>.dsym( 符号表)</li></ul><p>如图所示:<br><img src="https://s1.ax1x.com/2020/07/11/Ul8OaR.png" alt="Ul8OaR.png"></p><h3 id="在Xcode中可查看-Mach-O-文件类型"><a href="#在Xcode中可查看-Mach-O-文件类型" class="headerlink" title="在Xcode中可查看 Mach-O 文件类型"></a>在Xcode中可查看 Mach-O 文件类型</h3><ul><li>如图<br>  <img src="https://s1.ax1x.com/2020/07/11/UlGdL4.png" alt="UlGdL4.png"></li></ul><h2 id="Mach-O-的基本结构"><a href="#Mach-O-的基本结构" class="headerlink" title="Mach-O 的基本结构"></a>Mach-O 的基本结构</h2><ul><li>Header<ul><li>文件类型、目标架构类型等</li></ul></li><li>Load commands<ul><li>描述文件在虚拟内存中的逻辑结构、布局</li></ul></li><li>Raw segment data<ul><li>在Load commands 中定义的 Segment 原始数据</li></ul></li></ul><p>如图所示:<br>    <img src="https://s1.ax1x.com/2020/07/11/UlGvwj.png" alt="UlGvwj.png"></p><h2 id="查看-Mach-O-文件结构"><a href="#查看-Mach-O-文件结构" class="headerlink" title="查看 Mach-O 文件结构"></a>查看 Mach-O 文件结构</h2><ul><li><p>命令行工具</p><ul><li>file  查看文件类型</li><li>otool  用来查看特定部分和段的内容</li><li>lipo  用于多架构文件的处理<ul><li>lipo -info &lt;文件路径&gt;</li><li>lipo &lt;文件路径&gt; -thin &lt;架构类型&gt; -output &lt;导出的文件目录&gt;</li><li>lipo &lt;文件路径1&gt; &lt;文件路径2&gt; -output &lt;输出的文件路径&gt; </li></ul></li></ul></li><li><p>GUI 工具</p><ul><li><a href="https://github.com/gdbinit/MachOView" target="_blank" rel="noopener">MachOView</a></li></ul></li></ul><blockquote><p>dyld 用于加载以下几种<code>Mach-O</code>格式文件:</p><ol><li>可执行文件</li><li>dylib 动态库</li><li>bundle </li></ol></blockquote><h2 id="App从开发到安装到手机上的过程"><a href="#App从开发到安装到手机上的过程" class="headerlink" title="App从开发到安装到手机上的过程"></a>App从开发到安装到手机上的过程</h2><ol><li>编写代码</li><li>编译、链接、签名 生成 .app 包</li><li>.app包内包含<strong>可执行文件</strong>和一些资源</li><li>压缩.app包为ipa文件</li><li>ipa文件可以上传到 AppStore 或者 其他商店</li><li>用户从AppStore 或其他商店 安装ipa</li></ol><h2 id="逆向App思路"><a href="#逆向App思路" class="headerlink" title="逆向App思路"></a>逆向App思路</h2><ol><li>界面分析<ul><li><code>Cycript</code>、<code>Reveal</code></li></ul></li><li>代码分析<ul><li>对<code>Mach-O</code>文件静态分析</li><li>主要工具有: <code>MachOView</code>、<a href="http://stevenygard.com/projects/class-dump/" target="_blank" rel="noopener">class-dump</a>、<code>Hopper Disassembler</code>、<code>ida</code></li></ul></li><li>动态调试<ul><li><code>debugserver</code>、<code>LLDB</code></li></ul></li><li>编写代码注入到App中<ul><li><code>theos</code> hook方式编写deb安装包 Cydia安装deb插件(已越狱)</li><li>重签名、打包ipa(未越狱)</li></ul></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;Mach-O-介绍&quot;&gt;&lt;a href=&quot;#Mach-O-介绍&quot; class=&quot;headerlink&quot; title=&quot;Mach-O 介绍&quot;&gt;&lt;/a&gt;Mach-O 介绍&lt;/h2&gt;&lt;p&gt;&lt;code&gt;Mach-O&lt;/code&gt; 其实是 &lt;code&gt;Mach Object&lt;
+      
+    
+    </summary>
+    
+    
+      <category term="iOS" scheme="https://codeman.netlify.app/categories/iOS/"/>
+    
+    
+  </entry>
+  
+  <entry>
     <title>iOS 逆向-分析工具 Cycript、Reaveal</title>
     <link href="https://codeman.netlify.app/2017/04/20/ios/ios-reverse-2/"/>
     <id>https://codeman.netlify.app/2017/04/20/ios/ios-reverse-2/</id>

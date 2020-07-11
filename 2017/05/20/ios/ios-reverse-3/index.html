@@ -14,7 +14,7 @@
     <meta name="keywords" content="CodeMan">
 
 
-<title>iOS 逆向-分析工具 Cycript、Reaveal | CodeMan的博客</title>
+<title>iOS Mach-O 格式文件 | CodeMan的博客</title>
 
 
 
@@ -172,7 +172,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">iOS 逆向-分析工具 Cycript、Reaveal</h1>
+            <h1 class="post-title">iOS Mach-O 格式文件</h1>
             
                 <div class="post-meta">
                     
@@ -181,7 +181,7 @@
 
                     
                         <span class="post-time">
-                        日期: <a href="#">四月 20, 2017&nbsp;&nbsp;23:00:40</a>
+                        日期: <a href="#">五月 20, 2017&nbsp;&nbsp;23:00:40</a>
                         </span>
                     
                     
@@ -197,72 +197,93 @@
         </header>
 
         <div class="post-content">
-            <h2 id="Cycript"><a href="#Cycript" class="headerlink" title="Cycript"></a>Cycript</h2><ul>
-<li>Cycript是Objective-C++、ES6（JavaScript）、Java等语法的混合物<br>可以用来探索、修改、调试正在运行的Mac\iOS APP<br>可以在<a href="http://www.cycript.org/" target="_blank" rel="noopener">官网</a>或者<a href="http://www.cycript.org/manual/" target="_blank" rel="noopener">文档</a>来查看相应说明</li>
+            <h2 id="Mach-O-介绍"><a href="#Mach-O-介绍" class="headerlink" title="Mach-O 介绍"></a>Mach-O 介绍</h2><p><code>Mach-O</code> 其实是 <code>Mach Object</code> 文件格式的缩写, 属于<code>Mach-O</code>格式的常见文件有</p>
+<ul>
+<li>目标文件.o</li>
+<li>库文件<ul>
+<li>.a 静态库其实就是多个.o链接到一起</li>
+<li>.dylib </li>
+<li>framework</li>
 </ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
-<li>在越狱的手机上 通过Cydia安装Cycript，即可在iPhone上调试运行中的APP</li>
+</li>
+<li>可执行文件</li>
+<li>dyld (动态链接器)</li>
+<li>.dsym( 符号表)</li>
 </ul>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h3><ul>
-<li>cycript -p 进程名称/进程ID<blockquote>
-<p>通过输入-p参数 后面跟上进程名称或进程ID即可进入cycript运行环境进行调试<br>取消输入: <code>Ctrl + C</code> 退出: <code>Ctrl + D</code>  清屏: <code>Command + R</code><br>命令行列出所有进程: <code>ps -A</code>  也可以搜索关键词 <code>ps -A | grep 关键词</code></p>
+<p>如图所示:<br><img src="https://s1.ax1x.com/2020/07/11/Ul8OaR.png" alt="Ul8OaR.png"></p>
+<h3 id="在Xcode中可查看-Mach-O-文件类型"><a href="#在Xcode中可查看-Mach-O-文件类型" class="headerlink" title="在Xcode中可查看 Mach-O 文件类型"></a>在Xcode中可查看 Mach-O 文件类型</h3><ul>
+<li>如图<br>  <img src="https://s1.ax1x.com/2020/07/11/UlGdL4.png" alt="UlGdL4.png"></li>
+</ul>
+<h2 id="Mach-O-的基本结构"><a href="#Mach-O-的基本结构" class="headerlink" title="Mach-O 的基本结构"></a>Mach-O 的基本结构</h2><ul>
+<li>Header<ul>
+<li>文件类型、目标架构类型等</li>
+</ul>
+</li>
+<li>Load commands<ul>
+<li>描述文件在虚拟内存中的逻辑结构、布局</li>
+</ul>
+</li>
+<li>Raw segment data<ul>
+<li>在Load commands 中定义的 Segment 原始数据</li>
+</ul>
+</li>
+</ul>
+<p>如图所示:<br>    <img src="https://s1.ax1x.com/2020/07/11/UlGvwj.png" alt="UlGvwj.png"></p>
+<h2 id="查看-Mach-O-文件结构"><a href="#查看-Mach-O-文件结构" class="headerlink" title="查看 Mach-O 文件结构"></a>查看 Mach-O 文件结构</h2><ul>
+<li><p>命令行工具</p>
+<ul>
+<li>file  查看文件类型</li>
+<li>otool  用来查看特定部分和段的内容</li>
+<li>lipo  用于多架构文件的处理<ul>
+<li>lipo -info &lt;文件路径&gt;</li>
+<li>lipo &lt;文件路径&gt; -thin &lt;架构类型&gt; -output &lt;导出的文件目录&gt;</li>
+<li>lipo &lt;文件路径1&gt; &lt;文件路径2&gt; -output &lt;输出的文件路径&gt; </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>GUI 工具</p>
+<ul>
+<li><a href="https://github.com/gdbinit/MachOView" target="_blank" rel="noopener">MachOView</a></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>dyld 用于加载以下几种<code>Mach-O</code>格式文件:</p>
+<ol>
+<li>可执行文件</li>
+<li>dylib 动态库</li>
+<li>bundle </li>
+</ol>
 </blockquote>
-</li>
-</ul>
-<h3 id="常用语法"><a href="#常用语法" class="headerlink" title="常用语法"></a>常用语法</h3><ul>
-<li>UIApp<ul>
-<li>代表 [UIApplication sharedApplication]</li>
-</ul>
-</li>
-<li>var app = [UIApplication sharedApplication]<ul>
-<li>定义变量</li>
-</ul>
-</li>
-<li>#0x13ba34500<ul>
-<li>用内存地址获取对象</li>
-</ul>
-</li>
-<li>ObjectiveC.classes<ul>
-<li>已加载的所有OC类</li>
-</ul>
-</li>
-<li>*对象<ul>
-<li>查看对象的所有成员变量</li>
-</ul>
-</li>
-<li>view.recursiveDescription().toString()<ul>
-<li>递归打印view的所有子控件（跟LLDB一样的函数）</li>
-</ul>
-</li>
-<li>choose(UIViewController)<ul>
-<li>筛选出某种类型的对象<blockquote>
-<p>可以使用MJ封装的<a href="https://github.com/CoderMJLee/mjcript" target="_blank" rel="noopener">mjcript</a>来使用, 封装了更多好用的函数</p>
-</blockquote>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="Reveal"><a href="#Reveal" class="headerlink" title="Reveal"></a>Reveal</h2><ul>
-<li><a href="https://revealapp.com" target="_blank" rel="noopener">Reveal</a>是一款调试iOS程序UI界面的神器</li>
-</ul>
-<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
-<li>想要调试任何app, 需要做以下三件事<ul>
-<li><ol>
-<li>在越狱的手机上通过<code>Cydia</code>安装<code>Reveal Loader</code></li>
+<h2 id="App从开发到安装到手机上的过程"><a href="#App从开发到安装到手机上的过程" class="headerlink" title="App从开发到安装到手机上的过程"></a>App从开发到安装到手机上的过程</h2><ol>
+<li>编写代码</li>
+<li>编译、链接、签名 生成 .app 包</li>
+<li>.app包内包含<strong>可执行文件</strong>和一些资源</li>
+<li>压缩.app包为ipa文件</li>
+<li>ipa文件可以上传到 AppStore 或者 其他商店</li>
+<li>用户从AppStore 或其他商店 安装ipa</li>
 </ol>
-</li>
-<li><ol start="2">
-<li>手机上点击<code>设置</code>-&gt;<code>Reveal</code>-&gt;<code>Enabled Applications</code> 打开需要调试的App的开关</li>
-</ol>
-</li>
-<li><ol start="3">
-<li>打开Mac电脑上的Reveal, 点击顶部菜单的 <code>Help</code>-&gt;<code>Show Reveal Library in Finder</code>, 然后将看到的 <code>RevealSever.framwork</code> 拷贝到手机上的目录: <code>Library</code>-&gt;<code>Frameworks</code> 中</li>
-</ol>
-</li>
+<h2 id="逆向App思路"><a href="#逆向App思路" class="headerlink" title="逆向App思路"></a>逆向App思路</h2><ol>
+<li>界面分析<ul>
+<li><code>Cycript</code>、<code>Reveal</code></li>
 </ul>
 </li>
+<li>代码分析<ul>
+<li>对<code>Mach-O</code>文件静态分析</li>
+<li>主要工具有: <code>MachOView</code>、<a href="http://stevenygard.com/projects/class-dump/" target="_blank" rel="noopener">class-dump</a>、<code>Hopper Disassembler</code>、<code>ida</code></li>
 </ul>
-<p>重启iOS设备的 SpringBoard: <code>killall SpringBoard</code> (通过mac命令汗运行)<br>至此可以通过Reveal查看任何运行中的App了, 可以通过 <code>Cycript + Reveal</code> 两个工具进行详细的分析</p>
+</li>
+<li>动态调试<ul>
+<li><code>debugserver</code>、<code>LLDB</code></li>
+</ul>
+</li>
+<li>编写代码注入到App中<ul>
+<li><code>theos</code> hook方式编写deb安装包 Cydia安装deb插件(已越狱)</li>
+<li>重签名、打包ipa(未越狱)</li>
+</ul>
+</li>
+</ol>
 
         </div>
 
@@ -277,7 +298,7 @@
                 
                     <p class="copyright-item">
                         <span>原文链接:</span>
-                        <span><a href="https://codeman.netlify.app/2017/04/20/ios/ios-reverse-2/">https://codeman.netlify.app/2017/04/20/ios/ios-reverse-2/</a></span>
+                        <span><a href="https://codeman.netlify.app/2017/05/20/ios/ios-reverse-3/">https://codeman.netlify.app/2017/05/20/ios/ios-reverse-3/</a></span>
                     </p>
                 
                 
@@ -310,10 +331,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2017/05/20/ios/ios-reverse-3/">iOS Mach-O 格式文件</a>
+                <a class="prev" rel="prev" href="/2018/03/15/ios/init_bloc/">Objective-C 语言底层原理</a>
             
             
-            <a class="next" rel="next" href="/2017/03/20/ios/ios-reverse-1/">iOS 逆向-越狱环境搭建</a>
+            <a class="next" rel="next" href="/2017/04/20/ios/ios-reverse-2/">iOS 逆向-分析工具 Cycript、Reaveal</a>
             
         </section>
         
