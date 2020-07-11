@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
+    <url>/2020/06/20/flutter-widget/</url>
+    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
+<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
+</ul>
+<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
+<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
+<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
+<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
+</ul>
+<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
+<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
+<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
+<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
+<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
+</ul>
+<blockquote>
+<p>如图所示</p>
+</blockquote>
+<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
+]]></content>
+      <categories>
+        <category>Flutter</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Objective-C 语言底层原理</title>
     <url>/2018/03/15/init_bloc/</url>
     <content><![CDATA[<h3 id="我们平时编写的Objective-C代码，底层实现其实都是C-C-代码"><a href="#我们平时编写的Objective-C代码，底层实现其实都是C-C-代码" class="headerlink" title="我们平时编写的Objective-C代码，底层实现其实都是C\C++代码"></a>我们平时编写的Objective-C代码，底层实现其实都是C\C++代码</h3><ul>
@@ -224,7 +252,75 @@
       </categories>
   </entry>
   <entry>
-    <title>iOS 逆向-Cycript、Reaveal</title>
+    <title>iOS 逆向-越狱环境搭建</title>
+    <url>/2017/03/20/ios-reverse-1/</url>
+    <content><![CDATA[<p>首先逆向需要一台 <strong>Mac电脑</strong>, 还有一台<strong>已经越狱的 iOS 设备</strong></p>
+<h2 id="越狱工具"><a href="#越狱工具" class="headerlink" title="越狱工具"></a>越狱工具</h2><p>市面上的越狱工具有很多, 例如:</p>
+<ul>
+<li><a href="https://unc0ver.dev/" target="_blank" rel="noopener">uncOver</a></li>
+<li><a href="https://checkra.in/" target="_blank" rel="noopener">checkra1n</a><blockquote>
+<p>可以自行选择越狱工具, 通过越狱工具官网查看支持的设备以及系统版本号来进行选择, 然后通过官网步骤即可完成越狱</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="通过-Cydia-安装逆向所需插件"><a href="#通过-Cydia-安装逆向所需插件" class="headerlink" title="通过 Cydia 安装逆向所需插件"></a>通过 <code>Cydia</code> 安装逆向所需插件</h2><p>越狱成功的手机, 会自动安装一个叫 <code>Cydia</code> 的软件, 它相当于一个软件商店, 可以下载一些好用的插件或软件来让越狱的手机更方便, 前提需要添加一些好用的“源”(可以自行搜索).<br>越狱之后逆向所需插件如下:</p>
+<ul>
+<li><code>Apple File Conduit &quot;2&quot;</code>    可以访问整个iOS设备的文系统, 类似的补丁还有：<code>afc2</code>、<code>afc2add</code></li>
+<li><code>AppSync Unified</code>  可以绕过系统验证，随意安装、运行破解的ipa安装包</li>
+</ul>
+<h2 id="通过-SSH-登录iOS设备"><a href="#通过-SSH-登录iOS设备" class="headerlink" title="通过 SSH 登录iOS设备"></a>通过 SSH 登录iOS设备</h2><ul>
+<li>在iOS设备上上通过<code>Cydia</code>安装<code>OpenSSH</code>工具</li>
+<li>在Mac的终端输入 <code>ssh 账户名@服务器主机地址</code><br>比如 <code>ssh root@10.1.1.168</code>（这里的服务器是手机）<br>初始密码 <code>alpine</code></li>
+<li>退出登录命令是 <code>exit</code><blockquote>
+<p>root：最高权限账户，$HOME 是 /var/root</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="ssh-一些其他操作"><a href="#ssh-一些其他操作" class="headerlink" title="ssh 一些其他操作"></a>ssh 一些其他操作</h3><ul>
+<li>删掉之前的服务器公钥信息<ul>
+<li><code>ssh-keygen -R 服务器IP地址</code></li>
+</ul>
+</li>
+<li>或者直接打开known_hosts文件删除服务器的公钥信息就行<ul>
+<li><code>vim ~/.ssh/known_hosts</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="ssh-基于密钥方式的客户端认证"><a href="#ssh-基于密钥方式的客户端认证" class="headerlink" title="ssh 基于密钥方式的客户端认证"></a>ssh 基于密钥方式的客户端认证</h3><ul>
+<li>在客户端生成一对相关联的密钥（Key Pair）：一个公钥（Public Key），一个私钥（Private Key）<ul>
+<li><code>ssh-keygen</code>  一路敲回车键（Enter）即可</li>
+</ul>
+</li>
+<li>把客户端的公钥内容追加到服务器的授权文件（~/.ssh/authorized_keys）尾部<ul>
+<li><code>ssh-copy-id root@服务器主机地址</code><blockquote>
+<p>ssh-copy-id会将客户端<del>/.ssh/id_rsa.pub的内容自动追加到服务器的</del>/.ssh/authorized_keys尾部<br>如果配置了免密码登录后，还是需要输入密码，需要在服务器端设置文件权限 <code>chmod 644 ~/.ssh/authorized_keys</code></p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="通过-USB-连接线连接-iOS-设备"><a href="#通过-USB-连接线连接-iOS-设备" class="headerlink" title="通过 USB 连接线连接 iOS 设备"></a>通过 USB 连接线连接 iOS 设备</h2><ul>
+<li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的一个python脚本：<code>tcprelay.py</code> 来进行端口映射</li>
+<li>将iPhone的22端口（SSH端口）映射到Mac本地的10010端口(10010也可以换成其他系统未占用的端口)<ul>
+<li><code>python tcprelay.py -t 22:10010</code></li>
+</ul>
+</li>
+<li>端口映射完毕后，以后如果想跟iPhone的22端口通信，直接跟Mac本地的10010端口通信就可以了<ul>
+<li><code>ssh root@localhost -p 10010</code><blockquote>
+<p>远程拷贝文件也可以直接跟Mac本地的10010端口通信<br>scp -P 10010 <del>/Desktop/1.txt root@localhost:</del>/test<br>我们可以将经常执行的一系列终端命令行放到sh脚本文件中（shell），然后执行脚本文件</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<p>至此, 逆向所需要的环境基本搭建完成</p>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 逆向-分析工具 Cycript、Reaveal</title>
     <url>/2017/04/20/ios-reverse-2/</url>
     <content><![CDATA[<h2 id="Cycript"><a href="#Cycript" class="headerlink" title="Cycript"></a>Cycript</h2><ul>
 <li>Cycript是Objective-C++、ES6（JavaScript）、Java等语法的混合物<br>可以用来探索、修改、调试正在运行的Mac\iOS APP<br>可以在<a href="http://www.cycript.org/" target="_blank" rel="noopener">官网</a>或者<a href="http://www.cycript.org/manual/" target="_blank" rel="noopener">文档</a>来查看相应说明</li>
@@ -298,100 +394,27 @@
       </categories>
   </entry>
   <entry>
-    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
-    <url>/2020/06/20/flutter-widget/</url>
-    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
-<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
+    <title>博客搬家了</title>
+    <url>/2016/05/13/new-bloc/</url>
+    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
+<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
+<li>多记录整块的知识体系,而不是分散的知识点</li>
+<li>每个分类或标签下的知识体系可以串联</li>
 </ul>
-<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
-<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
-<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
-<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
+<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
+<li>iOS应用开发, Objective-C、Swift</li>
+<li>跨平台方向</li>
+<li>Android相关(了解), Java</li>
+<li>脚本语言 Shell、Ruby、Python</li>
+<li>Linux 常用命令</li>
+<li>网络</li>
+<li>算法</li>
+<li>数据结构基础、编译原理</li>
 </ul>
-<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
-<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
-<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
-<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li>设计 <code>Pixelmator pro</code></li>
 </ul>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
-<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
-</ul>
-<blockquote>
-<p>如图所示</p>
-</blockquote>
-<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
 ]]></content>
-      <categories>
-        <category>Flutter</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 逆向-越狱环境搭建</title>
-    <url>/2017/03/20/ios-reverse-1/</url>
-    <content><![CDATA[<p>首先逆向需要一台 <strong>Mac电脑</strong>, 还有一台<strong>已经越狱的 iOS 设备</strong></p>
-<h2 id="越狱工具"><a href="#越狱工具" class="headerlink" title="越狱工具"></a>越狱工具</h2><p>市面上的越狱工具有很多, 例如:</p>
-<ul>
-<li><a href="https://unc0ver.dev/" target="_blank" rel="noopener">uncOver</a></li>
-<li><a href="https://checkra.in/" target="_blank" rel="noopener">checkra1n</a><blockquote>
-<p>可以自行选择越狱工具, 通过越狱工具官网查看支持的设备以及系统版本号来进行选择, 然后通过官网步骤即可完成越狱</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="通过-Cydia-安装逆向所需插件"><a href="#通过-Cydia-安装逆向所需插件" class="headerlink" title="通过 Cydia 安装逆向所需插件"></a>通过 <code>Cydia</code> 安装逆向所需插件</h2><p>越狱成功的手机, 会自动安装一个叫 <code>Cydia</code> 的软件, 它相当于一个软件商店, 可以下载一些好用的插件或软件来让越狱的手机更方便, 前提需要添加一些好用的“源”(可以自行搜索).<br>越狱之后逆向所需插件如下:</p>
-<ul>
-<li><code>Apple File Conduit &quot;2&quot;</code>    可以访问整个iOS设备的文系统, 类似的补丁还有：<code>afc2</code>、<code>afc2add</code></li>
-<li><code>AppSync Unified</code>  可以绕过系统验证，随意安装、运行破解的ipa安装包</li>
-</ul>
-<h2 id="通过-SSH-登录iOS设备"><a href="#通过-SSH-登录iOS设备" class="headerlink" title="通过 SSH 登录iOS设备"></a>通过 SSH 登录iOS设备</h2><ul>
-<li>在iOS设备上上通过<code>Cydia</code>安装<code>OpenSSH</code>工具</li>
-<li>在Mac的终端输入 <code>ssh 账户名@服务器主机地址</code><br>比如 <code>ssh root@10.1.1.168</code>（这里的服务器是手机）<br>初始密码 <code>alpine</code></li>
-<li>退出登录命令是 <code>exit</code><blockquote>
-<p>root：最高权限账户，$HOME 是 /var/root</p>
-</blockquote>
-</li>
-</ul>
-<h3 id="ssh-一些其他操作"><a href="#ssh-一些其他操作" class="headerlink" title="ssh 一些其他操作"></a>ssh 一些其他操作</h3><ul>
-<li>删掉之前的服务器公钥信息<ul>
-<li><code>ssh-keygen -R 服务器IP地址</code></li>
-</ul>
-</li>
-<li>或者直接打开known_hosts文件删除服务器的公钥信息就行<ul>
-<li><code>vim ~/.ssh/known_hosts</code></li>
-</ul>
-</li>
-</ul>
-<h3 id="ssh-基于密钥方式的客户端认证"><a href="#ssh-基于密钥方式的客户端认证" class="headerlink" title="ssh 基于密钥方式的客户端认证"></a>ssh 基于密钥方式的客户端认证</h3><ul>
-<li>在客户端生成一对相关联的密钥（Key Pair）：一个公钥（Public Key），一个私钥（Private Key）<ul>
-<li><code>ssh-keygen</code>  一路敲回车键（Enter）即可</li>
-</ul>
-</li>
-<li>把客户端的公钥内容追加到服务器的授权文件（~/.ssh/authorized_keys）尾部<ul>
-<li><code>ssh-copy-id root@服务器主机地址</code><blockquote>
-<p>ssh-copy-id会将客户端<del>/.ssh/id_rsa.pub的内容自动追加到服务器的</del>/.ssh/authorized_keys尾部<br>如果配置了免密码登录后，还是需要输入密码，需要在服务器端设置文件权限 <code>chmod 644 ~/.ssh/authorized_keys</code></p>
-</blockquote>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="通过-USB-连接线连接-iOS-设备"><a href="#通过-USB-连接线连接-iOS-设备" class="headerlink" title="通过 USB 连接线连接 iOS 设备"></a>通过 USB 连接线连接 iOS 设备</h2><ul>
-<li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的一个python脚本：<code>tcprelay.py</code> 来进行端口映射</li>
-<li>将iPhone的22端口（SSH端口）映射到Mac本地的10010端口(10010也可以换成其他系统未占用的端口)<ul>
-<li><code>python tcprelay.py -t 22:10010</code></li>
-</ul>
-</li>
-<li>端口映射完毕后，以后如果想跟iPhone的22端口通信，直接跟Mac本地的10010端口通信就可以了<ul>
-<li><code>ssh root@localhost -p 10010</code><blockquote>
-<p>远程拷贝文件也可以直接跟Mac本地的10010端口通信<br>scp -P 10010 <del>/Desktop/1.txt root@localhost:</del>/test<br>我们可以将经常执行的一系列终端命令行放到sh脚本文件中（shell），然后执行脚本文件</p>
-</blockquote>
-</li>
-</ul>
-</li>
-</ul>
-<p>至此, 逆向所需要的环境基本搭建完成</p>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
   </entry>
   <entry>
     <title>iOS 内存布局以及管理</title>
@@ -482,6 +505,226 @@
 <h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
 <li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
 </ul>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS RunLoop</title>
+    <url>/2018/05/14/oc-runloop/</url>
+    <content><![CDATA[<h3 id="什么是RunLoop-都有哪些应用范畴"><a href="#什么是RunLoop-都有哪些应用范畴" class="headerlink" title="什么是RunLoop 都有哪些应用范畴"></a>什么是RunLoop 都有哪些应用范畴</h3><ul>
+<li>运行循环, 用来保证程序的持续运行</li>
+<li>用来处理App的各种事件<ul>
+<li>定时器, performSelector</li>
+<li>GCD Async Main Queue</li>
+<li>事件响应, 手势识别, 界面刷新</li>
+<li>网络请求</li>
+<li>AutoReleasePool</li>
+<li>等等…</li>
+</ul>
+</li>
+</ul>
+<h3 id="RunLoop与线程的关系"><a href="#RunLoop与线程的关系" class="headerlink" title="RunLoop与线程的关系"></a>RunLoop与线程的关系</h3><ul>
+<li>每条线程都有一个与之对应的RunLoop对象</li>
+<li>RunLoop保存在一个全局的字典中, 线程作为Key, RunLoop作为Value, 一一对应</li>
+<li>线程刚刚创建的时候没有RunLoop, 当第一次获取RunLoop时会创建</li>
+<li>RunLoop默认情况下会在线程结束时销毁</li>
+<li>主线程的RunLoop会在程序启动时自动获取</li>
+</ul>
+<h3 id="如何获取当前线程的RunLoop"><a href="#如何获取当前线程的RunLoop" class="headerlink" title="如何获取当前线程的RunLoop"></a>如何获取当前线程的RunLoop</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> &#x2F;&#x2F; Foundation </span><br><span class="line">[NSRunLoop currentRunLoop]; &#x2F;&#x2F; 获得当前线程的RunLoop对象</span><br><span class="line">[NSRunLoop mainRunLoop]; &#x2F;&#x2F; 获得主线程的RunLoop对象</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Core Foundation</span><br><span class="line">CFRunLoopGetCurrent(); &#x2F;&#x2F; 获得当前线程的RunLoop对象</span><br><span class="line">CFRunLoopGetMain(); &#x2F;&#x2F; 获得主线程的RunLoop对象</span><br></pre></td></tr></table></figure>
+
+<h3 id="RunLoop对象结构-以及对外接口"><a href="#RunLoop对象结构-以及对外接口" class="headerlink" title="RunLoop对象结构, 以及对外接口"></a>RunLoop对象结构, 以及对外接口</h3><ul>
+<li>在 CoreFoundation 里面关于 RunLoop 有5个类:<ol>
+<li>CFRunLoopRef</li>
+<li>CFRunLoopModeRef</li>
+<li>CFRunLoopSourceRef</li>
+<li>CFRunLoopTimerRef</li>
+<li>CFRunLoopObserverRef </li>
+</ol>
+</li>
+<li>他们的关系如图所示: </li>
+</ul>
+<p><img src="https://s1.ax1x.com/2020/06/26/NDqPII.jpg" alt="NDqPII.jpg"></p>
+<blockquote>
+<p>一个RunLoop对象包含若干个Mode, 每个Mode包含若干个Source0/Source1/Timers/Observer(统称为 <strong>mode item</strong>)<br>RunLoop启动时只能选择一种mode 作为currentMode<br>如果需要切换Mode, 则需要退出当前Mode, 重新进入新的Mode<br>不同Mode的 Source0/Source1/Timer/Observer 是互相隔离分开的互相不干扰<br>当一个RunLoop中不含任何 Source0/Source1/Timer/Observer 时, RunLoop会立刻退出</p>
+</blockquote>
+<h4 id="RunLoop中常见的Mode"><a href="#RunLoop中常见的Mode" class="headerlink" title="RunLoop中常见的Mode"></a>RunLoop中常见的Mode</h4><ul>
+<li>kCFRunLoopDefaultMode(NSDefaultRunLoopMode):<br>  App的默认mode, 主线程默认情况下在此mode下运行</li>
+<li>UITrackingRunLoopMode: 界面跟踪Mode, 用户ScrollView追踪触摸滑动, 保证界面滑动时不受其他mode影响</li>
+</ul>
+<h3 id="Mode中5个类的解释"><a href="#Mode中5个类的解释" class="headerlink" title="Mode中5个类的解释"></a>Mode中5个类的解释</h3><h4 id="Source0"><a href="#Source0" class="headerlink" title="Source0"></a>Source0</h4><ul>
+<li>触摸事件的处理</li>
+<li>performSelector:onThread:</li>
+</ul>
+<blockquote>
+<p>Source0 只包含了一个回调（函数指针），它并不能主动触发事件。使用时，你需要先调用 CFRunLoopSourceSignal(source)，将这个 Source 标记为待处理，然后手动调用 CFRunLoopWakeUp(runloop) 来唤醒 RunLoop，让其处理这个事件。</p>
+</blockquote>
+<h4 id="Source1"><a href="#Source1" class="headerlink" title="Source1"></a>Source1</h4><ul>
+<li>基于Port的线程间的通信</li>
+<li>系统事件捕捉<blockquote>
+<p>Source1 包含了一个 mach_port 和一个回调（函数指针），被用于通过内核和其他线程相互发送消息。这种 Source 能主动唤醒 RunLoop 的线程.</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="Timers"><a href="#Timers" class="headerlink" title="Timers"></a>Timers</h4><ul>
+<li>NSTimer定时器</li>
+<li>performSelector:withObject:afterDelay:<blockquote>
+<p>是基于时间的触发器，它和 NSTimer 是toll-free bridged 的，可以混用。其包含一个时间长度和一个回调（函数指针）。当其加入到 RunLoop 时，RunLoop会注册对应的时间点，当时间点到时，RunLoop会被唤醒以执行那个回调。</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h4><ul>
+<li>用于监听RunLoop的各种状态</li>
+<li>UI刷新</li>
+<li>AutoReleasePool 自动释放池</li>
+<li>Observer监听的状态: <ul>
+<li><code>kCFRunLoopEntry</code> // 即将进入Loop</li>
+<li><code>kCFRunLoopBeforeTimers</code> // 即将处理Timers</li>
+<li><code>kCFRunLoopBeforeSources</code> // 即将处理Sources</li>
+<li><code>kCFRunLoopBeforeWaiting</code> // 即将进入休眠</li>
+<li><code>kCFRunLoopAfterWaiting</code> // 刚从睡眠中唤醒</li>
+<li><code>kCFRunLoopExit</code> // 即将退出RunLoop</li>
+</ul>
+</li>
+</ul>
+<h3 id="RunLoop的运行逻辑"><a href="#RunLoop的运行逻辑" class="headerlink" title="RunLoop的运行逻辑"></a>RunLoop的运行逻辑</h3><p><em>文字版</em></p>
+<ol>
+<li>通知Observers：进入Loop</li>
+<li>通知Observers：即将处理Timers</li>
+<li>通知Observers：即将处理Sources</li>
+<li>处理Blocks</li>
+<li>处理Source0（可能会再次处理Blocks）</li>
+<li>如果存在Source1，就跳转到第8步</li>
+<li>通知Observers：开始休眠（等待消息唤醒）</li>
+<li>通知Observers：结束休眠（被某个消息唤醒）<ol>
+<li>处理Timer</li>
+<li>处理GCD Async To Main Queue</li>
+<li>处理Source1</li>
+</ol>
+</li>
+<li>处理Blocks</li>
+<li>根据前面的执行结果，决定如何操作<ol>
+<li>回到第02步</li>
+<li>退出Loop</li>
+</ol>
+</li>
+<li>通知Observers：退出Loop</li>
+</ol>
+<p><em>图片版</em></p>
+<p><img src="https://s1.ax1x.com/2020/06/26/NDOp4I.png" alt="NDOp4I.png"></p>
+<h4 id="RunLoop的休眠原理"><a href="#RunLoop的休眠原理" class="headerlink" title="RunLoop的休眠原理"></a>RunLoop的休眠原理</h4><ul>
+<li>RunLoop 的核心是基于 mach port 的，其进入休眠时调用的函数是 mach_msg()。 这个函数属于操作系统内核层面的调度, 可以真正的让CPU处于休息状态, 不处理任何指令.</li>
+<li>如图所示:<br><img src="https://s1.ax1x.com/2020/06/26/NDXCdJ.png" alt="NDXCdJ.png"></li>
+</ul>
+<h3 id="苹果用-RunLoop-实现的功能"><a href="#苹果用-RunLoop-实现的功能" class="headerlink" title="苹果用 RunLoop 实现的功能"></a>苹果用 RunLoop 实现的功能</h3><h4 id="苹果所有mode列举"><a href="#苹果所有mode列举" class="headerlink" title="苹果所有mode列举"></a>苹果所有mode列举</h4><p><img src="https://s1.ax1x.com/2020/06/26/NDvjzt.png" alt="NDvjzt.png"></p>
+<h4 id="AutoreleasePool"><a href="#AutoreleasePool" class="headerlink" title="AutoreleasePool"></a>AutoreleasePool</h4><p>App启动后，苹果在主线程 RunLoop 里注册了两个 Observer，其回调都是 _wrapRunLoopWithAutoreleasePoolHandler()。</p>
+<table>
+<thead>
+<tr>
+<th>Observer监听RunLoop状态</th>
+<th>AutoRelease操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kCFRunLoopEntry</code> 进入</td>
+<td><code>_objc_autoreleasePoolPush()</code> 入栈</td>
+</tr>
+<tr>
+<td><code>kCFRunLoopBeforeWaiting</code> 即将休眠</td>
+<td><code>_objc_autoreleasePoolPop()</code> <code>_objc_autoreleasePoolPush()</code> 释放旧的池并创建新池</td>
+</tr>
+<tr>
+<td><code>kCFRunLoopExit</code> 即将退出</td>
+<td><code>_objc_autoreleasePoolPop()</code> 出栈</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>在主线程执行的代码，通常是写在诸如事件回调、Timer回调内的。这些回调会被 RunLoop 创建好的 AutoreleasePool 环绕着，所以不会出现内存泄漏，开发者也不必显示创建 Pool 了。</p>
+</blockquote>
+<h4 id="事件响应"><a href="#事件响应" class="headerlink" title="事件响应"></a>事件响应</h4><p>苹果注册了一个 Source1 (基于 mach port 的) 用来接收系统事件，</p>
+<p>当一个硬件事件(触摸/锁屏/摇晃等)发生后，首先由 IOKit.framework 生成一个 IOHIDEvent 事件并由 SpringBoard 接收。SpringBoard 只接收按键(锁屏/静音等)，触摸，加速，接近传感器等几种 Event，随后用 mach port 转发给需要的App进程。随后苹果注册的那个 Source1 就会触发回调，并调用 _UIApplicationHandleEventQueue() 进行应用内部的分发。</p>
+<p>_UIApplicationHandleEventQueue() 会把 IOHIDEvent 处理并包装成 UIEvent 进行处理或分发，其中包括识别 UIGesture/处理屏幕旋转/发送给 UIWindow 等。通常事件比如 UIButton 点击、touchesBegin/Move/End/Cancel 事件都是在这个回调中完成的。</p>
+<h4 id="手势识别"><a href="#手势识别" class="headerlink" title="手势识别"></a>手势识别</h4><p>当上面的 _UIApplicationHandleEventQueue() 识别了一个手势时，其首先会调用 Cancel 将当前的 touchesBegin/Move/End 系列回调打断。随后系统将对应的 UIGestureRecognizer 标记为待处理。</p>
+<p>苹果注册了一个 Observer 监测 BeforeWaiting (Loop即将进入休眠) 事件，这个Observer的回调函数是 _UIGestureRecognizerUpdateObserver()，其内部会获取所有刚被标记为待处理的 GestureRecognizer，并执行GestureRecognizer的回调。</p>
+<p>当有 UIGestureRecognizer 的变化(创建/销毁/状态改变)时，这个回调都会进行相应处理。</p>
+<h4 id="界面更新"><a href="#界面更新" class="headerlink" title="界面更新"></a>界面更新</h4><p>当在操作 UI 时，比如改变了 Frame、更新了 UIView/CALayer 的层次时，或者手动调用了 UIView/CALayer 的 setNeedsLayout/setNeedsDisplay方法后，这个 UIView/CALayer 就被<strong>标记为待处理</strong>，并被提交到一个全局的容器去。</p>
+<p>苹果注册了一个 Observer 监听 BeforeWaiting(即将进入休眠) 和 Exit (即将退出Loop) 事件，回调去执行遍历所有待处理的 UIView/CAlayer 以执行实际的绘制和调整，并更新 UI 界面。</p>
+<h4 id="定时器"><a href="#定时器" class="headerlink" title="定时器"></a>定时器</h4><p>NSTimer 其实就是 CFRunLoopTimerRef，他们之间是 toll-free bridged 的。一个 NSTimer 注册到 RunLoop 后，RunLoop 会为其重复的时间点注册好事件。例如 10:00, 10:10, 10:20 这几个时间点。RunLoop为了节省资源，并不会在非常准确的时间点回调这个Timer。Timer 有个属性叫做 Tolerance (宽容度)，标示了当时间点到后，容许有多少最大误差。</p>
+<p>如果某个时间点被错过了，例如执行了一个很长的任务，则那个时间点的回调也会跳过去，不会延后执行。就比如等公交，如果 10:10 时我忙着玩手机错过了那个点的公交，那我只能等 10:20 这一趟了。</p>
+<p>CADisplayLink 是一个和屏幕刷新率一致的定时器（但实际实现原理更复杂，和 NSTimer 并不一样，其内部实际是操作了一个 Source）。如果在两次屏幕刷新之间执行了一个长任务，那其中就会有一帧被跳过去（和 NSTimer 相似），造成界面卡顿的感觉。在快速滑动TableView时，即使一帧的卡顿也会让用户有所察觉。</p>
+<blockquote>
+<p>因此 NSTimer CADisplayLink 作为定时器并不是特别的精确<br>如果要求定时任务精确可以使用GCD的定时器,它不依赖于RunLoop</p>
+</blockquote>
+<h4 id="PerformSelecter"><a href="#PerformSelecter" class="headerlink" title="PerformSelecter"></a>PerformSelecter</h4><p>当调用 NSObject 的 performSelecter:afterDelay: 后，实际上其内部会创建一个 Timer 并添加到当前线程的 RunLoop 中。所以<strong>如果当前线程没有 RunLoop，则这个方法会失效</strong>。</p>
+<p>当调用 performSelector:onThread: 时，实际上其会创建一个 Timer 加到对应的线程去，<strong>同样的，如果对应线程没有 RunLoop 该方法也会失效</strong>。</p>
+<h4 id="关于GCD"><a href="#关于GCD" class="headerlink" title="关于GCD"></a>关于GCD</h4><p>实际上 RunLoop 底层也会用到 GCD 的东西, 例如 dispatch_async()。</p>
+<p>当调用 dispatch_async(dispatch_get_main_queue(), block) 时，libDispatch 会向主线程的 RunLoop 发送消息，RunLoop会被唤醒，并从消息中取得这个 block，并在回调里执行这个 block。但这个逻辑仅限于 dispatch 到主线程，dispatch 到其他线程仍然是由 libDispatch 处理的。</p>
+<h4 id="关于网络请求"><a href="#关于网络请求" class="headerlink" title="关于网络请求"></a>关于网络请求</h4><p>通常使用 NSURLConnection 时，你会传入一个 Delegate，当调用了 [connection start] 后，这个 Delegate 就会不停收到事件回调。实际上，start 这个函数的内部会会获取 CurrentRunLoop，然后在其中的 DefaultMode 添加了4个 Source0 (即需要手动触发的Source)。CFMultiplexerSource 是负责各种 Delegate 回调的，CFHTTPCookieStorage 是处理各种 Cookie 的。</p>
+<p>另外: AFNetWorking内部单独创建了一个线程，并在这个线程中启动了一个 RunLoop, RunLoop 启动前内部必须要有至少一个 Timer/Observer/Source，所以 AFNetworking 在 [runLoop run] 之前先创建了一个新的 NSMachPort 添加进去了。通常情况下，调用者需要持有这个 NSMachPort (mach_port) 并在外部线程通过这个 port 发送消息到 loop 内；但此处添加 port 只是为了让 RunLoop 不至于退出，并没有用于实际的发送消息。</p>
+<hr>
+<p>参考链接:<br><a href="https://blog.ibireme.com/2015/05/18/runloop/#more-41710" target="_blank" rel="noopener">深入理解RunLoop</a><br><a href="https://ke.qq.com/course/314526" target="_blank" rel="noopener">iOS底层原理讲解</a></p>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS Runtime</title>
+    <url>/2018/04/15/oc-runtime/</url>
+    <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
+<li>Objective-C是一门动态性比较强的编程语言，跟C、C++等语言有着很大的不同, 很多操作会推迟到运行时再进行</li>
+<li>OC的动态性就是有Runtime来支撑和实现的, 它是一套C语言API, 封装了很多动态性相关的函数</li>
+<li>平时编写的OC代码底层都是转换成了Runtime API进行调用</li>
+</ul>
+<h3 id="64位CPU架构下的-isa-指针详解"><a href="#64位CPU架构下的-isa-指针详解" class="headerlink" title="64位CPU架构下的 isa 指针详解"></a>64位CPU架构下的 isa 指针详解</h3><ul>
+<li>64位CPU架构之前,isa指针仅仅是存储者当前类对象的地址值</li>
+<li>64位CPU架构下, 对isa进行了优化, 变成了共用体结构, 使用位域操作来存储更多的内容<blockquote>
+<p>如是否有过关联对象, 是否有C++析构函数, 是否有弱引用指向过, 是否正在析构, 引用计数 等等</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="OC的消息机制"><a href="#OC的消息机制" class="headerlink" title="OC的消息机制"></a>OC的消息机制</h3><ul>
+<li><p>OC中的方法, 其实就是给消息接受者发送一条消息, 底层实现是Runtime 的 objc_msgSend() 传入消息的接受者receiver和方法名selector</p>
+</li>
+<li><p>objc_msgSend 底层有三大阶段<br>   1.消息发送(缓存, 当前方法列表, 父类循环查找)<br>   2.动态方法解析(resoveInstanceMethod, 可以动态的添加方法, 如果实现了动态方法解析, 那么会重新走一次消息发送)<br>   3.消息转发 </p>
+<pre><code>`forwardingTargetForSelector`
+`methodSignatureForSelector:`
+`forwardInvocation`</code></pre></li>
+<li><p>流程如下图所示</p>
+<ul>
+<li><p>消息发送<br><img src="https://wx2.sbimg.cn/2020/06/24/image5b82c619bc9ddefc.png" alt="image5b82c619bc9ddefc.png">  </p>
+<br>
+</li>
+<li><p>动态方法解析<br><img src="https://wx1.sbimg.cn/2020/06/24/image4be831b95b960c31.png" alt="image4be831b95b960c31.png"></p>
+<br>
+</li>
+<li><p>消息转发<br><img src="https://wx2.sbimg.cn/2020/06/24/imagea19574eb69c22e47.png" alt="imagea19574eb69c22e47.png"></p>
+<br>
+
+
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="super调用的本质"><a href="#super调用的本质" class="headerlink" title="super调用的本质"></a>super调用的本质</h3><ul>
+<li>super的本质是底层的 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objc_msgSendSuper2(</span><br><span class="line">    &#123;self, Class&#125;,</span><br><span class="line">    @selector())</span><br></pre></td></tr></table></figure></li>
+<li>相当于还是当前对象为消息接受者, 只不过消息查找从superclass 中开始查找</li>
+</ul>
+<h3 id="Runtime在实际开发中的应用举例"><a href="#Runtime在实际开发中的应用举例" class="headerlink" title="Runtime在实际开发中的应用举例"></a>Runtime在实际开发中的应用举例</h3><ul>
+<li>查找并不公开的成员变量, 来进行想要的操作,比如通过KVC进行修改, 或获取值</li>
+<li>可以遍历成员变量来进行json转数据实体</li>
+<li>可以进行方法交换来拦截系统或者第三方库中的方法,来进行修改达到想要的操作</li>
+</ul>
+<h4 id="RunTime常用API"><a href="#RunTime常用API" class="headerlink" title="RunTime常用API"></a>RunTime常用API</h4><p><em>类</em></p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 动态创建一个类（参数：父类，类名，额外的内存空间）</span></span><br><span class="line">Class objc_allocateClassPair(Class superclass, <span class="keyword">const</span> <span class="keyword">char</span> *name, size_t extraBytes)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册一个类（要在类注册之前添加成员变量）</span></span><br><span class="line"><span class="keyword">void</span> objc_registerClassPair(Class cls) </span><br><span class="line"></span><br><span class="line"><span class="comment">// 销毁一个类</span></span><br><span class="line"><span class="keyword">void</span> objc_disposeClassPair(Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取isa指向的Class</span></span><br><span class="line">Class object_getClass(<span class="keyword">id</span> obj)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置isa指向的Class</span></span><br><span class="line">Class object_setClass(<span class="keyword">id</span> obj, Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断一个OC对象是否为Class</span></span><br><span class="line"><span class="built_in">BOOL</span> object_isClass(<span class="keyword">id</span> obj)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断一个Class是否为元类</span></span><br><span class="line"><span class="built_in">BOOL</span> class_isMetaClass(Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取父类</span></span><br><span class="line">Class class_getSuperclass(Class cls)</span><br></pre></td></tr></table></figure>
+<p><em>成员变量</em></p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取一个实例变量信息</span></span><br><span class="line">Ivar class_getInstanceVariable(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝实例变量列表（最后需要调用free释放）</span></span><br><span class="line">Ivar *class_copyIvarList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置和获取成员变量的值</span></span><br><span class="line"><span class="keyword">void</span> object_setIvar(<span class="keyword">id</span> obj, Ivar ivar, <span class="keyword">id</span> value)</span><br><span class="line"><span class="keyword">id</span> object_getIvar(<span class="keyword">id</span> obj, Ivar ivar)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加成员变量（已经注册的类是不能动态添加成员变量的）</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addIvar(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> * name, size_t size, uint8_t alignment, <span class="keyword">const</span> <span class="keyword">char</span> * types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取成员变量的相关信息</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *ivar_getName(Ivar v)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *ivar_getTypeEncoding(Ivar v)</span><br></pre></td></tr></table></figure>
+<p><em>属性</em></p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取一个属性</span></span><br><span class="line">objc_property_t class_getProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝属性列表（最后需要调用free释放）</span></span><br><span class="line">objc_property_t *class_copyPropertyList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加属性</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> objc_property_attribute_t *attributes,</span><br><span class="line">                  <span class="keyword">unsigned</span> <span class="keyword">int</span> attributeCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态替换属性</span></span><br><span class="line"><span class="keyword">void</span> class_replaceProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> objc_property_attribute_t *attributes,</span><br><span class="line">                      <span class="keyword">unsigned</span> <span class="keyword">int</span> attributeCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取属性的一些信息</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *property_getName(objc_property_t property)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *property_getAttributes(objc_property_t property)</span><br></pre></td></tr></table></figure>
+<p><em>方法</em></p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获得一个实例方法、类方法</span></span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name)</span><br><span class="line">Method class_getClassMethod(Class cls, SEL name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法实现相关操作</span></span><br><span class="line">IMP class_getMethodImplementation(Class cls, SEL name) </span><br><span class="line">IMP method_setImplementation(Method m, IMP imp)</span><br><span class="line"><span class="keyword">void</span> method_exchangeImplementations(Method m1, Method m2) </span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝方法列表（最后需要调用free释放）</span></span><br><span class="line">Method *class_copyMethodList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加方法</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addMethod(Class cls, SEL name, IMP imp, <span class="keyword">const</span> <span class="keyword">char</span> *types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态替换方法</span></span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, <span class="keyword">const</span> <span class="keyword">char</span> *types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取方法的相关信息（带有copy的需要调用free去释放）</span></span><br><span class="line">SEL method_getName(Method m)</span><br><span class="line">IMP method_getImplementation(Method m)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *method_getTypeEncoding(Method m)</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> method_getNumberOfArguments(Method m)</span><br><span class="line"><span class="keyword">char</span> *method_copyReturnType(Method m)</span><br><span class="line"><span class="keyword">char</span> *method_copyArgumentType(Method m, <span class="keyword">unsigned</span> <span class="keyword">int</span> index)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选择器相关</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *sel_getName(SEL sel)</span><br><span class="line">SEL sel_registerName(<span class="keyword">const</span> <span class="keyword">char</span> *str)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用block作为方法实现</span></span><br><span class="line">IMP imp_implementationWithBlock(<span class="keyword">id</span> block)</span><br><span class="line"><span class="keyword">id</span> imp_getBlock(IMP anImp)</span><br><span class="line"><span class="built_in">BOOL</span> imp_removeBlock(IMP anImp)</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>iOS</category>
@@ -694,248 +937,5 @@
 <li>可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</details></li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>博客搬家了</title>
-    <url>/2016/05/13/new-bloc/</url>
-    <content><![CDATA[<p>之前的博客地址<a href="https://home.cnblogs.com/u/zhangguoliang1992" target="_blank" rel="noopener">博客园</a>已不在更新,<br>本博客采用 <code>Hexo</code> + <code>Github Pages</code> + <code>Netlify</code> 搭建</p>
-<h4 id="新博客的目标"><a href="#新博客的目标" class="headerlink" title="新博客的目标"></a>新博客的目标</h4><ul>
-<li>多记录整块的知识体系,而不是分散的知识点</li>
-<li>每个分类或标签下的知识体系可以串联</li>
-</ul>
-<h4 id="博客主攻技术方向"><a href="#博客主攻技术方向" class="headerlink" title="博客主攻技术方向"></a>博客主攻技术方向</h4><ul>
-<li>iOS应用开发, Objective-C、Swift</li>
-<li>跨平台方向</li>
-<li>Android相关(了解), Java</li>
-<li>脚本语言 Shell、Ruby、Python</li>
-<li>Linux 常用命令</li>
-<li>网络</li>
-<li>算法</li>
-<li>数据结构基础、编译原理</li>
-</ul>
-<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
-<li>设计 <code>Pixelmator pro</code></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>iOS Runtime</title>
-    <url>/2018/04/15/oc-runtime/</url>
-    <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
-<li>Objective-C是一门动态性比较强的编程语言，跟C、C++等语言有着很大的不同, 很多操作会推迟到运行时再进行</li>
-<li>OC的动态性就是有Runtime来支撑和实现的, 它是一套C语言API, 封装了很多动态性相关的函数</li>
-<li>平时编写的OC代码底层都是转换成了Runtime API进行调用</li>
-</ul>
-<h3 id="64位CPU架构下的-isa-指针详解"><a href="#64位CPU架构下的-isa-指针详解" class="headerlink" title="64位CPU架构下的 isa 指针详解"></a>64位CPU架构下的 isa 指针详解</h3><ul>
-<li>64位CPU架构之前,isa指针仅仅是存储者当前类对象的地址值</li>
-<li>64位CPU架构下, 对isa进行了优化, 变成了共用体结构, 使用位域操作来存储更多的内容<blockquote>
-<p>如是否有过关联对象, 是否有C++析构函数, 是否有弱引用指向过, 是否正在析构, 引用计数 等等</p>
-</blockquote>
-</li>
-</ul>
-<h3 id="OC的消息机制"><a href="#OC的消息机制" class="headerlink" title="OC的消息机制"></a>OC的消息机制</h3><ul>
-<li><p>OC中的方法, 其实就是给消息接受者发送一条消息, 底层实现是Runtime 的 objc_msgSend() 传入消息的接受者receiver和方法名selector</p>
-</li>
-<li><p>objc_msgSend 底层有三大阶段<br>   1.消息发送(缓存, 当前方法列表, 父类循环查找)<br>   2.动态方法解析(resoveInstanceMethod, 可以动态的添加方法, 如果实现了动态方法解析, 那么会重新走一次消息发送)<br>   3.消息转发 </p>
-<pre><code>`forwardingTargetForSelector`
-`methodSignatureForSelector:`
-`forwardInvocation`</code></pre></li>
-<li><p>流程如下图所示</p>
-<ul>
-<li><p>消息发送<br><img src="https://wx2.sbimg.cn/2020/06/24/image5b82c619bc9ddefc.png" alt="image5b82c619bc9ddefc.png">  </p>
-<br>
-</li>
-<li><p>动态方法解析<br><img src="https://wx1.sbimg.cn/2020/06/24/image4be831b95b960c31.png" alt="image4be831b95b960c31.png"></p>
-<br>
-</li>
-<li><p>消息转发<br><img src="https://wx2.sbimg.cn/2020/06/24/imagea19574eb69c22e47.png" alt="imagea19574eb69c22e47.png"></p>
-<br>
-
-
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="super调用的本质"><a href="#super调用的本质" class="headerlink" title="super调用的本质"></a>super调用的本质</h3><ul>
-<li>super的本质是底层的 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objc_msgSendSuper2(</span><br><span class="line">    &#123;self, Class&#125;,</span><br><span class="line">    @selector())</span><br></pre></td></tr></table></figure></li>
-<li>相当于还是当前对象为消息接受者, 只不过消息查找从superclass 中开始查找</li>
-</ul>
-<h3 id="Runtime在实际开发中的应用举例"><a href="#Runtime在实际开发中的应用举例" class="headerlink" title="Runtime在实际开发中的应用举例"></a>Runtime在实际开发中的应用举例</h3><ul>
-<li>查找并不公开的成员变量, 来进行想要的操作,比如通过KVC进行修改, 或获取值</li>
-<li>可以遍历成员变量来进行json转数据实体</li>
-<li>可以进行方法交换来拦截系统或者第三方库中的方法,来进行修改达到想要的操作</li>
-</ul>
-<h4 id="RunTime常用API"><a href="#RunTime常用API" class="headerlink" title="RunTime常用API"></a>RunTime常用API</h4><p><em>类</em></p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 动态创建一个类（参数：父类，类名，额外的内存空间）</span></span><br><span class="line">Class objc_allocateClassPair(Class superclass, <span class="keyword">const</span> <span class="keyword">char</span> *name, size_t extraBytes)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册一个类（要在类注册之前添加成员变量）</span></span><br><span class="line"><span class="keyword">void</span> objc_registerClassPair(Class cls) </span><br><span class="line"></span><br><span class="line"><span class="comment">// 销毁一个类</span></span><br><span class="line"><span class="keyword">void</span> objc_disposeClassPair(Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取isa指向的Class</span></span><br><span class="line">Class object_getClass(<span class="keyword">id</span> obj)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置isa指向的Class</span></span><br><span class="line">Class object_setClass(<span class="keyword">id</span> obj, Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断一个OC对象是否为Class</span></span><br><span class="line"><span class="built_in">BOOL</span> object_isClass(<span class="keyword">id</span> obj)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断一个Class是否为元类</span></span><br><span class="line"><span class="built_in">BOOL</span> class_isMetaClass(Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取父类</span></span><br><span class="line">Class class_getSuperclass(Class cls)</span><br></pre></td></tr></table></figure>
-<p><em>成员变量</em></p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取一个实例变量信息</span></span><br><span class="line">Ivar class_getInstanceVariable(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝实例变量列表（最后需要调用free释放）</span></span><br><span class="line">Ivar *class_copyIvarList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置和获取成员变量的值</span></span><br><span class="line"><span class="keyword">void</span> object_setIvar(<span class="keyword">id</span> obj, Ivar ivar, <span class="keyword">id</span> value)</span><br><span class="line"><span class="keyword">id</span> object_getIvar(<span class="keyword">id</span> obj, Ivar ivar)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加成员变量（已经注册的类是不能动态添加成员变量的）</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addIvar(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> * name, size_t size, uint8_t alignment, <span class="keyword">const</span> <span class="keyword">char</span> * types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取成员变量的相关信息</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *ivar_getName(Ivar v)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *ivar_getTypeEncoding(Ivar v)</span><br></pre></td></tr></table></figure>
-<p><em>属性</em></p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取一个属性</span></span><br><span class="line">objc_property_t class_getProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝属性列表（最后需要调用free释放）</span></span><br><span class="line">objc_property_t *class_copyPropertyList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加属性</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> objc_property_attribute_t *attributes,</span><br><span class="line">                  <span class="keyword">unsigned</span> <span class="keyword">int</span> attributeCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态替换属性</span></span><br><span class="line"><span class="keyword">void</span> class_replaceProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> objc_property_attribute_t *attributes,</span><br><span class="line">                      <span class="keyword">unsigned</span> <span class="keyword">int</span> attributeCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取属性的一些信息</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *property_getName(objc_property_t property)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *property_getAttributes(objc_property_t property)</span><br></pre></td></tr></table></figure>
-<p><em>方法</em></p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获得一个实例方法、类方法</span></span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name)</span><br><span class="line">Method class_getClassMethod(Class cls, SEL name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法实现相关操作</span></span><br><span class="line">IMP class_getMethodImplementation(Class cls, SEL name) </span><br><span class="line">IMP method_setImplementation(Method m, IMP imp)</span><br><span class="line"><span class="keyword">void</span> method_exchangeImplementations(Method m1, Method m2) </span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝方法列表（最后需要调用free释放）</span></span><br><span class="line">Method *class_copyMethodList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加方法</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addMethod(Class cls, SEL name, IMP imp, <span class="keyword">const</span> <span class="keyword">char</span> *types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态替换方法</span></span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, <span class="keyword">const</span> <span class="keyword">char</span> *types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取方法的相关信息（带有copy的需要调用free去释放）</span></span><br><span class="line">SEL method_getName(Method m)</span><br><span class="line">IMP method_getImplementation(Method m)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *method_getTypeEncoding(Method m)</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> method_getNumberOfArguments(Method m)</span><br><span class="line"><span class="keyword">char</span> *method_copyReturnType(Method m)</span><br><span class="line"><span class="keyword">char</span> *method_copyArgumentType(Method m, <span class="keyword">unsigned</span> <span class="keyword">int</span> index)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选择器相关</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *sel_getName(SEL sel)</span><br><span class="line">SEL sel_registerName(<span class="keyword">const</span> <span class="keyword">char</span> *str)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用block作为方法实现</span></span><br><span class="line">IMP imp_implementationWithBlock(<span class="keyword">id</span> block)</span><br><span class="line"><span class="keyword">id</span> imp_getBlock(IMP anImp)</span><br><span class="line"><span class="built_in">BOOL</span> imp_removeBlock(IMP anImp)</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS RunLoop</title>
-    <url>/2018/05/14/oc-runloop/</url>
-    <content><![CDATA[<h3 id="什么是RunLoop-都有哪些应用范畴"><a href="#什么是RunLoop-都有哪些应用范畴" class="headerlink" title="什么是RunLoop 都有哪些应用范畴"></a>什么是RunLoop 都有哪些应用范畴</h3><ul>
-<li>运行循环, 用来保证程序的持续运行</li>
-<li>用来处理App的各种事件<ul>
-<li>定时器, performSelector</li>
-<li>GCD Async Main Queue</li>
-<li>事件响应, 手势识别, 界面刷新</li>
-<li>网络请求</li>
-<li>AutoReleasePool</li>
-<li>等等…</li>
-</ul>
-</li>
-</ul>
-<h3 id="RunLoop与线程的关系"><a href="#RunLoop与线程的关系" class="headerlink" title="RunLoop与线程的关系"></a>RunLoop与线程的关系</h3><ul>
-<li>每条线程都有一个与之对应的RunLoop对象</li>
-<li>RunLoop保存在一个全局的字典中, 线程作为Key, RunLoop作为Value, 一一对应</li>
-<li>线程刚刚创建的时候没有RunLoop, 当第一次获取RunLoop时会创建</li>
-<li>RunLoop默认情况下会在线程结束时销毁</li>
-<li>主线程的RunLoop会在程序启动时自动获取</li>
-</ul>
-<h3 id="如何获取当前线程的RunLoop"><a href="#如何获取当前线程的RunLoop" class="headerlink" title="如何获取当前线程的RunLoop"></a>如何获取当前线程的RunLoop</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> &#x2F;&#x2F; Foundation </span><br><span class="line">[NSRunLoop currentRunLoop]; &#x2F;&#x2F; 获得当前线程的RunLoop对象</span><br><span class="line">[NSRunLoop mainRunLoop]; &#x2F;&#x2F; 获得主线程的RunLoop对象</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Core Foundation</span><br><span class="line">CFRunLoopGetCurrent(); &#x2F;&#x2F; 获得当前线程的RunLoop对象</span><br><span class="line">CFRunLoopGetMain(); &#x2F;&#x2F; 获得主线程的RunLoop对象</span><br></pre></td></tr></table></figure>
-
-<h3 id="RunLoop对象结构-以及对外接口"><a href="#RunLoop对象结构-以及对外接口" class="headerlink" title="RunLoop对象结构, 以及对外接口"></a>RunLoop对象结构, 以及对外接口</h3><ul>
-<li>在 CoreFoundation 里面关于 RunLoop 有5个类:<ol>
-<li>CFRunLoopRef</li>
-<li>CFRunLoopModeRef</li>
-<li>CFRunLoopSourceRef</li>
-<li>CFRunLoopTimerRef</li>
-<li>CFRunLoopObserverRef </li>
-</ol>
-</li>
-<li>他们的关系如图所示: </li>
-</ul>
-<p><img src="https://s1.ax1x.com/2020/06/26/NDqPII.jpg" alt="NDqPII.jpg"></p>
-<blockquote>
-<p>一个RunLoop对象包含若干个Mode, 每个Mode包含若干个Source0/Source1/Timers/Observer(统称为 <strong>mode item</strong>)<br>RunLoop启动时只能选择一种mode 作为currentMode<br>如果需要切换Mode, 则需要退出当前Mode, 重新进入新的Mode<br>不同Mode的 Source0/Source1/Timer/Observer 是互相隔离分开的互相不干扰<br>当一个RunLoop中不含任何 Source0/Source1/Timer/Observer 时, RunLoop会立刻退出</p>
-</blockquote>
-<h4 id="RunLoop中常见的Mode"><a href="#RunLoop中常见的Mode" class="headerlink" title="RunLoop中常见的Mode"></a>RunLoop中常见的Mode</h4><ul>
-<li>kCFRunLoopDefaultMode(NSDefaultRunLoopMode):<br>  App的默认mode, 主线程默认情况下在此mode下运行</li>
-<li>UITrackingRunLoopMode: 界面跟踪Mode, 用户ScrollView追踪触摸滑动, 保证界面滑动时不受其他mode影响</li>
-</ul>
-<h3 id="Mode中5个类的解释"><a href="#Mode中5个类的解释" class="headerlink" title="Mode中5个类的解释"></a>Mode中5个类的解释</h3><h4 id="Source0"><a href="#Source0" class="headerlink" title="Source0"></a>Source0</h4><ul>
-<li>触摸事件的处理</li>
-<li>performSelector:onThread:</li>
-</ul>
-<blockquote>
-<p>Source0 只包含了一个回调（函数指针），它并不能主动触发事件。使用时，你需要先调用 CFRunLoopSourceSignal(source)，将这个 Source 标记为待处理，然后手动调用 CFRunLoopWakeUp(runloop) 来唤醒 RunLoop，让其处理这个事件。</p>
-</blockquote>
-<h4 id="Source1"><a href="#Source1" class="headerlink" title="Source1"></a>Source1</h4><ul>
-<li>基于Port的线程间的通信</li>
-<li>系统事件捕捉<blockquote>
-<p>Source1 包含了一个 mach_port 和一个回调（函数指针），被用于通过内核和其他线程相互发送消息。这种 Source 能主动唤醒 RunLoop 的线程.</p>
-</blockquote>
-</li>
-</ul>
-<h4 id="Timers"><a href="#Timers" class="headerlink" title="Timers"></a>Timers</h4><ul>
-<li>NSTimer定时器</li>
-<li>performSelector:withObject:afterDelay:<blockquote>
-<p>是基于时间的触发器，它和 NSTimer 是toll-free bridged 的，可以混用。其包含一个时间长度和一个回调（函数指针）。当其加入到 RunLoop 时，RunLoop会注册对应的时间点，当时间点到时，RunLoop会被唤醒以执行那个回调。</p>
-</blockquote>
-</li>
-</ul>
-<h4 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h4><ul>
-<li>用于监听RunLoop的各种状态</li>
-<li>UI刷新</li>
-<li>AutoReleasePool 自动释放池</li>
-<li>Observer监听的状态: <ul>
-<li><code>kCFRunLoopEntry</code> // 即将进入Loop</li>
-<li><code>kCFRunLoopBeforeTimers</code> // 即将处理Timers</li>
-<li><code>kCFRunLoopBeforeSources</code> // 即将处理Sources</li>
-<li><code>kCFRunLoopBeforeWaiting</code> // 即将进入休眠</li>
-<li><code>kCFRunLoopAfterWaiting</code> // 刚从睡眠中唤醒</li>
-<li><code>kCFRunLoopExit</code> // 即将退出RunLoop</li>
-</ul>
-</li>
-</ul>
-<h3 id="RunLoop的运行逻辑"><a href="#RunLoop的运行逻辑" class="headerlink" title="RunLoop的运行逻辑"></a>RunLoop的运行逻辑</h3><p><em>文字版</em></p>
-<ol>
-<li>通知Observers：进入Loop</li>
-<li>通知Observers：即将处理Timers</li>
-<li>通知Observers：即将处理Sources</li>
-<li>处理Blocks</li>
-<li>处理Source0（可能会再次处理Blocks）</li>
-<li>如果存在Source1，就跳转到第8步</li>
-<li>通知Observers：开始休眠（等待消息唤醒）</li>
-<li>通知Observers：结束休眠（被某个消息唤醒）<ol>
-<li>处理Timer</li>
-<li>处理GCD Async To Main Queue</li>
-<li>处理Source1</li>
-</ol>
-</li>
-<li>处理Blocks</li>
-<li>根据前面的执行结果，决定如何操作<ol>
-<li>回到第02步</li>
-<li>退出Loop</li>
-</ol>
-</li>
-<li>通知Observers：退出Loop</li>
-</ol>
-<p><em>图片版</em></p>
-<p><img src="https://s1.ax1x.com/2020/06/26/NDOp4I.png" alt="NDOp4I.png"></p>
-<h4 id="RunLoop的休眠原理"><a href="#RunLoop的休眠原理" class="headerlink" title="RunLoop的休眠原理"></a>RunLoop的休眠原理</h4><ul>
-<li>RunLoop 的核心是基于 mach port 的，其进入休眠时调用的函数是 mach_msg()。 这个函数属于操作系统内核层面的调度, 可以真正的让CPU处于休息状态, 不处理任何指令.</li>
-<li>如图所示:<br><img src="https://s1.ax1x.com/2020/06/26/NDXCdJ.png" alt="NDXCdJ.png"></li>
-</ul>
-<h3 id="苹果用-RunLoop-实现的功能"><a href="#苹果用-RunLoop-实现的功能" class="headerlink" title="苹果用 RunLoop 实现的功能"></a>苹果用 RunLoop 实现的功能</h3><h4 id="苹果所有mode列举"><a href="#苹果所有mode列举" class="headerlink" title="苹果所有mode列举"></a>苹果所有mode列举</h4><p><img src="https://s1.ax1x.com/2020/06/26/NDvjzt.png" alt="NDvjzt.png"></p>
-<h4 id="AutoreleasePool"><a href="#AutoreleasePool" class="headerlink" title="AutoreleasePool"></a>AutoreleasePool</h4><p>App启动后，苹果在主线程 RunLoop 里注册了两个 Observer，其回调都是 _wrapRunLoopWithAutoreleasePoolHandler()。</p>
-<table>
-<thead>
-<tr>
-<th>Observer监听RunLoop状态</th>
-<th>AutoRelease操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>kCFRunLoopEntry</code> 进入</td>
-<td><code>_objc_autoreleasePoolPush()</code> 入栈</td>
-</tr>
-<tr>
-<td><code>kCFRunLoopBeforeWaiting</code> 即将休眠</td>
-<td><code>_objc_autoreleasePoolPop()</code> <code>_objc_autoreleasePoolPush()</code> 释放旧的池并创建新池</td>
-</tr>
-<tr>
-<td><code>kCFRunLoopExit</code> 即将退出</td>
-<td><code>_objc_autoreleasePoolPop()</code> 出栈</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>在主线程执行的代码，通常是写在诸如事件回调、Timer回调内的。这些回调会被 RunLoop 创建好的 AutoreleasePool 环绕着，所以不会出现内存泄漏，开发者也不必显示创建 Pool 了。</p>
-</blockquote>
-<h4 id="事件响应"><a href="#事件响应" class="headerlink" title="事件响应"></a>事件响应</h4><p>苹果注册了一个 Source1 (基于 mach port 的) 用来接收系统事件，</p>
-<p>当一个硬件事件(触摸/锁屏/摇晃等)发生后，首先由 IOKit.framework 生成一个 IOHIDEvent 事件并由 SpringBoard 接收。SpringBoard 只接收按键(锁屏/静音等)，触摸，加速，接近传感器等几种 Event，随后用 mach port 转发给需要的App进程。随后苹果注册的那个 Source1 就会触发回调，并调用 _UIApplicationHandleEventQueue() 进行应用内部的分发。</p>
-<p>_UIApplicationHandleEventQueue() 会把 IOHIDEvent 处理并包装成 UIEvent 进行处理或分发，其中包括识别 UIGesture/处理屏幕旋转/发送给 UIWindow 等。通常事件比如 UIButton 点击、touchesBegin/Move/End/Cancel 事件都是在这个回调中完成的。</p>
-<h4 id="手势识别"><a href="#手势识别" class="headerlink" title="手势识别"></a>手势识别</h4><p>当上面的 _UIApplicationHandleEventQueue() 识别了一个手势时，其首先会调用 Cancel 将当前的 touchesBegin/Move/End 系列回调打断。随后系统将对应的 UIGestureRecognizer 标记为待处理。</p>
-<p>苹果注册了一个 Observer 监测 BeforeWaiting (Loop即将进入休眠) 事件，这个Observer的回调函数是 _UIGestureRecognizerUpdateObserver()，其内部会获取所有刚被标记为待处理的 GestureRecognizer，并执行GestureRecognizer的回调。</p>
-<p>当有 UIGestureRecognizer 的变化(创建/销毁/状态改变)时，这个回调都会进行相应处理。</p>
-<h4 id="界面更新"><a href="#界面更新" class="headerlink" title="界面更新"></a>界面更新</h4><p>当在操作 UI 时，比如改变了 Frame、更新了 UIView/CALayer 的层次时，或者手动调用了 UIView/CALayer 的 setNeedsLayout/setNeedsDisplay方法后，这个 UIView/CALayer 就被<strong>标记为待处理</strong>，并被提交到一个全局的容器去。</p>
-<p>苹果注册了一个 Observer 监听 BeforeWaiting(即将进入休眠) 和 Exit (即将退出Loop) 事件，回调去执行遍历所有待处理的 UIView/CAlayer 以执行实际的绘制和调整，并更新 UI 界面。</p>
-<h4 id="定时器"><a href="#定时器" class="headerlink" title="定时器"></a>定时器</h4><p>NSTimer 其实就是 CFRunLoopTimerRef，他们之间是 toll-free bridged 的。一个 NSTimer 注册到 RunLoop 后，RunLoop 会为其重复的时间点注册好事件。例如 10:00, 10:10, 10:20 这几个时间点。RunLoop为了节省资源，并不会在非常准确的时间点回调这个Timer。Timer 有个属性叫做 Tolerance (宽容度)，标示了当时间点到后，容许有多少最大误差。</p>
-<p>如果某个时间点被错过了，例如执行了一个很长的任务，则那个时间点的回调也会跳过去，不会延后执行。就比如等公交，如果 10:10 时我忙着玩手机错过了那个点的公交，那我只能等 10:20 这一趟了。</p>
-<p>CADisplayLink 是一个和屏幕刷新率一致的定时器（但实际实现原理更复杂，和 NSTimer 并不一样，其内部实际是操作了一个 Source）。如果在两次屏幕刷新之间执行了一个长任务，那其中就会有一帧被跳过去（和 NSTimer 相似），造成界面卡顿的感觉。在快速滑动TableView时，即使一帧的卡顿也会让用户有所察觉。</p>
-<blockquote>
-<p>因此 NSTimer CADisplayLink 作为定时器并不是特别的精确<br>如果要求定时任务精确可以使用GCD的定时器,它不依赖于RunLoop</p>
-</blockquote>
-<h4 id="PerformSelecter"><a href="#PerformSelecter" class="headerlink" title="PerformSelecter"></a>PerformSelecter</h4><p>当调用 NSObject 的 performSelecter:afterDelay: 后，实际上其内部会创建一个 Timer 并添加到当前线程的 RunLoop 中。所以<strong>如果当前线程没有 RunLoop，则这个方法会失效</strong>。</p>
-<p>当调用 performSelector:onThread: 时，实际上其会创建一个 Timer 加到对应的线程去，<strong>同样的，如果对应线程没有 RunLoop 该方法也会失效</strong>。</p>
-<h4 id="关于GCD"><a href="#关于GCD" class="headerlink" title="关于GCD"></a>关于GCD</h4><p>实际上 RunLoop 底层也会用到 GCD 的东西, 例如 dispatch_async()。</p>
-<p>当调用 dispatch_async(dispatch_get_main_queue(), block) 时，libDispatch 会向主线程的 RunLoop 发送消息，RunLoop会被唤醒，并从消息中取得这个 block，并在回调里执行这个 block。但这个逻辑仅限于 dispatch 到主线程，dispatch 到其他线程仍然是由 libDispatch 处理的。</p>
-<h4 id="关于网络请求"><a href="#关于网络请求" class="headerlink" title="关于网络请求"></a>关于网络请求</h4><p>通常使用 NSURLConnection 时，你会传入一个 Delegate，当调用了 [connection start] 后，这个 Delegate 就会不停收到事件回调。实际上，start 这个函数的内部会会获取 CurrentRunLoop，然后在其中的 DefaultMode 添加了4个 Source0 (即需要手动触发的Source)。CFMultiplexerSource 是负责各种 Delegate 回调的，CFHTTPCookieStorage 是处理各种 Cookie 的。</p>
-<p>另外: AFNetWorking内部单独创建了一个线程，并在这个线程中启动了一个 RunLoop, RunLoop 启动前内部必须要有至少一个 Timer/Observer/Source，所以 AFNetworking 在 [runLoop run] 之前先创建了一个新的 NSMachPort 添加进去了。通常情况下，调用者需要持有这个 NSMachPort (mach_port) 并在外部线程通过这个 port 发送消息到 loop 内；但此处添加 port 只是为了让 RunLoop 不至于退出，并没有用于实际的发送消息。</p>
-<hr>
-<p>参考链接:<br><a href="https://blog.ibireme.com/2015/05/18/runloop/#more-41710" target="_blank" rel="noopener">深入理解RunLoop</a><br><a href="https://ke.qq.com/course/314526" target="_blank" rel="noopener">iOS底层原理讲解</a></p>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
   </entry>
 </search>
