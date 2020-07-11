@@ -14,7 +14,7 @@
     <meta name="keywords" content="CodeMan">
 
 
-<title>iOS 线程以及线程同步方案 | CodeMan的博客</title>
+<title>iOS 内存布局以及管理 | CodeMan的博客</title>
 
 
 
@@ -172,7 +172,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">iOS 线程以及线程同步方案</h1>
+            <h1 class="post-title">iOS 内存布局以及管理</h1>
             
                 <div class="post-meta">
                     
@@ -181,7 +181,7 @@
 
                     
                         <span class="post-time">
-                        日期: <a href="#">六月 15, 2018&nbsp;&nbsp;22:00:40</a>
+                        日期: <a href="#">七月 13, 2018&nbsp;&nbsp;22:00:40</a>
                         </span>
                     
                     
@@ -197,102 +197,92 @@
         </header>
 
         <div class="post-content">
-            <h3 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
-<h3 id="同步、异步、串行、并发"><a href="#同步、异步、串行、并发" class="headerlink" title="同步、异步、串行、并发"></a>同步、异步、串行、并发</h3><ul>
-<li><em>同步</em> 和 <em>异步</em> 主要是能否开启新的线程<ol>
-<li>同步: 在当前线程中执行任务, 不具备开启新线程的能力</li>
-<li>异步: 在新的线程中执行任务, 具备开启新线程的能力</li>
-</ol>
-</li>
-<li><em>串行</em> 和 <em>并发</em> 主要决定任务的执行方式<ol>
-<li>串行: 一个任务执行完毕再执行下一个任务</li>
-<li>并发: 多个任务同时执行</li>
-</ol>
-</li>
+            <h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
+<li>编译之后的代码存储的区域</li>
 </ul>
-<h3 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p>
-<h3 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h3><blockquote>
-<p>通过dispatch_group_t 队列组可以实现 所有异步任务共同并发, 任务都处理完毕, 统一触发 通过dispatch_group_notify来进行接下来的任务</p>
-</blockquote>
-<h3 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h3><ul>
-<li><p><font color=grey>OSSpinLock</font> </p>
-<ul>
-<li><code>#import &lt;libkern/OSAtomic.h&gt;</code></li>
-<li>自旋, 不推荐使用, 会有优先级反转的问题, 如果等待锁的线程优先级较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁</li>
+<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
+<li>字符串常量</li>
+<li>已初始化的全局变量, 静态变量</li>
+<li>未初始化的全局变量, 静态变量</li>
 </ul>
-</li>
-<li><p><font color=blue>os_unfair_lock</font> </p>
-<ul>
-<li>互斥, 推荐效率较高</li>
-<li><code>os_unfair_lock</code>用于取代不安全的<code>OSSpinLock</code> ，从iOS10开始才支持</li>
+<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
+<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
 </ul>
-</li>
-<li><p><font color=blue>pthread_mutex</font>  </p>
-<ul>
-<li><code>#import &lt;pthread.h&gt;</code></li>
-<li>互斥, 推荐跨平台</li>
+<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
+<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
 </ul>
-</li>
-<li><p><font color=blue>dispatch_semaphore</font></p>
-<ul>
-<li>互斥, 推荐, 兼容性好</li>
+<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
+<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
+<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
 </ul>
-</li>
-<li><p>dispatch_queue(DISPATCH_QUEUE_SERIAL)</p>
-<ul>
-<li>串行队列同样可以线程同步</li>
+<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
+<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
+<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
 </ul>
-</li>
-<li><p>NSLock</p>
-<ul>
-<li>对pthread_mutex的OC包装</li>
+<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
+<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
 </ul>
-</li>
-<li><p>NSRecursiveLock</p>
-<ul>
-<li>对pthread_mutex递归锁的OC包装</li>
+<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
+<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
 </ul>
-</li>
-<li><p>NSCondition</p>
-<ul>
-<li>对pthread_mutex条件锁的OC包装</li>
-</ul>
-</li>
-<li><p>NSConditionLock</p>
-</li>
-<li><p>@synchronized </p>
-<ul>
-<li>对pthread_mutex递归锁的OC包装</li>
-</ul>
-</li>
-</ul>
+<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>copy操作</th>
+<th>mutableCopy操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NSString</code></td>
+<td><code>NSString</code>浅拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+<tr>
+<td><code>NSMutableString</code></td>
+<td><code>NSMutableString</code>深拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+</tbody></table>
 <blockquote>
-<p>死锁<br>当线程加锁之后忘记解锁, 那么这把锁就相当于死锁<br> 如果当前加锁采用的是自旋锁方式, 那么就会一直占用着CPU资源,让其他线程处于忙等状态<br> 如果当前加锁采用的是互斥锁方式, 那么就会让再次获取锁的线程处于休眠状态</p>
+<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
 </blockquote>
-<h3 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h3><ul>
-<li><p>场景</p>
-<ul>
-<li>同一时间，只能有1个线程进行写的操作</li>
-<li>同一时间，允许有多个线程进行读的操作</li>
-<li>同一时间，不允许既有写的操作，又有读的操作</li>
-</ul>
+<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
+<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
 </li>
-<li><p>解决方案:</p>
+<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
+</li>
+<li><p>SideTable结构如下:</p>
 <ul>
-<li><code>pthread_rwlock</code> 读写锁</li>
-<li><code>dispatch_barrier_async</code> GCD异步栅栏</li>
+<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
+<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
+<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
 </ul>
 </li>
 </ul>
-<h3 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h3><details>
-<summary>参考内容</summary>
-
-<ol>
-<li>可以添加任务依赖, 方便控制执行顺序</li>
-<li>可以设置任务的优先级</li>
-<li>可以设置最大并发数</li>
-<li>可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</details></li>
+<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
+<li>_objc_rootDealloc()<ol>
+<li>内部会判断是否有c++析构函数</li>
+<li>是否有关联对象</li>
+<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
 </ol>
+</li>
+</ul>
+<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
+<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
+<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
+<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
+</ul>
+<ol>
+<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
+<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
+<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
+</ol>
+<p>如图所示</p>
+<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
+<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
+<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
+</ul>
 
         </div>
 
@@ -307,7 +297,7 @@
                 
                     <p class="copyright-item">
                         <span>原文链接:</span>
-                        <span><a href="https://codeman.netlify.app/2018/06/15/oc-thread/">https://codeman.netlify.app/2018/06/15/oc-thread/</a></span>
+                        <span><a href="https://codeman.netlify.app/2018/07/13/ios/ios-memory/">https://codeman.netlify.app/2018/07/13/ios/ios-memory/</a></span>
                     </p>
                 
                 
@@ -340,10 +330,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2018/07/13/oc-memory/">iOS 内存布局以及管理</a>
+                <a class="prev" rel="prev" href="/2018/08/20/ios/ios-opitimize/">iOS 性能优化</a>
             
             
-            <a class="next" rel="next" href="/2018/05/14/oc-runloop/">iOS RunLoop</a>
+            <a class="next" rel="next" href="/2018/06/15/ios/ios-thread/">iOS 线程以及线程同步方案</a>
             
         </section>
         

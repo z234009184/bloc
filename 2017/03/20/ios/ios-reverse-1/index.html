@@ -14,7 +14,7 @@
     <meta name="keywords" content="CodeMan">
 
 
-<title>iOS 内存布局以及管理 | CodeMan的博客</title>
+<title>iOS 逆向-越狱环境搭建 | CodeMan的博客</title>
 
 
 
@@ -172,7 +172,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">iOS 内存布局以及管理</h1>
+            <h1 class="post-title">iOS 逆向-越狱环境搭建</h1>
             
                 <div class="post-meta">
                     
@@ -181,7 +181,7 @@
 
                     
                         <span class="post-time">
-                        日期: <a href="#">七月 13, 2018&nbsp;&nbsp;22:00:40</a>
+                        日期: <a href="#">三月 20, 2017&nbsp;&nbsp;23:00:40</a>
                         </span>
                     
                     
@@ -197,92 +197,66 @@
         </header>
 
         <div class="post-content">
-            <h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
-<li>编译之后的代码存储的区域</li>
-</ul>
-<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
-<li>字符串常量</li>
-<li>已初始化的全局变量, 静态变量</li>
-<li>未初始化的全局变量, 静态变量</li>
-</ul>
-<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
-<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
-</ul>
-<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
-<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
-</ul>
-<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
-<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
-<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
-</ul>
-<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
-<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
-<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
-</ul>
-<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
-<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
-</ul>
-<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
-<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
-</ul>
-<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
-<thead>
-<tr>
-<th></th>
-<th>copy操作</th>
-<th>mutableCopy操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>NSString</code></td>
-<td><code>NSString</code>浅拷贝</td>
-<td><code>NSMutableString</code>深拷贝</td>
-</tr>
-<tr>
-<td><code>NSMutableString</code></td>
-<td><code>NSMutableString</code>深拷贝</td>
-<td><code>NSMutableString</code>深拷贝</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
-</blockquote>
-<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
-<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
-</li>
-<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
-</li>
-<li><p>SideTable结构如下:</p>
+            <p>首先逆向需要一台 <strong>Mac电脑</strong>, 还有一台<strong>已经越狱的 iOS 设备</strong></p>
+<h2 id="越狱工具"><a href="#越狱工具" class="headerlink" title="越狱工具"></a>越狱工具</h2><p>市面上的越狱工具有很多, 例如:</p>
 <ul>
-<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
-<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
-<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
+<li><a href="https://unc0ver.dev/" target="_blank" rel="noopener">uncOver</a></li>
+<li><a href="https://checkra.in/" target="_blank" rel="noopener">checkra1n</a><blockquote>
+<p>可以自行选择越狱工具, 通过越狱工具官网查看支持的设备以及系统版本号来进行选择, 然后通过官网步骤即可完成越狱</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="通过-Cydia-安装逆向所需插件"><a href="#通过-Cydia-安装逆向所需插件" class="headerlink" title="通过 Cydia 安装逆向所需插件"></a>通过 <code>Cydia</code> 安装逆向所需插件</h2><p>越狱成功的手机, 会自动安装一个叫 <code>Cydia</code> 的软件, 它相当于一个软件商店, 可以下载一些好用的插件或软件来让越狱的手机更方便, 前提需要添加一些好用的“源”(可以自行搜索).<br>越狱之后逆向所需插件如下:</p>
+<ul>
+<li><code>Apple File Conduit &quot;2&quot;</code>    可以访问整个iOS设备的文系统, 类似的补丁还有：<code>afc2</code>、<code>afc2add</code></li>
+<li><code>AppSync Unified</code>  可以绕过系统验证，随意安装、运行破解的ipa安装包</li>
+</ul>
+<h2 id="通过-SSH-登录iOS设备"><a href="#通过-SSH-登录iOS设备" class="headerlink" title="通过 SSH 登录iOS设备"></a>通过 SSH 登录iOS设备</h2><ul>
+<li>在iOS设备上上通过<code>Cydia</code>安装<code>OpenSSH</code>工具</li>
+<li>在Mac的终端输入 <code>ssh 账户名@服务器主机地址</code><br>比如 <code>ssh root@10.1.1.168</code>（这里的服务器是手机）<br>初始密码 <code>alpine</code></li>
+<li>退出登录命令是 <code>exit</code><blockquote>
+<p>root：最高权限账户，$HOME 是 /var/root</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="ssh-一些其他操作"><a href="#ssh-一些其他操作" class="headerlink" title="ssh 一些其他操作"></a>ssh 一些其他操作</h3><ul>
+<li>删掉之前的服务器公钥信息<ul>
+<li><code>ssh-keygen -R 服务器IP地址</code></li>
+</ul>
+</li>
+<li>或者直接打开known_hosts文件删除服务器的公钥信息就行<ul>
+<li><code>vim ~/.ssh/known_hosts</code></li>
 </ul>
 </li>
 </ul>
-<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
-<li>_objc_rootDealloc()<ol>
-<li>内部会判断是否有c++析构函数</li>
-<li>是否有关联对象</li>
-<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
-</ol>
+<h3 id="ssh-基于密钥方式的客户端认证"><a href="#ssh-基于密钥方式的客户端认证" class="headerlink" title="ssh 基于密钥方式的客户端认证"></a>ssh 基于密钥方式的客户端认证</h3><ul>
+<li>在客户端生成一对相关联的密钥（Key Pair）：一个公钥（Public Key），一个私钥（Private Key）<ul>
+<li><code>ssh-keygen</code>  一路敲回车键（Enter）即可</li>
+</ul>
+</li>
+<li>把客户端的公钥内容追加到服务器的授权文件（~/.ssh/authorized_keys）尾部<ul>
+<li><code>ssh-copy-id root@服务器主机地址</code><blockquote>
+<p>ssh-copy-id会将客户端<del>/.ssh/id_rsa.pub的内容自动追加到服务器的</del>/.ssh/authorized_keys尾部<br>如果配置了免密码登录后，还是需要输入密码，需要在服务器端设置文件权限 <code>chmod 644 ~/.ssh/authorized_keys</code></p>
+</blockquote>
 </li>
 </ul>
-<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
-<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
-<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
-<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
+</li>
 </ul>
-<ol>
-<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
-<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
-<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
-</ol>
-<p>如图所示</p>
-<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
-<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
-<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
+<h2 id="通过-USB-连接线连接-iOS-设备"><a href="#通过-USB-连接线连接-iOS-设备" class="headerlink" title="通过 USB 连接线连接 iOS 设备"></a>通过 USB 连接线连接 iOS 设备</h2><ul>
+<li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的一个python脚本：<code>tcprelay.py</code> 来进行端口映射</li>
+<li>将iPhone的22端口（SSH端口）映射到Mac本地的10010端口(10010也可以换成其他系统未占用的端口)<ul>
+<li><code>python tcprelay.py -t 22:10010</code></li>
 </ul>
+</li>
+<li>端口映射完毕后，以后如果想跟iPhone的22端口通信，直接跟Mac本地的10010端口通信就可以了<ul>
+<li><code>ssh root@localhost -p 10010</code><blockquote>
+<p>远程拷贝文件也可以直接跟Mac本地的10010端口通信<br>scp -P 10010 <del>/Desktop/1.txt root@localhost:</del>/test<br>我们可以将经常执行的一系列终端命令行放到sh脚本文件中（shell），然后执行脚本文件</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<p>至此, 逆向所需要的环境基本搭建完成</p>
 
         </div>
 
@@ -297,7 +271,7 @@
                 
                     <p class="copyright-item">
                         <span>原文链接:</span>
-                        <span><a href="https://codeman.netlify.app/2018/07/13/oc-memory/">https://codeman.netlify.app/2018/07/13/oc-memory/</a></span>
+                        <span><a href="https://codeman.netlify.app/2017/03/20/ios/ios-reverse-1/">https://codeman.netlify.app/2017/03/20/ios/ios-reverse-1/</a></span>
                     </p>
                 
                 
@@ -330,10 +304,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2018/08/20/ios-opitimize/">iOS 性能优化</a>
+                <a class="prev" rel="prev" href="/2017/04/20/ios/ios-reverse-2/">iOS 逆向-分析工具 Cycript、Reaveal</a>
             
             
-            <a class="next" rel="next" href="/2018/06/15/oc-thread/">iOS 线程以及线程同步方案</a>
+            <a class="next" rel="next" href="/2016/05/13/new-bloc/">博客搬家了</a>
             
         </section>
         
