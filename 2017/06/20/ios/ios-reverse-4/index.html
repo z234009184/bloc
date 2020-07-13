@@ -14,7 +14,7 @@
     <meta name="keywords" content="CodeMan">
 
 
-<title>iOS 逆向-分析工具 Cycript、Reaveal | CodeMan的博客</title>
+<title>逆向-脱壳 | CodeMan的博客</title>
 
 
 
@@ -172,7 +172,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">iOS 逆向-分析工具 Cycript、Reaveal</h1>
+            <h1 class="post-title">逆向-脱壳</h1>
             
                 <div class="post-meta">
                     
@@ -181,7 +181,7 @@
 
                     
                         <span class="post-time">
-                        日期: <a href="#">四月 20, 2017&nbsp;&nbsp;23:00:40</a>
+                        日期: <a href="#">六月 20, 2017&nbsp;&nbsp;22:00:40</a>
                         </span>
                     
                     
@@ -197,72 +197,47 @@
         </header>
 
         <div class="post-content">
-            <h2 id="Cycript"><a href="#Cycript" class="headerlink" title="Cycript"></a>Cycript</h2><ul>
-<li>Cycript是Objective-C++、ES6（JavaScript）、Java等语法的混合物<br>可以用来探索、修改、调试正在运行的Mac\iOS APP<br>可以在<a href="http://www.cycript.org/" target="_blank" rel="noopener">官网</a>或者<a href="http://www.cycript.org/manual/" target="_blank" rel="noopener">文档</a>来查看相应说明</li>
+            <h2 id="加壳"><a href="#加壳" class="headerlink" title="加壳"></a>加壳</h2><ul>
+<li>默认上传到AppStore 的ipa安装包内的可执行文件都会被苹果进行一次加密操作, 然后执行的时候直接执行加密后的壳程序, 然后再动态解密可执行文件</li>
 </ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
-<li>在越狱的手机上 通过Cydia安装Cycript，即可在iPhone上调试运行中的APP</li>
-</ul>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h3><ul>
-<li>cycript -p 进程名称/进程ID<blockquote>
-<p>通过输入-p参数 后面跟上进程名称或进程ID即可进入cycript运行环境进行调试<br>取消输入: <code>Ctrl + C</code> 退出: <code>Ctrl + D</code>  清屏: <code>Command + R</code><br>命令行列出所有进程: <code>ps -A</code>  也可以搜索关键词 <code>ps -A | grep 关键词</code></p>
-</blockquote>
+<h2 id="如何校验可执行文件是否被加壳"><a href="#如何校验可执行文件是否被加壳" class="headerlink" title="如何校验可执行文件是否被加壳"></a>如何校验可执行文件是否被加壳</h2><ol>
+<li><p>通过 <code>MachOView</code> GUI工具查看 <code>Load Conmmands</code> -&gt; <code>LC_ENCRYPTION_INFO</code> -&gt; <code>Crypt ID</code> </p>
 </li>
-</ul>
-<h3 id="常用语法"><a href="#常用语法" class="headerlink" title="常用语法"></a>常用语法</h3><ul>
-<li>UIApp<ul>
-<li>代表 [UIApplication sharedApplication]</li>
-</ul>
+<li><p>通过 <code>otool -l &lt;可执行文件路径&gt; | grep cript</code> 查看 <code>Crypt ID</code></p>
 </li>
-<li>var app = [UIApplication sharedApplication]<ul>
-<li>定义变量</li>
-</ul>
-</li>
-<li>#0x13ba34500<ul>
-<li>用内存地址获取对象</li>
-</ul>
-</li>
-<li>ObjectiveC.classes<ul>
-<li>已加载的所有OC类</li>
-</ul>
-</li>
-<li>*对象<ul>
-<li>查看对象的所有成员变量</li>
-</ul>
-</li>
-<li>view.recursiveDescription().toString()<ul>
-<li>递归打印view的所有子控件（跟LLDB一样的函数）</li>
-</ul>
-</li>
-<li>choose(UIViewController)<ul>
-<li>筛选出某种类型的对象<blockquote>
-<p>可以使用MJ封装的<a href="https://github.com/CoderMJLee/mjcript" target="_blank" rel="noopener">mjcript</a>来使用, 封装了更多好用的函数</p>
-</blockquote>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="Reveal"><a href="#Reveal" class="headerlink" title="Reveal"></a>Reveal</h2><ul>
-<li><a href="https://revealapp.com" target="_blank" rel="noopener">Reveal</a>是一款调试iOS程序UI界面的神器</li>
-</ul>
-<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
-<li>想要调试任何app, 需要做以下三件事<ul>
-<li><ol>
-<li>在越狱的手机上通过<code>Cydia</code>安装<code>Reveal Loader</code></li>
 </ol>
+<p>其中 <code>Crypt ID</code> 0代表未加壳, 否则代表加壳</p>
+<h2 id="脱壳工具"><a href="#脱壳工具" class="headerlink" title="脱壳工具"></a>脱壳工具</h2><ul>
+<li><p><a href="https://github.com/KJCracks/Clutch" target="_blank" rel="noopener">Clutch</a> (脱壳部分程序可能会失败)</p>
+<ol>
+<li><p>下载最新release包</p>
 </li>
-<li><ol start="2">
-<li>手机上点击<code>设置</code>-&gt;<code>Reveal</code>-&gt;<code>Enabled Applications</code> 打开需要调试的App的开关</li>
+<li><p>将可执行文件 <code>Clutch</code> 放到越狱设备的 <code>/usr/bin</code> 目录下</p>
+</li>
+<li><p>赋予可执行权限: <code>chmod +x /usr/bin/Clutch</code>  </p>
+<p>使用:</p>
+</li>
 </ol>
+<ul>
+<li><code>Clutch -i</code> 列出加壳的程序</li>
+<li><code>Clutch -d &lt;可执行文件bundleid&gt;</code> 脱壳后会生成脱壳后的ipa文件</li>
+</ul>
 </li>
-<li><ol start="3">
-<li>打开Mac电脑上的Reveal, 点击顶部菜单的 <code>Help</code>-&gt;<code>Show Reveal Library in Finder</code>, 然后将看到的 <code>RevealSever.framwork</code> 拷贝到手机上的目录: <code>Library</code>-&gt;<code>Frameworks</code> 中</li>
+<li><p><a href="https://github.com/stefanesser/dumpdecrypted/" target="_blank" rel="noopener">dumpdecrypted</a></p>
+<ol>
+<li><p>下载源码, 然后在源码根目录执行<code>make</code>操作编译生成动态库dylib</p>
+</li>
+<li><p>将dylib拷贝到越狱设备的 <code>/var/root</code> 目录中</p>
+<p>使用:</p>
+</li>
 </ol>
-</li>
+<ul>
+<li>终端进入越狱设备 <code>/var/root</code> 目录中</li>
+<li><code>DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib   可执行文件路径</code></li>
+<li>.decrypted文件就是脱壳后的可执行文件</li>
 </ul>
 </li>
 </ul>
-<p>重启iOS设备的 SpringBoard: <code>killall SpringBoard</code> (通过mac命令汗运行)<br>至此可以通过Reveal查看任何运行中的App了, 可以通过 <code>Cycript + Reveal</code> 两个工具进行详细的分析</p>
 
         </div>
 
@@ -277,7 +252,7 @@
                 
                     <p class="copyright-item">
                         <span>原文链接:</span>
-                        <span><a href="https://codeman.netlify.app/2017/04/20/ios/ios-reverse-2/">https://codeman.netlify.app/2017/04/20/ios/ios-reverse-2/</a></span>
+                        <span><a href="https://codeman.netlify.app/2017/06/20/ios/ios-reverse-4/">https://codeman.netlify.app/2017/06/20/ios/ios-reverse-4/</a></span>
                     </p>
                 
                 
@@ -310,10 +285,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2017/05/20/ios/ios-reverse-3/">逆向-iOS Mach-O 格式文件</a>
+                <a class="prev" rel="prev" href="/2018/03/15/ios/init_bloc/">Objective-C 语言底层原理</a>
             
             
-            <a class="next" rel="next" href="/2017/03/20/ios/ios-reverse-1/">iOS 逆向-越狱环境搭建</a>
+            <a class="next" rel="next" href="/2017/05/20/ios/ios-reverse-3/">逆向-iOS Mach-O 格式文件</a>
             
         </section>
         
