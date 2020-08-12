@@ -88,11 +88,11 @@
 <li>关联对象并不是存储在被关联对象本身内存中<br>关联对象存储在全局的统一的一个AssociationsManager中(全局的字典)</li>
 </ul>
 <h3 id="Block的本质"><a href="#Block的本质" class="headerlink" title="Block的本质"></a>Block的本质</h3><ul>
-<li>Block是封装了函数以及函数调用的OC对象<br>其内部构造如图所示:<br><img src="https://wx1.sbimg.cn/2020/06/22/image.png" alt="image.png"></li>
+<li>Block是封装了函数以及函数调用的OC对象<br>其内部构造如图所示:<br><img src="https://s1.ax1x.com/2020/08/12/ajKQ5d.png" alt="ajKQ5d.png"></li>
 </ul>
 <h5 id="Block的捕获类型"><a href="#Block的捕获类型" class="headerlink" title="Block的捕获类型"></a>Block的捕获类型</h5><ul>
 <li>auto局部变量是值捕获<br>如果是基本数据类型: 值捕获只会将数值拷贝一份到内部存储<br>如果是对象数据类型: 根据外面对象是否为retain来进行是否retain操作</li>
-<li>static局部静态是引用捕获</li>
+<li>static局部静态是引用(指针)捕获</li>
 <li>全局变量 不进行捕获</li>
 </ul>
 <h5 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h5><ul>
@@ -100,9 +100,24 @@
 <li>访问了auto变量为NSStackBlock</li>
 <li>NSStackBlock进行了Copy操作则变成NSMallocBlock</li>
 </ul>
-<h5 id="block-修饰符"><a href="#block-修饰符" class="headerlink" title="__block 修饰符"></a>__block 修饰符</h5><ul>
-<li>会将auto变量进行包装成block内部的 OC对象<br>如果是基本数据类型:Block内部的OC对象内部会拷贝一份外面的数值<br>如果是对象数据类型:Block内部的OC对象内部会对外面的对象根据外面对象是否为retain来进行是否retain操作</li>
-<li>被<strong>block修饰的外部变量 在block内部访问时 本质是通过 Block内部生成的</strong>Block对象内部的forwarding指针指向的自己来进行访问, 主要是解决当Block在栈存储区时,确保访问的外部变量是在堆上</li>
+<h5 id="对象类型的auto变量"><a href="#对象类型的auto变量" class="headerlink" title="对象类型的auto变量"></a>对象类型的auto变量</h5><ul>
+<li>如果block在栈上, 则不会对对象的auto类型强引用</li>
+<li>如果block在堆上, 则block内部会对外部的对象类型根据修饰(<strong>weak、</strong>strong、__unsafe_unretain)符进行强或者弱引用<blockquote>
+<p>block内部会有两个函数进行对外部对象的引用技术的控制, 增加或者释放 <code>_Block_Object_assign</code>、<code>_Block_Object_dispose</code></p>
+</blockquote>
+</li>
+</ul>
+<h5 id="Block的Copy"><a href="#Block的Copy" class="headerlink" title="Block的Copy"></a>Block的Copy</h5><p>在ARC自动引用计数环境下, 编译器会根据情况自动将栈上的block复制到堆上:</p>
+<ul>
+<li>block作为函数返回值时</li>
+<li>将block赋值给 __strong 指针时</li>
+<li>将block作为 Cocoa API中的方法名含有usingBlock时</li>
+<li>block作为GCD API参数时</li>
+</ul>
+<h5 id="block-修饰符"><a href="#block-修饰符" class="headerlink" title="__block 修饰符"></a>__block 修饰符</h5><p>主要解决block内部无法修改外部auto变量值的问题</p>
+<ul>
+<li>它会将auto变量进行包装成block内部的 OC对象<br>如果是基本数据类型:Block内部的OC对象内部会拷贝一份外面的数值<br>如果是对象数据类型:Block内部的OC对象内部会对外面的对象根据外面对象是否为retain来进行是否retain操作</li>
+<li>被<strong>block修饰的外部变量 在block内部访问时 本质是通过 Block内部生成的</strong>Block对象内部的forwarding指针指向的自己来进行访问, 主要是解决当Block在栈存储区时, 访问栈上的block内部的外部变量时确保访问的外部变量是在堆存储区上</li>
 </ul>
 <h5 id="Block本身的拷贝操作对外面引用变量的影响"><a href="#Block本身的拷贝操作对外面引用变量的影响" class="headerlink" title="Block本身的拷贝操作对外面引用变量的影响"></a>Block本身的拷贝操作对外面引用变量的影响</h5><ul>
 <li>如果Block从栈存储区拷贝的堆存储区则会调用desc结构体内部的copy操作(被__block修饰的同样, 只是多了一层对象包装)</li>
@@ -116,94 +131,74 @@
       </categories>
   </entry>
   <entry>
-    <title>iOS 内存布局以及管理</title>
-    <url>/2018/07/13/ios/ios-memory/</url>
-    <content><![CDATA[<h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
-<li>编译之后的代码存储的区域</li>
+    <title>iOS 逆向-分析工具 Cycript、Reaveal</title>
+    <url>/2017/04/20/ios/ios-reverse-2/</url>
+    <content><![CDATA[<h2 id="Cycript"><a href="#Cycript" class="headerlink" title="Cycript"></a>Cycript</h2><ul>
+<li>Cycript是Objective-C++、ES6（JavaScript）、Java等语法的混合物<br>可以用来探索、修改、调试正在运行的Mac\iOS APP<br>可以在<a href="http://www.cycript.org/" target="_blank" rel="noopener">官网</a>或者<a href="http://www.cycript.org/manual/" target="_blank" rel="noopener">文档</a>来查看相应说明</li>
 </ul>
-<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
-<li>字符串常量</li>
-<li>已初始化的全局变量, 静态变量</li>
-<li>未初始化的全局变量, 静态变量</li>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li>在越狱的手机上 通过Cydia安装Cycript，即可在iPhone上调试运行中的APP</li>
 </ul>
-<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
-<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
-</ul>
-<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
-<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
-</ul>
-<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
-<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
-<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
-</ul>
-<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
-<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
-<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
-</ul>
-<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
-<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
-</ul>
-<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
-<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
-</ul>
-<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
-<thead>
-<tr>
-<th></th>
-<th>copy操作</th>
-<th>mutableCopy操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>NSString</code></td>
-<td><code>NSString</code>浅拷贝</td>
-<td><code>NSMutableString</code>深拷贝</td>
-</tr>
-<tr>
-<td><code>NSMutableString</code></td>
-<td><code>NSMutableString</code>深拷贝</td>
-<td><code>NSMutableString</code>深拷贝</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h3><ul>
+<li>cycript -p 进程名称/进程ID<blockquote>
+<p>通过输入-p参数 后面跟上进程名称或进程ID即可进入cycript运行环境进行调试<br>取消输入: <code>Ctrl + C</code> 退出: <code>Ctrl + D</code>  清屏: <code>Command + R</code><br>命令行列出所有进程: <code>ps -A</code>  也可以搜索关键词 <code>ps -A | grep 关键词</code></p>
 </blockquote>
-<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
-<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
 </li>
-<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
+</ul>
+<h3 id="常用语法"><a href="#常用语法" class="headerlink" title="常用语法"></a>常用语法</h3><ul>
+<li>UIApp<ul>
+<li>代表 [UIApplication sharedApplication]</li>
+</ul>
 </li>
-<li><p>SideTable结构如下:</p>
-<ul>
-<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
-<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
-<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
+<li>var app = [UIApplication sharedApplication]<ul>
+<li>定义变量</li>
+</ul>
+</li>
+<li>#0x13ba34500<ul>
+<li>用内存地址获取对象</li>
+</ul>
+</li>
+<li>ObjectiveC.classes<ul>
+<li>已加载的所有OC类</li>
+</ul>
+</li>
+<li>*对象<ul>
+<li>查看对象的所有成员变量</li>
+</ul>
+</li>
+<li>view.recursiveDescription().toString()<ul>
+<li>递归打印view的所有子控件（跟LLDB一样的函数）</li>
+</ul>
+</li>
+<li>choose(UIViewController)<ul>
+<li>筛选出某种类型的对象<blockquote>
+<p>可以使用MJ封装的<a href="https://github.com/CoderMJLee/mjcript" target="_blank" rel="noopener">mjcript</a>来使用, 封装了更多好用的函数</p>
+</blockquote>
+</li>
 </ul>
 </li>
 </ul>
-<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
-<li>_objc_rootDealloc()<ol>
-<li>内部会判断是否有c++析构函数</li>
-<li>是否有关联对象</li>
-<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
+<h2 id="Reveal"><a href="#Reveal" class="headerlink" title="Reveal"></a>Reveal</h2><ul>
+<li><a href="https://revealapp.com" target="_blank" rel="noopener">Reveal</a>是一款调试iOS程序UI界面的神器</li>
+</ul>
+<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
+<li>想要调试任何app, 需要做以下三件事<ul>
+<li><ol>
+<li>在越狱的手机上通过<code>Cydia</code>安装<code>Reveal Loader</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>手机上点击<code>设置</code>-&gt;<code>Reveal</code>-&gt;<code>Enabled Applications</code> 打开需要调试的App的开关</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>打开Mac电脑上的Reveal, 点击顶部菜单的 <code>Help</code>-&gt;<code>Show Reveal Library in Finder</code>, 然后将看到的 <code>RevealSever.framwork</code> 拷贝到手机上的目录: <code>Library</code>-&gt;<code>Frameworks</code> 中</li>
 </ol>
 </li>
 </ul>
-<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
-<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
-<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
-<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
+</li>
 </ul>
-<ol>
-<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
-<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
-<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
-</ol>
-<p>如图所示</p>
-<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
-<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
-<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
-</ul>
+<p>重启iOS设备的 SpringBoard: <code>killall SpringBoard</code> (通过mac命令汗运行)<br>至此可以通过Reveal查看任何运行中的App了, 可以通过 <code>Cycript + Reveal</code> 两个工具进行详细的分析</p>
 ]]></content>
       <categories>
         <category>iOS</category>
@@ -417,7 +412,7 @@
 </li>
 </ul>
 <h2 id="通过-USB-连接线连接-iOS-设备"><a href="#通过-USB-连接线连接-iOS-设备" class="headerlink" title="通过 USB 连接线连接 iOS 设备"></a>通过 USB 连接线连接 iOS 设备</h2><ul>
-<li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的一个python脚本：<code>tcprelay.py</code> 来进行端口映射</li>
+<li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的两个个python脚本：<code>tcprelay.py</code>、<code>usbmux.py</code> 来进行端口映射</li>
 <li>将iPhone的22端口（SSH端口）映射到Mac本地的10010端口(10010也可以换成其他系统未占用的端口)<ul>
 <li><code>python tcprelay.py -t 22:10010</code></li>
 </ul>
@@ -437,218 +432,62 @@
       </categories>
   </entry>
   <entry>
-    <title>iOS-逆向 Mach-O 格式文件</title>
-    <url>/2017/05/20/ios/ios-reverse-3/</url>
-    <content><![CDATA[<h2 id="Mach-O-介绍"><a href="#Mach-O-介绍" class="headerlink" title="Mach-O 介绍"></a>Mach-O 介绍</h2><p><code>Mach-O</code> 其实是 <code>Mach Object</code> 文件格式的缩写, 属于<code>Mach-O</code>格式的常见文件有</p>
-<ul>
-<li>目标文件.o</li>
-<li>库文件<ul>
-<li>.a 静态库其实就是多个.o链接到一起</li>
-<li>.dylib </li>
-<li>framework</li>
+    <title>iOS Runtime</title>
+    <url>/2018/04/15/ios/ios-runtime/</url>
+    <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
+<li>Objective-C是一门动态性比较强的编程语言，跟C、C++等语言有着很大的不同, 很多操作会推迟到运行时再进行</li>
+<li>OC的动态性就是有Runtime来支撑和实现的, 它是一套C语言API, 封装了很多动态性相关的函数</li>
+<li>平时编写的OC代码底层都是转换成了Runtime API进行调用</li>
 </ul>
-</li>
-<li>可执行文件</li>
-<li>dyld (动态链接器)</li>
-<li>.dsym( 符号表)</li>
-</ul>
-<p>如图所示:<br><img src="https://s1.ax1x.com/2020/07/11/Ul8OaR.png" alt="Ul8OaR.png"></p>
-<h3 id="在Xcode中可查看-Mach-O-文件类型"><a href="#在Xcode中可查看-Mach-O-文件类型" class="headerlink" title="在Xcode中可查看 Mach-O 文件类型"></a>在Xcode中可查看 Mach-O 文件类型</h3><ul>
-<li>如图<br>  <img src="https://s1.ax1x.com/2020/07/11/UlGdL4.png" alt="UlGdL4.png"></li>
-</ul>
-<h2 id="Mach-O-的基本结构"><a href="#Mach-O-的基本结构" class="headerlink" title="Mach-O 的基本结构"></a>Mach-O 的基本结构</h2><ul>
-<li>Header<ul>
-<li>文件类型、目标架构类型等</li>
-</ul>
-</li>
-<li>Load commands<ul>
-<li>描述文件在虚拟内存中的逻辑结构、布局</li>
-</ul>
-</li>
-<li>Raw segment data<ul>
-<li>在Load commands 中定义的 Segment 原始数据</li>
-</ul>
-</li>
-</ul>
-<p>如图所示:<br>    <img src="https://s1.ax1x.com/2020/07/11/UlGvwj.png" alt="UlGvwj.png"></p>
-<h2 id="查看-Mach-O-文件结构"><a href="#查看-Mach-O-文件结构" class="headerlink" title="查看 Mach-O 文件结构"></a>查看 Mach-O 文件结构</h2><ul>
-<li><p>命令行工具</p>
-<ul>
-<li>file  查看文件类型</li>
-<li>otool  用来查看特定部分和段的内容</li>
-<li>lipo  用于多架构文件的处理<ul>
-<li>lipo -info &lt;文件路径&gt;</li>
-<li>lipo &lt;文件路径&gt; -thin &lt;架构类型&gt; -output &lt;导出的文件目录&gt;</li>
-<li>lipo &lt;文件路径1&gt; &lt;文件路径2&gt; -output &lt;输出的文件路径&gt; </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>GUI 工具</p>
-<ul>
-<li><a href="https://github.com/gdbinit/MachOView" target="_blank" rel="noopener">MachOView</a></li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>dyld 用于加载以下几种<code>Mach-O</code>格式文件:</p>
-<ol>
-<li>可执行文件</li>
-<li>dylib 动态库</li>
-<li>bundle </li>
-</ol>
-</blockquote>
-<h2 id="App从开发到安装到手机上的过程"><a href="#App从开发到安装到手机上的过程" class="headerlink" title="App从开发到安装到手机上的过程"></a>App从开发到安装到手机上的过程</h2><ol>
-<li>编写代码</li>
-<li>编译、链接、签名 生成 .app 包</li>
-<li>.app包内包含<strong>可执行文件</strong>和一些资源</li>
-<li>压缩.app包为ipa文件</li>
-<li>ipa文件可以上传到 AppStore 或者 其他商店</li>
-<li>用户从AppStore 或其他商店 安装ipa</li>
-</ol>
-<h2 id="逆向App思路"><a href="#逆向App思路" class="headerlink" title="逆向App思路"></a>逆向App思路</h2><ol>
-<li>界面分析<ul>
-<li><code>Cycript</code>、<code>Reveal</code></li>
-</ul>
-</li>
-<li>代码分析<ul>
-<li>对<code>Mach-O</code>文件静态分析</li>
-<li>主要工具有: <code>MachOView</code>、<a href="http://stevenygard.com/projects/class-dump/" target="_blank" rel="noopener">class-dump</a>、<code>Hopper Disassembler</code>、<code>ida</code></li>
-</ul>
-</li>
-<li>动态调试<ul>
-<li><code>debugserver</code>、<code>LLDB</code></li>
-</ul>
-</li>
-<li>编写代码注入到App中<ul>
-<li><code>theos</code> hook方式编写deb安装包 Cydia安装deb插件(已越狱)</li>
-<li>重签名、打包ipa(未越狱)</li>
-</ul>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 逆向-脱壳</title>
-    <url>/2017/06/20/ios/ios-reverse-4/</url>
-    <content><![CDATA[<h2 id="加壳"><a href="#加壳" class="headerlink" title="加壳"></a>加壳</h2><ul>
-<li>默认上传到AppStore 的ipa安装包内的可执行文件都会被苹果进行一次加密操作, 然后执行的时候直接执行加密后的壳程序, 然后再动态解密可执行文件</li>
-</ul>
-<h2 id="如何校验可执行文件是否被加壳"><a href="#如何校验可执行文件是否被加壳" class="headerlink" title="如何校验可执行文件是否被加壳"></a>如何校验可执行文件是否被加壳</h2><ol>
-<li><p>通过 <code>MachOView</code> GUI工具查看 <code>Load Conmmands</code> -&gt; <code>LC_ENCRYPTION_INFO</code> -&gt; <code>Crypt ID</code> </p>
-</li>
-<li><p>通过 <code>otool -l &lt;可执行文件路径&gt; | grep cript</code> 查看 <code>Crypt ID</code></p>
-</li>
-</ol>
-<p>其中 <code>Crypt ID</code> 0代表未加壳, 否则代表加壳</p>
-<h2 id="脱壳工具"><a href="#脱壳工具" class="headerlink" title="脱壳工具"></a>脱壳工具</h2><ul>
-<li><p><a href="https://github.com/KJCracks/Clutch" target="_blank" rel="noopener">Clutch</a> (脱壳部分程序可能会失败)</p>
-<ol>
-<li><p>下载最新release包</p>
-</li>
-<li><p>将可执行文件 <code>Clutch</code> 放到越狱设备的 <code>/usr/bin</code> 目录下</p>
-</li>
-<li><p>赋予可执行权限: <code>chmod +x /usr/bin/Clutch</code>  </p>
-<p>使用:</p>
-</li>
-</ol>
-<ul>
-<li><code>Clutch -i</code> 列出加壳的程序</li>
-<li><code>Clutch -d &lt;可执行文件bundleid&gt;</code> 脱壳后会生成脱壳后的ipa文件</li>
-</ul>
-</li>
-<li><p><a href="https://github.com/stefanesser/dumpdecrypted/" target="_blank" rel="noopener">dumpdecrypted</a></p>
-<ol>
-<li><p>下载源码, 然后在源码根目录执行<code>make</code>操作编译生成动态库dylib</p>
-</li>
-<li><p>将dylib拷贝到越狱设备的 <code>/var/root</code> 目录中</p>
-<p>使用:</p>
-</li>
-</ol>
-<ul>
-<li>终端进入越狱设备 <code>/var/root</code> 目录中</li>
-<li><code>DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib   可执行文件路径</code></li>
-<li>.decrypted文件就是脱壳后的可执行文件</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 逆向-分析工具 Cycript、Reaveal</title>
-    <url>/2017/04/20/ios/ios-reverse-2/</url>
-    <content><![CDATA[<h2 id="Cycript"><a href="#Cycript" class="headerlink" title="Cycript"></a>Cycript</h2><ul>
-<li>Cycript是Objective-C++、ES6（JavaScript）、Java等语法的混合物<br>可以用来探索、修改、调试正在运行的Mac\iOS APP<br>可以在<a href="http://www.cycript.org/" target="_blank" rel="noopener">官网</a>或者<a href="http://www.cycript.org/manual/" target="_blank" rel="noopener">文档</a>来查看相应说明</li>
-</ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
-<li>在越狱的手机上 通过Cydia安装Cycript，即可在iPhone上调试运行中的APP</li>
-</ul>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h3><ul>
-<li>cycript -p 进程名称/进程ID<blockquote>
-<p>通过输入-p参数 后面跟上进程名称或进程ID即可进入cycript运行环境进行调试<br>取消输入: <code>Ctrl + C</code> 退出: <code>Ctrl + D</code>  清屏: <code>Command + R</code><br>命令行列出所有进程: <code>ps -A</code>  也可以搜索关键词 <code>ps -A | grep 关键词</code></p>
+<h3 id="64位CPU架构下的-isa-指针详解"><a href="#64位CPU架构下的-isa-指针详解" class="headerlink" title="64位CPU架构下的 isa 指针详解"></a>64位CPU架构下的 isa 指针详解</h3><ul>
+<li>64位CPU架构之前,isa指针仅仅是存储者当前类对象的地址值</li>
+<li>64位CPU架构下, 对isa进行了优化, 变成了共用体结构, 使用位域操作来存储更多的内容<blockquote>
+<p>如是否有过关联对象, 是否有C++析构函数, 是否有弱引用指向过, 是否正在析构, 引用计数 等等</p>
 </blockquote>
 </li>
 </ul>
-<h3 id="常用语法"><a href="#常用语法" class="headerlink" title="常用语法"></a>常用语法</h3><ul>
-<li>UIApp<ul>
-<li>代表 [UIApplication sharedApplication]</li>
-</ul>
+<h3 id="OC的消息机制"><a href="#OC的消息机制" class="headerlink" title="OC的消息机制"></a>OC的消息机制</h3><ul>
+<li><p>OC中的方法, 其实就是给消息接受者发送一条消息, 底层实现是Runtime 的 objc_msgSend() 传入消息的接受者receiver和方法名selector</p>
 </li>
-<li>var app = [UIApplication sharedApplication]<ul>
-<li>定义变量</li>
-</ul>
+<li><p>objc_msgSend 底层有三大阶段<br>   1.消息发送(缓存, 当前方法列表, 父类循环查找)<br>   2.动态方法解析(resoveInstanceMethod, 可以动态的添加方法, 如果实现了动态方法解析, 那么会重新走一次消息发送)<br>   3.消息转发 </p>
+<pre><code>`forwardingTargetForSelector`
+`methodSignatureForSelector:`
+`forwardInvocation`</code></pre></li>
+<li><p>流程如下图所示</p>
+<ul>
+<li><p>消息发送<br><img src="https://wx2.sbimg.cn/2020/06/24/image5b82c619bc9ddefc.png" alt="image5b82c619bc9ddefc.png">  </p>
+<br>
 </li>
-<li>#0x13ba34500<ul>
-<li>用内存地址获取对象</li>
-</ul>
+<li><p>动态方法解析<br><img src="https://wx1.sbimg.cn/2020/06/24/image4be831b95b960c31.png" alt="image4be831b95b960c31.png"></p>
+<br>
 </li>
-<li>ObjectiveC.classes<ul>
-<li>已加载的所有OC类</li>
-</ul>
-</li>
-<li>*对象<ul>
-<li>查看对象的所有成员变量</li>
-</ul>
-</li>
-<li>view.recursiveDescription().toString()<ul>
-<li>递归打印view的所有子控件（跟LLDB一样的函数）</li>
-</ul>
-</li>
-<li>choose(UIViewController)<ul>
-<li>筛选出某种类型的对象<blockquote>
-<p>可以使用MJ封装的<a href="https://github.com/CoderMJLee/mjcript" target="_blank" rel="noopener">mjcript</a>来使用, 封装了更多好用的函数</p>
-</blockquote>
+<li><p>消息转发<br><img src="https://wx2.sbimg.cn/2020/06/24/imagea19574eb69c22e47.png" alt="imagea19574eb69c22e47.png"></p>
+<br>
+
+
 </li>
 </ul>
 </li>
 </ul>
-<h2 id="Reveal"><a href="#Reveal" class="headerlink" title="Reveal"></a>Reveal</h2><ul>
-<li><a href="https://revealapp.com" target="_blank" rel="noopener">Reveal</a>是一款调试iOS程序UI界面的神器</li>
+<h3 id="super调用的本质"><a href="#super调用的本质" class="headerlink" title="super调用的本质"></a>super调用的本质</h3><ul>
+<li>super的本质是底层的 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objc_msgSendSuper2(</span><br><span class="line">    &#123;self, Class&#125;,</span><br><span class="line">    @selector())</span><br></pre></td></tr></table></figure></li>
+<li>相当于还是当前对象为消息接受者, 只不过消息查找从superclass 中开始查找</li>
+<li></li>
 </ul>
-<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
-<li>想要调试任何app, 需要做以下三件事<ul>
-<li><ol>
-<li>在越狱的手机上通过<code>Cydia</code>安装<code>Reveal Loader</code></li>
-</ol>
-</li>
-<li><ol start="2">
-<li>手机上点击<code>设置</code>-&gt;<code>Reveal</code>-&gt;<code>Enabled Applications</code> 打开需要调试的App的开关</li>
-</ol>
-</li>
-<li><ol start="3">
-<li>打开Mac电脑上的Reveal, 点击顶部菜单的 <code>Help</code>-&gt;<code>Show Reveal Library in Finder</code>, 然后将看到的 <code>RevealSever.framwork</code> 拷贝到手机上的目录: <code>Library</code>-&gt;<code>Frameworks</code> 中</li>
-</ol>
-</li>
+<h3 id="Runtime在实际开发中的应用举例"><a href="#Runtime在实际开发中的应用举例" class="headerlink" title="Runtime在实际开发中的应用举例"></a>Runtime在实际开发中的应用举例</h3><ul>
+<li>查找并不公开的成员变量, 来进行想要的操作,比如通过KVC进行修改, 或获取值</li>
+<li>可以遍历成员变量来进行json转数据实体</li>
+<li>可以进行方法交换来拦截系统或者第三方库中的方法,来进行修改达到想要的操作</li>
 </ul>
-</li>
-</ul>
-<p>重启iOS设备的 SpringBoard: <code>killall SpringBoard</code> (通过mac命令汗运行)<br>至此可以通过Reveal查看任何运行中的App了, 可以通过 <code>Cycript + Reveal</code> 两个工具进行详细的分析</p>
+<h4 id="RunTime常用API"><a href="#RunTime常用API" class="headerlink" title="RunTime常用API"></a>RunTime常用API</h4><p><em>类</em></p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 动态创建一个类（参数：父类，类名，额外的内存空间）</span></span><br><span class="line">Class objc_allocateClassPair(Class superclass, <span class="keyword">const</span> <span class="keyword">char</span> *name, size_t extraBytes)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册一个类（要在类注册之前添加成员变量）</span></span><br><span class="line"><span class="keyword">void</span> objc_registerClassPair(Class cls) </span><br><span class="line"></span><br><span class="line"><span class="comment">// 销毁一个类</span></span><br><span class="line"><span class="keyword">void</span> objc_disposeClassPair(Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取isa指向的Class</span></span><br><span class="line">Class object_getClass(<span class="keyword">id</span> obj)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置isa指向的Class</span></span><br><span class="line">Class object_setClass(<span class="keyword">id</span> obj, Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断一个OC对象是否为Class</span></span><br><span class="line"><span class="built_in">BOOL</span> object_isClass(<span class="keyword">id</span> obj)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断一个Class是否为元类</span></span><br><span class="line"><span class="built_in">BOOL</span> class_isMetaClass(Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取父类</span></span><br><span class="line">Class class_getSuperclass(Class cls)</span><br></pre></td></tr></table></figure>
+<p><em>成员变量</em></p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取一个实例变量信息</span></span><br><span class="line">Ivar class_getInstanceVariable(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝实例变量列表（最后需要调用free释放）</span></span><br><span class="line">Ivar *class_copyIvarList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置和获取成员变量的值</span></span><br><span class="line"><span class="keyword">void</span> object_setIvar(<span class="keyword">id</span> obj, Ivar ivar, <span class="keyword">id</span> value)</span><br><span class="line"><span class="keyword">id</span> object_getIvar(<span class="keyword">id</span> obj, Ivar ivar)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加成员变量（已经注册的类是不能动态添加成员变量的）</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addIvar(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> * name, size_t size, uint8_t alignment, <span class="keyword">const</span> <span class="keyword">char</span> * types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取成员变量的相关信息</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *ivar_getName(Ivar v)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *ivar_getTypeEncoding(Ivar v)</span><br></pre></td></tr></table></figure>
+<p><em>属性</em></p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取一个属性</span></span><br><span class="line">objc_property_t class_getProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝属性列表（最后需要调用free释放）</span></span><br><span class="line">objc_property_t *class_copyPropertyList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加属性</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> objc_property_attribute_t *attributes,</span><br><span class="line">                  <span class="keyword">unsigned</span> <span class="keyword">int</span> attributeCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态替换属性</span></span><br><span class="line"><span class="keyword">void</span> class_replaceProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> objc_property_attribute_t *attributes,</span><br><span class="line">                      <span class="keyword">unsigned</span> <span class="keyword">int</span> attributeCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取属性的一些信息</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *property_getName(objc_property_t property)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *property_getAttributes(objc_property_t property)</span><br></pre></td></tr></table></figure>
+<p><em>方法</em></p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获得一个实例方法、类方法</span></span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name)</span><br><span class="line">Method class_getClassMethod(Class cls, SEL name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法实现相关操作</span></span><br><span class="line">IMP class_getMethodImplementation(Class cls, SEL name) </span><br><span class="line">IMP method_setImplementation(Method m, IMP imp)</span><br><span class="line"><span class="keyword">void</span> method_exchangeImplementations(Method m1, Method m2) </span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝方法列表（最后需要调用free释放）</span></span><br><span class="line">Method *class_copyMethodList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加方法</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addMethod(Class cls, SEL name, IMP imp, <span class="keyword">const</span> <span class="keyword">char</span> *types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态替换方法</span></span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, <span class="keyword">const</span> <span class="keyword">char</span> *types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取方法的相关信息（带有copy的需要调用free去释放）</span></span><br><span class="line">SEL method_getName(Method m)</span><br><span class="line">IMP method_getImplementation(Method m)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *method_getTypeEncoding(Method m)</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> method_getNumberOfArguments(Method m)</span><br><span class="line"><span class="keyword">char</span> *method_copyReturnType(Method m)</span><br><span class="line"><span class="keyword">char</span> *method_copyArgumentType(Method m, <span class="keyword">unsigned</span> <span class="keyword">int</span> index)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选择器相关</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *sel_getName(SEL sel)</span><br><span class="line">SEL sel_registerName(<span class="keyword">const</span> <span class="keyword">char</span> *str)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用block作为方法实现</span></span><br><span class="line">IMP imp_implementationWithBlock(<span class="keyword">id</span> block)</span><br><span class="line"><span class="keyword">id</span> imp_getBlock(IMP anImp)</span><br><span class="line"><span class="built_in">BOOL</span> imp_removeBlock(IMP anImp)</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>iOS</category>
@@ -814,6 +653,101 @@
       </categories>
   </entry>
   <entry>
+    <title>iOS 逆向 Mach-O 格式文件</title>
+    <url>/2017/05/20/ios/ios-reverse-3/</url>
+    <content><![CDATA[<h2 id="Mach-O-介绍"><a href="#Mach-O-介绍" class="headerlink" title="Mach-O 介绍"></a>Mach-O 介绍</h2><p><code>Mach-O</code> 其实是 <code>Mach Object</code> 文件格式的缩写, 属于<code>Mach-O</code>格式的常见文件有</p>
+<ul>
+<li>目标文件.o</li>
+<li>库文件<ul>
+<li>.a 静态库其实就是多个.o链接到一起</li>
+<li>.dylib </li>
+<li>.framework</li>
+</ul>
+</li>
+<li>可执行文件</li>
+<li>dyld (动态链接器)</li>
+<li>.dsym( 符号表)</li>
+</ul>
+<p>如图所示:<br><img src="https://s1.ax1x.com/2020/07/11/Ul8OaR.png" alt="Ul8OaR.png"></p>
+<h3 id="在Xcode中可查看-Mach-O-文件类型"><a href="#在Xcode中可查看-Mach-O-文件类型" class="headerlink" title="在Xcode中可查看 Mach-O 文件类型"></a>在Xcode中可查看 Mach-O 文件类型</h3><ul>
+<li>如图<br>  <img src="https://s1.ax1x.com/2020/07/11/UlGdL4.png" alt="UlGdL4.png"></li>
+</ul>
+<h2 id="Mach-O-的基本结构"><a href="#Mach-O-的基本结构" class="headerlink" title="Mach-O 的基本结构"></a>Mach-O 的基本结构</h2><ul>
+<li>Header<ul>
+<li>文件类型、目标架构类型等</li>
+</ul>
+</li>
+<li>Load commands<ul>
+<li>描述文件在虚拟内存中的逻辑结构、布局</li>
+</ul>
+</li>
+<li>Raw segment data<ul>
+<li>在Load commands 中定义的 Segment 原始数据</li>
+</ul>
+</li>
+</ul>
+<p>如图所示:<br>    <img src="https://s1.ax1x.com/2020/07/11/UlGvwj.png" alt="UlGvwj.png"></p>
+<h2 id="查看-Mach-O-文件结构"><a href="#查看-Mach-O-文件结构" class="headerlink" title="查看 Mach-O 文件结构"></a>查看 Mach-O 文件结构</h2><ul>
+<li><p>命令行工具</p>
+<ul>
+<li>file  查看文件类型</li>
+<li>otool  用来查看特定部分和段的内容</li>
+<li>lipo  用于多架构文件的处理<ul>
+<li>lipo -info &lt;文件路径&gt;</li>
+<li>lipo &lt;文件路径&gt; -thin &lt;架构类型&gt; -output &lt;导出的文件目录&gt;</li>
+<li>lipo &lt;文件路径1&gt; &lt;文件路径2&gt; -output &lt;输出的文件路径&gt; </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>GUI 工具</p>
+<ul>
+<li><a href="https://github.com/gdbinit/MachOView" target="_blank" rel="noopener">MachOView</a></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>dyld 用于加载以下几种<code>Mach-O</code>格式文件:</p>
+<ol>
+<li>可执行文件</li>
+<li>dylib 动态库</li>
+<li>bundle </li>
+</ol>
+</blockquote>
+<h2 id="App从开发到安装到手机上的过程"><a href="#App从开发到安装到手机上的过程" class="headerlink" title="App从开发到安装到手机上的过程"></a>App从开发到安装到手机上的过程</h2><ol>
+<li>编写代码</li>
+<li>编译、链接、签名 生成 .app 包</li>
+<li>.app包内包含<strong>可执行文件</strong>和一些资源</li>
+<li>压缩.app包为ipa文件</li>
+<li>ipa文件可以上传到 AppStore 或者 其他商店</li>
+<li>用户从AppStore 或其他商店 安装ipa</li>
+</ol>
+<h2 id="逆向App思路"><a href="#逆向App思路" class="headerlink" title="逆向App思路"></a>逆向App思路</h2><ol>
+<li>界面分析<ul>
+<li><code>Cycript</code>、<code>Reveal</code></li>
+</ul>
+</li>
+<li>代码分析<ul>
+<li>对<code>Mach-O</code>文件静态分析</li>
+<li>主要工具有: <code>MachOView</code>、<a href="http://stevenygard.com/projects/class-dump/" target="_blank" rel="noopener">class-dump</a>、<code>Hopper Disassembler</code>、<code>ida</code></li>
+</ul>
+</li>
+<li>动态调试<ul>
+<li><code>debugserver</code>、<code>LLDB</code></li>
+</ul>
+</li>
+<li>编写代码注入到App中<ul>
+<li><code>theos</code> hook方式编写deb安装包 Cydia安装deb插件(已越狱)</li>
+<li>重签名、打包ipa(未越狱)</li>
+</ul>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
     <title>iOS 线程以及线程同步方案</title>
     <url>/2018/06/15/ios/ios-thread/</url>
     <content><![CDATA[<h3 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
@@ -918,61 +852,164 @@
       </categories>
   </entry>
   <entry>
-    <title>iOS Runtime</title>
-    <url>/2018/04/15/ios/ios-runtime/</url>
-    <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
-<li>Objective-C是一门动态性比较强的编程语言，跟C、C++等语言有着很大的不同, 很多操作会推迟到运行时再进行</li>
-<li>OC的动态性就是有Runtime来支撑和实现的, 它是一套C语言API, 封装了很多动态性相关的函数</li>
-<li>平时编写的OC代码底层都是转换成了Runtime API进行调用</li>
+    <title>iOS 逆向-脱壳</title>
+    <url>/2017/06/20/ios/ios-reverse-4/</url>
+    <content><![CDATA[<h2 id="加壳"><a href="#加壳" class="headerlink" title="加壳"></a>加壳</h2><ul>
+<li>默认上传到AppStore 的ipa安装包内的可执行文件都会被苹果进行一次加密操作, 然后执行的时候直接执行加密后的壳程序, 然后再动态解密可执行文件</li>
 </ul>
-<h3 id="64位CPU架构下的-isa-指针详解"><a href="#64位CPU架构下的-isa-指针详解" class="headerlink" title="64位CPU架构下的 isa 指针详解"></a>64位CPU架构下的 isa 指针详解</h3><ul>
-<li>64位CPU架构之前,isa指针仅仅是存储者当前类对象的地址值</li>
-<li>64位CPU架构下, 对isa进行了优化, 变成了共用体结构, 使用位域操作来存储更多的内容<blockquote>
-<p>如是否有过关联对象, 是否有C++析构函数, 是否有弱引用指向过, 是否正在析构, 引用计数 等等</p>
+<h2 id="如何校验可执行文件是否被加壳"><a href="#如何校验可执行文件是否被加壳" class="headerlink" title="如何校验可执行文件是否被加壳"></a>如何校验可执行文件是否被加壳</h2><ol>
+<li><p>通过 <code>MachOView</code> GUI工具查看 <code>Load Conmmands</code> -&gt; <code>LC_ENCRYPTION_INFO</code> -&gt; <code>Crypt ID</code> </p>
+</li>
+<li><p>通过 <code>otool -l &lt;可执行文件路径&gt; | grep cript</code> 查看 <code>Crypt ID</code></p>
+</li>
+</ol>
+<p>其中 <code>Crypt ID</code> 0代表未加壳, 否则代表加壳</p>
+<ol start="3">
+<li>或者通过<code>Clutch -i</code>来查看</li>
+</ol>
+<h2 id="脱壳工具"><a href="#脱壳工具" class="headerlink" title="脱壳工具"></a>脱壳工具</h2><ul>
+<li><p><a href="https://github.com/KJCracks/Clutch" target="_blank" rel="noopener">Clutch</a> (脱壳部分程序可能会失败)</p>
+<ol>
+<li><p>下载最新release包</p>
+</li>
+<li><p>将可执行文件 <code>Clutch</code> 放到越狱设备的 <code>/usr/bin</code> 目录下</p>
+</li>
+<li><p>赋予可执行权限: <code>chmod +x /usr/bin/Clutch</code>  </p>
+<p>使用:</p>
+</li>
+</ol>
+<ul>
+<li><code>Clutch -i</code> 列出加壳的程序</li>
+<li><code>Clutch -d &lt;可执行文件bundleid&gt;</code> 脱壳后会生成脱壳后的ipa文件<blockquote>
+<p>目前来说可能部分app已失效, 脱壳失败</p>
 </blockquote>
 </li>
 </ul>
-<h3 id="OC的消息机制"><a href="#OC的消息机制" class="headerlink" title="OC的消息机制"></a>OC的消息机制</h3><ul>
-<li><p>OC中的方法, 其实就是给消息接受者发送一条消息, 底层实现是Runtime 的 objc_msgSend() 传入消息的接受者receiver和方法名selector</p>
 </li>
-<li><p>objc_msgSend 底层有三大阶段<br>   1.消息发送(缓存, 当前方法列表, 父类循环查找)<br>   2.动态方法解析(resoveInstanceMethod, 可以动态的添加方法, 如果实现了动态方法解析, 那么会重新走一次消息发送)<br>   3.消息转发 </p>
-<pre><code>`forwardingTargetForSelector`
-`methodSignatureForSelector:`
-`forwardInvocation`</code></pre></li>
-<li><p>流程如下图所示</p>
+<li><p><a href="https://github.com/stefanesser/dumpdecrypted/" target="_blank" rel="noopener">dumpdecrypted</a></p>
+<ol>
+<li><p>下载源码, 然后在源码根目录执行<code>make</code>操作编译生成动态库dylib</p>
+</li>
+<li><p>将dylib拷贝到越狱设备的 <code>/var/root</code> 目录中</p>
+<p>使用:</p>
+</li>
+</ol>
 <ul>
-<li><p>消息发送<br><img src="https://wx2.sbimg.cn/2020/06/24/image5b82c619bc9ddefc.png" alt="image5b82c619bc9ddefc.png">  </p>
-<br>
-</li>
-<li><p>动态方法解析<br><img src="https://wx1.sbimg.cn/2020/06/24/image4be831b95b960c31.png" alt="image4be831b95b960c31.png"></p>
-<br>
-</li>
-<li><p>消息转发<br><img src="https://wx2.sbimg.cn/2020/06/24/imagea19574eb69c22e47.png" alt="imagea19574eb69c22e47.png"></p>
-<br>
-
-
-</li>
+<li>终端进入越狱设备 <code>/var/root</code> 目录中</li>
+<li><code>DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib   可执行文件路径</code></li>
+<li>.decrypted文件就是脱壳后的可执行文件</li>
 </ul>
 </li>
 </ul>
-<h3 id="super调用的本质"><a href="#super调用的本质" class="headerlink" title="super调用的本质"></a>super调用的本质</h3><ul>
-<li>super的本质是底层的 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objc_msgSendSuper2(</span><br><span class="line">    &#123;self, Class&#125;,</span><br><span class="line">    @selector())</span><br></pre></td></tr></table></figure></li>
-<li>相当于还是当前对象为消息接受者, 只不过消息查找从superclass 中开始查找</li>
+<blockquote>
+<p>部分app也会脱壳失败</p>
+</blockquote>
+<ul>
+<li><a href="https://github.com/AloneMonkey/frida-ios-dump" target="_blank" rel="noopener">frida-ios-dump</a><ol>
+<li>根据官网提示进行安装frida <code>pip3 install frida-tools</code></li>
+<li><code>sudo pip3 install -r requirements.txt --upgrade</code></li>
+<li>进行端口转发, 可以使用之前的<code>tcprelay.py</code>脚本进行转发或者使用 <code>iproxy 2222 22</code> 将本地的 2222 端口转发到手机的 22 端口</li>
+<li>下载frida-ios-dump进行脱壳:<br> <code>python3 ./dump.py 应用的名字或者应用的Bundle ID</code><blockquote>
+<p>以上操作会导出脱壳后的ipa文件</p>
+</blockquote>
+</li>
+</ol>
+</li>
 </ul>
-<h3 id="Runtime在实际开发中的应用举例"><a href="#Runtime在实际开发中的应用举例" class="headerlink" title="Runtime在实际开发中的应用举例"></a>Runtime在实际开发中的应用举例</h3><ul>
-<li>查找并不公开的成员变量, 来进行想要的操作,比如通过KVC进行修改, 或获取值</li>
-<li>可以遍历成员变量来进行json转数据实体</li>
-<li>可以进行方法交换来拦截系统或者第三方库中的方法,来进行修改达到想要的操作</li>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 内存布局以及管理</title>
+    <url>/2018/07/13/ios/ios-memory/</url>
+    <content><![CDATA[<h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
+<li>编译之后的代码存储的区域</li>
 </ul>
-<h4 id="RunTime常用API"><a href="#RunTime常用API" class="headerlink" title="RunTime常用API"></a>RunTime常用API</h4><p><em>类</em></p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 动态创建一个类（参数：父类，类名，额外的内存空间）</span></span><br><span class="line">Class objc_allocateClassPair(Class superclass, <span class="keyword">const</span> <span class="keyword">char</span> *name, size_t extraBytes)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册一个类（要在类注册之前添加成员变量）</span></span><br><span class="line"><span class="keyword">void</span> objc_registerClassPair(Class cls) </span><br><span class="line"></span><br><span class="line"><span class="comment">// 销毁一个类</span></span><br><span class="line"><span class="keyword">void</span> objc_disposeClassPair(Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取isa指向的Class</span></span><br><span class="line">Class object_getClass(<span class="keyword">id</span> obj)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置isa指向的Class</span></span><br><span class="line">Class object_setClass(<span class="keyword">id</span> obj, Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断一个OC对象是否为Class</span></span><br><span class="line"><span class="built_in">BOOL</span> object_isClass(<span class="keyword">id</span> obj)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断一个Class是否为元类</span></span><br><span class="line"><span class="built_in">BOOL</span> class_isMetaClass(Class cls)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取父类</span></span><br><span class="line">Class class_getSuperclass(Class cls)</span><br></pre></td></tr></table></figure>
-<p><em>成员变量</em></p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取一个实例变量信息</span></span><br><span class="line">Ivar class_getInstanceVariable(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝实例变量列表（最后需要调用free释放）</span></span><br><span class="line">Ivar *class_copyIvarList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置和获取成员变量的值</span></span><br><span class="line"><span class="keyword">void</span> object_setIvar(<span class="keyword">id</span> obj, Ivar ivar, <span class="keyword">id</span> value)</span><br><span class="line"><span class="keyword">id</span> object_getIvar(<span class="keyword">id</span> obj, Ivar ivar)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加成员变量（已经注册的类是不能动态添加成员变量的）</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addIvar(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> * name, size_t size, uint8_t alignment, <span class="keyword">const</span> <span class="keyword">char</span> * types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取成员变量的相关信息</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *ivar_getName(Ivar v)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *ivar_getTypeEncoding(Ivar v)</span><br></pre></td></tr></table></figure>
-<p><em>属性</em></p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获取一个属性</span></span><br><span class="line">objc_property_t class_getProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝属性列表（最后需要调用free释放）</span></span><br><span class="line">objc_property_t *class_copyPropertyList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加属性</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> objc_property_attribute_t *attributes,</span><br><span class="line">                  <span class="keyword">unsigned</span> <span class="keyword">int</span> attributeCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态替换属性</span></span><br><span class="line"><span class="keyword">void</span> class_replaceProperty(Class cls, <span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">const</span> objc_property_attribute_t *attributes,</span><br><span class="line">                      <span class="keyword">unsigned</span> <span class="keyword">int</span> attributeCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取属性的一些信息</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *property_getName(objc_property_t property)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *property_getAttributes(objc_property_t property)</span><br></pre></td></tr></table></figure>
-<p><em>方法</em></p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 获得一个实例方法、类方法</span></span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name)</span><br><span class="line">Method class_getClassMethod(Class cls, SEL name)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法实现相关操作</span></span><br><span class="line">IMP class_getMethodImplementation(Class cls, SEL name) </span><br><span class="line">IMP method_setImplementation(Method m, IMP imp)</span><br><span class="line"><span class="keyword">void</span> method_exchangeImplementations(Method m1, Method m2) </span><br><span class="line"></span><br><span class="line"><span class="comment">// 拷贝方法列表（最后需要调用free释放）</span></span><br><span class="line">Method *class_copyMethodList(Class cls, <span class="keyword">unsigned</span> <span class="keyword">int</span> *outCount)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态添加方法</span></span><br><span class="line"><span class="built_in">BOOL</span> class_addMethod(Class cls, SEL name, IMP imp, <span class="keyword">const</span> <span class="keyword">char</span> *types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动态替换方法</span></span><br><span class="line">IMP class_replaceMethod(Class cls, SEL name, IMP imp, <span class="keyword">const</span> <span class="keyword">char</span> *types)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取方法的相关信息（带有copy的需要调用free去释放）</span></span><br><span class="line">SEL method_getName(Method m)</span><br><span class="line">IMP method_getImplementation(Method m)</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *method_getTypeEncoding(Method m)</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> method_getNumberOfArguments(Method m)</span><br><span class="line"><span class="keyword">char</span> *method_copyReturnType(Method m)</span><br><span class="line"><span class="keyword">char</span> *method_copyArgumentType(Method m, <span class="keyword">unsigned</span> <span class="keyword">int</span> index)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选择器相关</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *sel_getName(SEL sel)</span><br><span class="line">SEL sel_registerName(<span class="keyword">const</span> <span class="keyword">char</span> *str)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用block作为方法实现</span></span><br><span class="line">IMP imp_implementationWithBlock(<span class="keyword">id</span> block)</span><br><span class="line"><span class="keyword">id</span> imp_getBlock(IMP anImp)</span><br><span class="line"><span class="built_in">BOOL</span> imp_removeBlock(IMP anImp)</span><br></pre></td></tr></table></figure>
-
+<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
+<li>字符串常量</li>
+<li>已初始化的全局变量, 静态变量</li>
+<li>未初始化的全局变量, 静态变量</li>
+</ul>
+<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
+<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
+</ul>
+<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
+<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
+</ul>
+<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
+<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
+<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
+</ul>
+<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
+<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
+<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
+</ul>
+<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
+<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
+</ul>
+<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
+<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
+</ul>
+<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>copy操作</th>
+<th>mutableCopy操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NSString</code></td>
+<td><code>NSString</code>浅拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+<tr>
+<td><code>NSMutableString</code></td>
+<td><code>NSMutableString</code>深拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
+</blockquote>
+<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
+<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
+</li>
+<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
+</li>
+<li><p>SideTable结构如下:</p>
+<ul>
+<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
+<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
+<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
+</ul>
+</li>
+</ul>
+<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
+<li>_objc_rootDealloc()<ol>
+<li>内部会判断是否有c++析构函数</li>
+<li>是否有关联对象</li>
+<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
+</ol>
+</li>
+</ul>
+<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
+<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
+<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
+<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
+</ul>
+<ol>
+<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
+<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
+<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
+</ol>
+<p>如图所示</p>
+<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
+<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
+<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
+</ul>
 ]]></content>
       <categories>
         <category>iOS</category>

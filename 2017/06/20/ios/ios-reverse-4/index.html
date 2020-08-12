@@ -207,6 +207,9 @@
 </li>
 </ol>
 <p>其中 <code>Crypt ID</code> 0代表未加壳, 否则代表加壳</p>
+<ol start="3">
+<li>或者通过<code>Clutch -i</code>来查看</li>
+</ol>
 <h2 id="脱壳工具"><a href="#脱壳工具" class="headerlink" title="脱壳工具"></a>脱壳工具</h2><ul>
 <li><p><a href="https://github.com/KJCracks/Clutch" target="_blank" rel="noopener">Clutch</a> (脱壳部分程序可能会失败)</p>
 <ol>
@@ -220,7 +223,10 @@
 </ol>
 <ul>
 <li><code>Clutch -i</code> 列出加壳的程序</li>
-<li><code>Clutch -d &lt;可执行文件bundleid&gt;</code> 脱壳后会生成脱壳后的ipa文件</li>
+<li><code>Clutch -d &lt;可执行文件bundleid&gt;</code> 脱壳后会生成脱壳后的ipa文件<blockquote>
+<p>目前来说可能部分app已失效, 脱壳失败</p>
+</blockquote>
+</li>
 </ul>
 </li>
 <li><p><a href="https://github.com/stefanesser/dumpdecrypted/" target="_blank" rel="noopener">dumpdecrypted</a></p>
@@ -236,6 +242,21 @@
 <li><code>DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib   可执行文件路径</code></li>
 <li>.decrypted文件就是脱壳后的可执行文件</li>
 </ul>
+</li>
+</ul>
+<blockquote>
+<p>部分app也会脱壳失败</p>
+</blockquote>
+<ul>
+<li><a href="https://github.com/AloneMonkey/frida-ios-dump" target="_blank" rel="noopener">frida-ios-dump</a><ol>
+<li>根据官网提示进行安装frida <code>pip3 install frida-tools</code></li>
+<li><code>sudo pip3 install -r requirements.txt --upgrade</code></li>
+<li>进行端口转发, 可以使用之前的<code>tcprelay.py</code>脚本进行转发或者使用 <code>iproxy 2222 22</code> 将本地的 2222 端口转发到手机的 22 端口</li>
+<li>下载frida-ios-dump进行脱壳:<br> <code>python3 ./dump.py 应用的名字或者应用的Bundle ID</code><blockquote>
+<p>以上操作会导出脱壳后的ipa文件</p>
+</blockquote>
+</li>
+</ol>
 </li>
 </ul>
 
@@ -288,7 +309,7 @@
                 <a class="prev" rel="prev" href="/2018/03/15/ios/init_bloc/">Objective-C 语言底层原理</a>
             
             
-            <a class="next" rel="next" href="/2017/05/20/ios/ios-reverse-3/">iOS-逆向 Mach-O 格式文件</a>
+            <a class="next" rel="next" href="/2017/05/20/ios/ios-reverse-3/">iOS 逆向 Mach-O 格式文件</a>
             
         </section>
         

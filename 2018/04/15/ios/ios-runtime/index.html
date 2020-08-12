@@ -235,6 +235,7 @@
 <h3 id="super调用的本质"><a href="#super调用的本质" class="headerlink" title="super调用的本质"></a>super调用的本质</h3><ul>
 <li>super的本质是底层的 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">objc_msgSendSuper2(</span><br><span class="line">    &#123;self, Class&#125;,</span><br><span class="line">    @selector())</span><br></pre></td></tr></table></figure></li>
 <li>相当于还是当前对象为消息接受者, 只不过消息查找从superclass 中开始查找</li>
+<li></li>
 </ul>
 <h3 id="Runtime在实际开发中的应用举例"><a href="#Runtime在实际开发中的应用举例" class="headerlink" title="Runtime在实际开发中的应用举例"></a>Runtime在实际开发中的应用举例</h3><ul>
 <li>查找并不公开的成员变量, 来进行想要的操作,比如通过KVC进行修改, 或获取值</li>

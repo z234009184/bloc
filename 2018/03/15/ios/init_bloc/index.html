@@ -231,11 +231,11 @@
 <li>关联对象并不是存储在被关联对象本身内存中<br>关联对象存储在全局的统一的一个AssociationsManager中(全局的字典)</li>
 </ul>
 <h3 id="Block的本质"><a href="#Block的本质" class="headerlink" title="Block的本质"></a>Block的本质</h3><ul>
-<li>Block是封装了函数以及函数调用的OC对象<br>其内部构造如图所示:<br><img src="https://wx1.sbimg.cn/2020/06/22/image.png" alt="image.png"></li>
+<li>Block是封装了函数以及函数调用的OC对象<br>其内部构造如图所示:<br><img src="https://s1.ax1x.com/2020/08/12/ajKQ5d.png" alt="ajKQ5d.png"></li>
 </ul>
 <h5 id="Block的捕获类型"><a href="#Block的捕获类型" class="headerlink" title="Block的捕获类型"></a>Block的捕获类型</h5><ul>
 <li>auto局部变量是值捕获<br>如果是基本数据类型: 值捕获只会将数值拷贝一份到内部存储<br>如果是对象数据类型: 根据外面对象是否为retain来进行是否retain操作</li>
-<li>static局部静态是引用捕获</li>
+<li>static局部静态是引用(指针)捕获</li>
 <li>全局变量 不进行捕获</li>
 </ul>
 <h5 id="Block的类型"><a href="#Block的类型" class="headerlink" title="Block的类型"></a>Block的类型</h5><ul>
@@ -243,9 +243,24 @@
 <li>访问了auto变量为NSStackBlock</li>
 <li>NSStackBlock进行了Copy操作则变成NSMallocBlock</li>
 </ul>
-<h5 id="block-修饰符"><a href="#block-修饰符" class="headerlink" title="__block 修饰符"></a>__block 修饰符</h5><ul>
-<li>会将auto变量进行包装成block内部的 OC对象<br>如果是基本数据类型:Block内部的OC对象内部会拷贝一份外面的数值<br>如果是对象数据类型:Block内部的OC对象内部会对外面的对象根据外面对象是否为retain来进行是否retain操作</li>
-<li>被<strong>block修饰的外部变量 在block内部访问时 本质是通过 Block内部生成的</strong>Block对象内部的forwarding指针指向的自己来进行访问, 主要是解决当Block在栈存储区时,确保访问的外部变量是在堆上</li>
+<h5 id="对象类型的auto变量"><a href="#对象类型的auto变量" class="headerlink" title="对象类型的auto变量"></a>对象类型的auto变量</h5><ul>
+<li>如果block在栈上, 则不会对对象的auto类型强引用</li>
+<li>如果block在堆上, 则block内部会对外部的对象类型根据修饰(<strong>weak、</strong>strong、__unsafe_unretain)符进行强或者弱引用<blockquote>
+<p>block内部会有两个函数进行对外部对象的引用技术的控制, 增加或者释放 <code>_Block_Object_assign</code>、<code>_Block_Object_dispose</code></p>
+</blockquote>
+</li>
+</ul>
+<h5 id="Block的Copy"><a href="#Block的Copy" class="headerlink" title="Block的Copy"></a>Block的Copy</h5><p>在ARC自动引用计数环境下, 编译器会根据情况自动将栈上的block复制到堆上:</p>
+<ul>
+<li>block作为函数返回值时</li>
+<li>将block赋值给 __strong 指针时</li>
+<li>将block作为 Cocoa API中的方法名含有usingBlock时</li>
+<li>block作为GCD API参数时</li>
+</ul>
+<h5 id="block-修饰符"><a href="#block-修饰符" class="headerlink" title="__block 修饰符"></a>__block 修饰符</h5><p>主要解决block内部无法修改外部auto变量值的问题</p>
+<ul>
+<li>它会将auto变量进行包装成block内部的 OC对象<br>如果是基本数据类型:Block内部的OC对象内部会拷贝一份外面的数值<br>如果是对象数据类型:Block内部的OC对象内部会对外面的对象根据外面对象是否为retain来进行是否retain操作</li>
+<li>被<strong>block修饰的外部变量 在block内部访问时 本质是通过 Block内部生成的</strong>Block对象内部的forwarding指针指向的自己来进行访问, 主要是解决当Block在栈存储区时, 访问栈上的block内部的外部变量时确保访问的外部变量是在堆存储区上</li>
 </ul>
 <h5 id="Block本身的拷贝操作对外面引用变量的影响"><a href="#Block本身的拷贝操作对外面引用变量的影响" class="headerlink" title="Block本身的拷贝操作对外面引用变量的影响"></a>Block本身的拷贝操作对外面引用变量的影响</h5><ul>
 <li>如果Block从栈存储区拷贝的堆存储区则会调用desc结构体内部的copy操作(被__block修饰的同样, 只是多了一层对象包装)</li>

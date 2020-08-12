@@ -243,7 +243,7 @@
 </li>
 </ul>
 <h2 id="通过-USB-连接线连接-iOS-设备"><a href="#通过-USB-连接线连接-iOS-设备" class="headerlink" title="通过 USB 连接线连接 iOS 设备"></a>通过 USB 连接线连接 iOS 设备</h2><ul>
-<li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的一个python脚本：<code>tcprelay.py</code> 来进行端口映射</li>
+<li>需要用到<a href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz" target="_blank" rel="noopener">usbmuxd</a>工具包里面的两个个python脚本：<code>tcprelay.py</code>、<code>usbmux.py</code> 来进行端口映射</li>
 <li>将iPhone的22端口（SSH端口）映射到Mac本地的10010端口(10010也可以换成其他系统未占用的端口)<ul>
 <li><code>python tcprelay.py -t 22:10010</code></li>
 </ul>
