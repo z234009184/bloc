@@ -24,34 +24,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
-    <url>/2020/06/20/flutter/flutter-widget/</url>
-    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
-<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
-</ul>
-<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
-<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
-<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
-<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
-</ul>
-<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
-<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
-<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
-<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
-</ul>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
-<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
-</ul>
-<blockquote>
-<p>如图所示</p>
-</blockquote>
-<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
-]]></content>
-      <categories>
-        <category>Flutter</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Objective-C 语言底层原理</title>
     <url>/2018/03/15/ios/init_bloc/</url>
     <content><![CDATA[<h3 id="我们平时编写的Objective-C代码，底层实现其实都是C-C-代码"><a href="#我们平时编写的Objective-C代码，底层实现其实都是C-C-代码" class="headerlink" title="我们平时编写的Objective-C代码，底层实现其实都是C\C++代码"></a>我们平时编写的Objective-C代码，底层实现其实都是C\C++代码</h3><ul>
@@ -131,74 +103,29 @@
       </categories>
   </entry>
   <entry>
-    <title>iOS 逆向-分析工具 Cycript、Reaveal</title>
-    <url>/2017/04/20/ios/ios-reverse-2/</url>
-    <content><![CDATA[<h2 id="Cycript"><a href="#Cycript" class="headerlink" title="Cycript"></a>Cycript</h2><ul>
-<li>Cycript是Objective-C++、ES6（JavaScript）、Java等语法的混合物<br>可以用来探索、修改、调试正在运行的Mac\iOS APP<br>可以在<a href="http://www.cycript.org/" target="_blank" rel="noopener">官网</a>或者<a href="http://www.cycript.org/manual/" target="_blank" rel="noopener">文档</a>来查看相应说明</li>
-</ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
-<li>在越狱的手机上 通过Cydia安装Cycript，即可在iPhone上调试运行中的APP</li>
-</ul>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h3><ul>
-<li>cycript -p 进程名称/进程ID<blockquote>
-<p>通过输入-p参数 后面跟上进程名称或进程ID即可进入cycript运行环境进行调试<br>取消输入: <code>Ctrl + C</code> 退出: <code>Ctrl + D</code>  清屏: <code>Command + R</code><br>命令行列出所有进程: <code>ps -A</code>  也可以搜索关键词 <code>ps -A | grep 关键词</code></p>
+    <title>iOS 性能优化</title>
+    <url>/2019/01/20/ios/ios-net/</url>
+    <content><![CDATA[<p>网络优化是一个很大的话题，设计的面非常广泛</p>
+<h4 id="速度方面"><a href="#速度方面" class="headerlink" title="速度方面"></a>速度方面</h4><ol>
+<li><p>使用HTTPDNS来解析IP，使用IP直连的方式进行请求后台服务<br>传统的DNS解析流程比较冗长，先从本地系统缓存取，没有就去最近的运营商DNS服务器取，再没有就去主域名服务器取每一层都有缓存，但是为了域名解析的实时性，每一层缓存都有过期时间，这种DNS解析有几个缺点：1. 缓存时间长域名更新不及时，缓存时间短，大量的DNS解析影响请求速度。2. 域名劫持，容易被中间人攻击或被运营商劫持。3. 一次请求只能解析一个域名</p>
+<blockquote>
+<p>可能遇到的问题，由于采用IP直连方式，可能导致验证服务器公钥证书时证书内部的域名和本地的IP（由于手动用IP替换了域名）不一致而验证失败。解决方案可以在验证公钥证书之前手动替换ip为后台的域名进行验证。</p>
 </blockquote>
 </li>
-</ul>
-<h3 id="常用语法"><a href="#常用语法" class="headerlink" title="常用语法"></a>常用语法</h3><ul>
-<li>UIApp<ul>
-<li>代表 [UIApplication sharedApplication]</li>
-</ul>
+<li><p>HTTP协议连接建立会消耗时间，这里主要的优化思路是复用连接，不用每次都建立新的连接。<br>keep-alive，HTTP1.1 协议中有个keep-live，默认情况是开启的，一定程度上缓解了每次TCP握手建立连接耗时的问题，但如果并发发出多个请求，会导致多建立很多TCP连接，原因是一个keep-alive 连接内部的请求只会是串行请求，而不是并发。解决这个问题可以使用HTTP 2.0协议，关于HTTP 2.0协议中的多路复用等优点就不赘述。</p>
 </li>
-<li>var app = [UIApplication sharedApplication]<ul>
-<li>定义变量</li>
-</ul>
-</li>
-<li>#0x13ba34500<ul>
-<li>用内存地址获取对象</li>
-</ul>
-</li>
-<li>ObjectiveC.classes<ul>
-<li>已加载的所有OC类</li>
-</ul>
-</li>
-<li>*对象<ul>
-<li>查看对象的所有成员变量</li>
-</ul>
-</li>
-<li>view.recursiveDescription().toString()<ul>
-<li>递归打印view的所有子控件（跟LLDB一样的函数）</li>
-</ul>
-</li>
-<li>choose(UIViewController)<ul>
-<li>筛选出某种类型的对象<blockquote>
-<p>可以使用MJ封装的<a href="https://github.com/CoderMJLee/mjcript" target="_blank" rel="noopener">mjcript</a>来使用, 封装了更多好用的函数</p>
+</ol>
+<blockquote>
+<p>HTTP 2.0 对网络优化做出了很大的调整，强烈建议升级到HTTP 2.0，不过网络不好的时候建议使用H2 + H1 的方案</p>
 </blockquote>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="Reveal"><a href="#Reveal" class="headerlink" title="Reveal"></a>Reveal</h2><ul>
-<li><a href="https://revealapp.com" target="_blank" rel="noopener">Reveal</a>是一款调试iOS程序UI界面的神器</li>
-</ul>
-<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
-<li>想要调试任何app, 需要做以下三件事<ul>
-<li><ol>
-<li>在越狱的手机上通过<code>Cydia</code>安装<code>Reveal Loader</code></li>
+<h4 id="数据大小方面"><a href="#数据大小方面" class="headerlink" title="数据大小方面"></a>数据大小方面</h4><p>我们都知道现如今数据大部分传输采用JSON方式序列化数据传输，相比于传统的XML方式，数据包会小一些，再加上各种压缩算法会更小一些，但不管再如何压缩，他也比不上protobuf这种方式在传输上的速度，因为 protobuf 是二进制，json是字符串，序列化 protobuf 也有优势，具体对比可以网上搜索。</p>
+<h4 id="弱网方面"><a href="#弱网方面" class="headerlink" title="弱网方面"></a>弱网方面</h4><p>手机无线网络很不稳定，针对弱网的优化</p>
+<ol>
+<li>设置合适的超市时间，比如 请求到响应的超时、首包超时，并且针对不同网络情况（2G 3G 4G WIFI）下的超时设置不同的时间。也可以根据当前的网络状态动态进行设置，关于实时监控当前网络是否为弱网可以采用 底层C语言API提供的 监控当前网卡流量的方式计算对比。<br> 推荐的超时设置策略是：首次请求的超时可以小一点，而重试的超时应该大一些</li>
+<li>请求策略，应当用户需要的时候再进行请求而不是一次性请求所有数据。这种场景就好比首页有多个模块，所有模块在首页打开时都去加载数据，但在弱网情况下会导致多个请求占用资源所有模块的数据都无法正常返回，我们可以设置只有用户看到的模块进行网络请求来减少并发请求的个数。当用户滑动页面触发其他模块资源时再进行相应的数据请求。<h4 id="优化TCP-的-ACK包，，发送者在⽆新的数据包的情况下，每隔⼀定的时间重试已发"><a href="#优化TCP-的-ACK包，，发送者在⽆新的数据包的情况下，每隔⼀定的时间重试已发" class="headerlink" title="优化TCP 的 ACK包，，发送者在⽆新的数据包的情况下，每隔⼀定的时间重试已发"></a>优化TCP 的 ACK包，，发送者在⽆新的数据包的情况下，每隔⼀定的时间重试已发</h4>送的包，达到最⼤重试次数后，则丢弃该包。</li>
 </ol>
-</li>
-<li><ol start="2">
-<li>手机上点击<code>设置</code>-&gt;<code>Reveal</code>-&gt;<code>Enabled Applications</code> 打开需要调试的App的开关</li>
-</ol>
-</li>
-<li><ol start="3">
-<li>打开Mac电脑上的Reveal, 点击顶部菜单的 <code>Help</code>-&gt;<code>Show Reveal Library in Finder</code>, 然后将看到的 <code>RevealSever.framwork</code> 拷贝到手机上的目录: <code>Library</code>-&gt;<code>Frameworks</code> 中</li>
-</ol>
-</li>
-</ul>
-</li>
-</ul>
-<p>重启iOS设备的 SpringBoard: <code>killall SpringBoard</code> (通过mac命令汗运行)<br>至此可以通过Reveal查看任何运行中的App了, 可以通过 <code>Cycript + Reveal</code> 两个工具进行详细的分析</p>
+<h4 id="让⽤户觉得快。到这⾥已经不能算是技术层⾯的⽅法了，属于⼀种⼼理层⾯的博弈，⼀种改善⽤户体验的⽅式。⽐如：1-不从0开始的进度条。不管⽹⻚的加载进度如何，不管⽹络条件如何，加载进度始终是从50-起，并且停留在⼤约98-进度左右的地⽅。2-先显示⽂字在加载图⽚。同样是在Webview之中，图⽚或者多媒体的加载速度肯定是远远慢过⽂字的加载速度的。由于不同的webview显示和渲染效果不同，我们可以先让webview先显示⽂字，在显示图⽚。给⽤户⼀种可以先预览整个⽹⻚概况的感觉。3-缓存设计，当网络不佳无法请求成功时，可以适当使用缓存数据，这样能够稍微缓解用户因无数据产生的焦虑心理。"><a href="#让⽤户觉得快。到这⾥已经不能算是技术层⾯的⽅法了，属于⼀种⼼理层⾯的博弈，⼀种改善⽤户体验的⽅式。⽐如：1-不从0开始的进度条。不管⽹⻚的加载进度如何，不管⽹络条件如何，加载进度始终是从50-起，并且停留在⼤约98-进度左右的地⽅。2-先显示⽂字在加载图⽚。同样是在Webview之中，图⽚或者多媒体的加载速度肯定是远远慢过⽂字的加载速度的。由于不同的webview显示和渲染效果不同，我们可以先让webview先显示⽂字，在显示图⽚。给⽤户⼀种可以先预览整个⽹⻚概况的感觉。3-缓存设计，当网络不佳无法请求成功时，可以适当使用缓存数据，这样能够稍微缓解用户因无数据产生的焦虑心理。" class="headerlink" title="让⽤户觉得快。到这⾥已经不能算是技术层⾯的⽅法了，属于⼀种⼼理层⾯的博弈，⼀种改善⽤户体验的⽅式。⽐如：1. 不从0开始的进度条。不管⽹⻚的加载进度如何，不管⽹络条件如何，加载进度始终是从50%起，并且停留在⼤约98%进度左右的地⽅。2. 先显示⽂字在加载图⽚。同样是在Webview之中，图⽚或者多媒体的加载速度肯定是远远慢过⽂字的加载速度的。由于不同的webview显示和渲染效果不同，我们可以先让webview先显示⽂字，在显示图⽚。给⽤户⼀种可以先预览整个⽹⻚概况的感觉。3. 缓存设计，当网络不佳无法请求成功时，可以适当使用缓存数据，这样能够稍微缓解用户因无数据产生的焦虑心理。"></a>让⽤户觉得快。到这⾥已经不能算是技术层⾯的⽅法了，属于⼀种⼼理层⾯的博弈，⼀种改善⽤户体验的⽅式。⽐如：1. 不从0开始的进度条。不管⽹⻚的加载进度如何，不管⽹络条件如何，加载进度始终是从50%起，并且停留在⼤约98%进度左右的地⽅。2. 先显示⽂字在加载图⽚。同样是在Webview之中，图⽚或者多媒体的加载速度肯定是远远慢过⽂字的加载速度的。由于不同的webview显示和渲染效果不同，我们可以先让webview先显示⽂字，在显示图⽚。给⽤户⼀种可以先预览整个⽹⻚概况的感觉。3. 缓存设计，当网络不佳无法请求成功时，可以适当使用缓存数据，这样能够稍微缓解用户因无数据产生的焦虑心理。</h4><p>##<br>最后附上爱奇艺网络优化流程</p>
+<p><img src="https://static001.infoq.cn/resource/image/73/66/7322562ccf43ab69e77e66fc09f8dd66.png" alt="爱奇艺网络优化流程"></p>
 ]]></content>
       <categories>
         <category>iOS</category>
@@ -432,6 +359,471 @@
       </categories>
   </entry>
   <entry>
+    <title>iOS 内存布局以及管理</title>
+    <url>/2018/07/13/ios/ios-memory/</url>
+    <content><![CDATA[<h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
+<li>编译之后的代码存储的区域</li>
+</ul>
+<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
+<li>字符串常量</li>
+<li>已初始化的全局变量, 静态变量</li>
+<li>未初始化的全局变量, 静态变量</li>
+</ul>
+<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
+<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
+</ul>
+<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
+<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
+</ul>
+<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
+<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
+<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
+</ul>
+<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
+<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
+<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
+</ul>
+<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
+<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
+</ul>
+<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
+<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
+</ul>
+<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>copy操作</th>
+<th>mutableCopy操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NSString</code></td>
+<td><code>NSString</code>浅拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+<tr>
+<td><code>NSMutableString</code></td>
+<td><code>NSMutableString</code>深拷贝</td>
+<td><code>NSMutableString</code>深拷贝</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
+</blockquote>
+<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
+<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
+</li>
+<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
+</li>
+<li><p>SideTable结构如下:</p>
+<ul>
+<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
+<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
+<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
+</ul>
+</li>
+</ul>
+<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
+<li>_objc_rootDealloc()<ol>
+<li>内部会判断是否有c++析构函数</li>
+<li>是否有关联对象</li>
+<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
+</ol>
+</li>
+</ul>
+<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
+<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
+<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
+<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
+</ul>
+<ol>
+<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
+<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
+<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
+</ol>
+<p>如图所示</p>
+<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
+<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
+<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
+</ul>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Flutter中Widget、Element、RenderObject三者的关系与作用</title>
+    <url>/2020/06/20/flutter/flutter-widget/</url>
+    <content><![CDATA[<h3 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h3><ul>
+<li>在Flutter中, 一切皆Widget, Widget是不可变的, 每个Widget状态都代表一帧<br>通俗来说只要页面发生了变化,对应的Widget就一定改变了<br>所以Widget很轻量级</li>
+</ul>
+<h3 id="Element"><a href="#Element" class="headerlink" title="Element"></a>Element</h3><ul>
+<li>Widget的加载,生命周期和更新流程;RenderObject的创建、更新等机制;child的加载更新行为, 都是Element实现的<br>所以Element就像是一个控制者一样起到主导作用</li>
+<li>此外Element还保存着Widget的状态信息,从而实现了跨Widget的状态恢复</li>
+<li>因此 <strong>Widget作为配置文件描述如何渲染页面, 多个Widget会组合成 Widget Tree ; 而Element表示 Widget Tree 中特定位置的实例, 多个Element在 mounted(挂载到页面)之后, 会构成一课 Element Tree ; Element只有在 mounted 之后才算激活, 激活之后如果Element存在RenderObject, Element会通过Widget的 createRenderObject 方法创建出对应的RenderObject 并与Element一一对应</strong></li>
+</ul>
+<h3 id="RenderObject"><a href="#RenderObject" class="headerlink" title="RenderObject"></a>RenderObject</h3><ul>
+<li>如果想知道一个Widget的实现逻辑, 只需要找到Widget的RenderObject实现即可, 同时Flutter中自定义控件的实现都绕不开RenderObect</li>
+<li>RenderObject属于真正的绘制实例, 它涉及到了布局layout 和绘制paint等真实的界面操作, 可以认为是真正的View(比如iOS和Android中的View)<br>而它的配置信息如: 颜色, 大小, 位置等, 是通过Widget传递过来的, 所以才会有Widget转化为RenderObject实现绘制的说法</li>
+<li>所有的RenderObject的子类都必须实现paint方法才会实现界面显示, 并且该方法并不是给开发者直接调用的, 需要更新绘制时,必须通过markNeedsPaint方法触发界面进行paint绘制</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
+<li>Widget、Element、RenderObject 之间的关系如下:<br>Widget与Element之间是多对一关系; 在存在RenderObject的情况下; Element与RenderObject是一一对应的关系.</li>
+</ul>
+<blockquote>
+<p>如图所示</p>
+</blockquote>
+<p><img src="https://wx1.sbimg.cn/2020/06/20/widget.jpg" alt="widget.jpg"></p>
+]]></content>
+      <categories>
+        <category>Flutter</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 逆向 Mach-O 格式文件</title>
+    <url>/2017/05/20/ios/ios-reverse-3/</url>
+    <content><![CDATA[<h2 id="Mach-O-介绍"><a href="#Mach-O-介绍" class="headerlink" title="Mach-O 介绍"></a>Mach-O 介绍</h2><p><code>Mach-O</code> 其实是 <code>Mach Object</code> 文件格式的缩写, 属于<code>Mach-O</code>格式的常见文件有</p>
+<ul>
+<li>目标文件.o</li>
+<li>库文件<ul>
+<li>.a 静态库其实就是多个.o链接到一起</li>
+<li>.dylib </li>
+<li>.framework</li>
+</ul>
+</li>
+<li>可执行文件</li>
+<li>dyld (动态链接器)</li>
+<li>.dsym( 符号表)</li>
+</ul>
+<p>如图所示:<br><img src="https://s1.ax1x.com/2020/07/11/Ul8OaR.png" alt="Ul8OaR.png"></p>
+<h3 id="在Xcode中可查看-Mach-O-文件类型"><a href="#在Xcode中可查看-Mach-O-文件类型" class="headerlink" title="在Xcode中可查看 Mach-O 文件类型"></a>在Xcode中可查看 Mach-O 文件类型</h3><ul>
+<li>如图<br>  <img src="https://s1.ax1x.com/2020/07/11/UlGdL4.png" alt="UlGdL4.png"></li>
+</ul>
+<h2 id="Mach-O-的基本结构"><a href="#Mach-O-的基本结构" class="headerlink" title="Mach-O 的基本结构"></a>Mach-O 的基本结构</h2><ul>
+<li>Header<ul>
+<li>文件类型、目标架构类型等</li>
+</ul>
+</li>
+<li>Load commands<ul>
+<li>描述文件在虚拟内存中的逻辑结构、布局</li>
+</ul>
+</li>
+<li>Raw segment data<ul>
+<li>在Load commands 中定义的 Segment 原始数据</li>
+</ul>
+</li>
+</ul>
+<p>如图所示:<br>    <img src="https://s1.ax1x.com/2020/07/11/UlGvwj.png" alt="UlGvwj.png"></p>
+<h2 id="查看-Mach-O-文件结构"><a href="#查看-Mach-O-文件结构" class="headerlink" title="查看 Mach-O 文件结构"></a>查看 Mach-O 文件结构</h2><ul>
+<li><p>命令行工具</p>
+<ul>
+<li>file  查看文件类型</li>
+<li>otool  用来查看特定部分和段的内容</li>
+<li>lipo  用于多架构文件的处理<ul>
+<li>lipo -info &lt;文件路径&gt;</li>
+<li>lipo &lt;文件路径&gt; -thin &lt;架构类型&gt; -output &lt;导出的文件目录&gt;</li>
+<li>lipo &lt;文件路径1&gt; &lt;文件路径2&gt; -output &lt;输出的文件路径&gt; </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>GUI 工具</p>
+<ul>
+<li><a href="https://github.com/gdbinit/MachOView" target="_blank" rel="noopener">MachOView</a></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>dyld 用于加载以下几种<code>Mach-O</code>格式文件:</p>
+<ol>
+<li>可执行文件</li>
+<li>dylib 动态库</li>
+<li>bundle </li>
+</ol>
+</blockquote>
+<h2 id="App从开发到安装到手机上的过程"><a href="#App从开发到安装到手机上的过程" class="headerlink" title="App从开发到安装到手机上的过程"></a>App从开发到安装到手机上的过程</h2><ol>
+<li>编写代码</li>
+<li>编译、链接、签名 生成 .app 包</li>
+<li>.app包内包含<strong>可执行文件</strong>和一些资源</li>
+<li>压缩.app包为ipa文件</li>
+<li>ipa文件可以上传到 AppStore 或者 其他商店</li>
+<li>用户从AppStore 或其他商店 安装ipa</li>
+</ol>
+<h2 id="逆向App思路"><a href="#逆向App思路" class="headerlink" title="逆向App思路"></a>逆向App思路</h2><ol>
+<li>界面分析<ul>
+<li><code>Cycript</code>、<code>Reveal</code></li>
+</ul>
+</li>
+<li>代码分析<ul>
+<li>对<code>Mach-O</code>文件静态分析</li>
+<li>主要工具有: <code>MachOView</code>、<a href="http://stevenygard.com/projects/class-dump/" target="_blank" rel="noopener">class-dump</a>、<code>Hopper Disassembler</code>、<code>ida</code></li>
+</ul>
+</li>
+<li>动态调试<ul>
+<li><code>debugserver</code>、<code>LLDB</code></li>
+</ul>
+</li>
+<li>编写代码注入到App中<ul>
+<li><code>theos</code> hook方式编写deb安装包 Cydia安装deb插件(已越狱)</li>
+<li>重签名、打包ipa(未越狱)</li>
+</ul>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 逆向-分析工具 Cycript、Reaveal</title>
+    <url>/2017/04/20/ios/ios-reverse-2/</url>
+    <content><![CDATA[<h2 id="Cycript"><a href="#Cycript" class="headerlink" title="Cycript"></a>Cycript</h2><ul>
+<li>Cycript是Objective-C++、ES6（JavaScript）、Java等语法的混合物<br>可以用来探索、修改、调试正在运行的Mac\iOS APP<br>可以在<a href="http://www.cycript.org/" target="_blank" rel="noopener">官网</a>或者<a href="http://www.cycript.org/manual/" target="_blank" rel="noopener">文档</a>来查看相应说明</li>
+</ul>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li>在越狱的手机上 通过Cydia安装Cycript，即可在iPhone上调试运行中的APP</li>
+</ul>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h3><ul>
+<li>cycript -p 进程名称/进程ID<blockquote>
+<p>通过输入-p参数 后面跟上进程名称或进程ID即可进入cycript运行环境进行调试<br>取消输入: <code>Ctrl + C</code> 退出: <code>Ctrl + D</code>  清屏: <code>Command + R</code><br>命令行列出所有进程: <code>ps -A</code>  也可以搜索关键词 <code>ps -A | grep 关键词</code></p>
+</blockquote>
+</li>
+</ul>
+<h3 id="常用语法"><a href="#常用语法" class="headerlink" title="常用语法"></a>常用语法</h3><ul>
+<li>UIApp<ul>
+<li>代表 [UIApplication sharedApplication]</li>
+</ul>
+</li>
+<li>var app = [UIApplication sharedApplication]<ul>
+<li>定义变量</li>
+</ul>
+</li>
+<li>#0x13ba34500<ul>
+<li>用内存地址获取对象</li>
+</ul>
+</li>
+<li>ObjectiveC.classes<ul>
+<li>已加载的所有OC类</li>
+</ul>
+</li>
+<li>*对象<ul>
+<li>查看对象的所有成员变量</li>
+</ul>
+</li>
+<li>view.recursiveDescription().toString()<ul>
+<li>递归打印view的所有子控件（跟LLDB一样的函数）</li>
+</ul>
+</li>
+<li>choose(UIViewController)<ul>
+<li>筛选出某种类型的对象<blockquote>
+<p>可以使用MJ封装的<a href="https://github.com/CoderMJLee/mjcript" target="_blank" rel="noopener">mjcript</a>来使用, 封装了更多好用的函数</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Reveal"><a href="#Reveal" class="headerlink" title="Reveal"></a>Reveal</h2><ul>
+<li><a href="https://revealapp.com" target="_blank" rel="noopener">Reveal</a>是一款调试iOS程序UI界面的神器</li>
+</ul>
+<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
+<li>想要调试任何app, 需要做以下三件事<ul>
+<li><ol>
+<li>在越狱的手机上通过<code>Cydia</code>安装<code>Reveal Loader</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>手机上点击<code>设置</code>-&gt;<code>Reveal</code>-&gt;<code>Enabled Applications</code> 打开需要调试的App的开关</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>打开Mac电脑上的Reveal, 点击顶部菜单的 <code>Help</code>-&gt;<code>Show Reveal Library in Finder</code>, 然后将看到的 <code>RevealSever.framwork</code> 拷贝到手机上的目录: <code>Library</code>-&gt;<code>Frameworks</code> 中</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p>重启iOS设备的 SpringBoard: <code>killall SpringBoard</code> (通过mac命令汗运行)<br>至此可以通过Reveal查看任何运行中的App了, 可以通过 <code>Cycript + Reveal</code> 两个工具进行详细的分析</p>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 线程以及线程同步方案</title>
+    <url>/2018/06/15/ios/ios-thread/</url>
+    <content><![CDATA[<h3 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
+<h3 id="同步、异步、串行、并发"><a href="#同步、异步、串行、并发" class="headerlink" title="同步、异步、串行、并发"></a>同步、异步、串行、并发</h3><ul>
+<li><em>同步</em> 和 <em>异步</em> 主要是能否开启新的线程<ol>
+<li>同步: 在当前线程中执行任务, 不具备开启新线程的能力</li>
+<li>异步: 在新的线程中执行任务, 具备开启新线程的能力</li>
+</ol>
+</li>
+<li><em>串行</em> 和 <em>并发</em> 主要决定任务的执行方式<ol>
+<li>串行: 一个任务执行完毕再执行下一个任务</li>
+<li>并发: 多个任务同时执行</li>
+</ol>
+</li>
+</ul>
+<h3 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p>
+<h3 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h3><blockquote>
+<p>通过dispatch_group_t 队列组可以实现 所有异步任务共同并发, 任务都处理完毕, 统一触发 通过dispatch_group_notify来进行接下来的任务</p>
+</blockquote>
+<h3 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h3><ul>
+<li><p><font color=grey>OSSpinLock</font> </p>
+<ul>
+<li><code>#import &lt;libkern/OSAtomic.h&gt;</code></li>
+<li>自旋, 不推荐使用, 会有优先级反转的问题, 如果等待锁的线程优先级较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁</li>
+</ul>
+</li>
+<li><p><font color=blue>os_unfair_lock</font> </p>
+<ul>
+<li>互斥, 推荐效率较高</li>
+<li><code>os_unfair_lock</code>用于取代不安全的<code>OSSpinLock</code> ，从iOS10开始才支持</li>
+</ul>
+</li>
+<li><p><font color=blue>pthread_mutex</font>  </p>
+<ul>
+<li><code>#import &lt;pthread.h&gt;</code></li>
+<li>互斥, 推荐跨平台</li>
+</ul>
+</li>
+<li><p><font color=blue>dispatch_semaphore</font></p>
+<ul>
+<li>互斥, 推荐, 兼容性好</li>
+</ul>
+</li>
+<li><p>dispatch_queue(DISPATCH_QUEUE_SERIAL)</p>
+<ul>
+<li>串行队列同样可以线程同步</li>
+</ul>
+</li>
+<li><p>NSLock</p>
+<ul>
+<li>对pthread_mutex的OC包装</li>
+</ul>
+</li>
+<li><p>NSRecursiveLock</p>
+<ul>
+<li>对pthread_mutex递归锁的OC包装</li>
+</ul>
+</li>
+<li><p>NSCondition</p>
+<ul>
+<li>对pthread_mutex条件锁的OC包装</li>
+</ul>
+</li>
+<li><p>NSConditionLock</p>
+</li>
+<li><p>@synchronized </p>
+<ul>
+<li>对pthread_mutex递归锁的OC包装</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>死锁<br>当线程加锁之后忘记解锁, 那么这把锁就相当于死锁<br> 如果当前加锁采用的是自旋锁方式, 那么就会一直占用着CPU资源,让其他线程处于忙等状态<br> 如果当前加锁采用的是互斥锁方式, 那么就会让再次获取锁的线程处于休眠状态</p>
+</blockquote>
+<h3 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h3><ul>
+<li><p>场景</p>
+<ul>
+<li>同一时间，只能有1个线程进行写的操作</li>
+<li>同一时间，允许有多个线程进行读的操作</li>
+<li>同一时间，不允许既有写的操作，又有读的操作</li>
+</ul>
+</li>
+<li><p>解决方案:</p>
+<ul>
+<li><code>pthread_rwlock</code> 读写锁</li>
+<li><code>dispatch_barrier_async</code> GCD异步栅栏</li>
+</ul>
+</li>
+</ul>
+<h3 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h3><details>
+<summary>参考内容</summary>
+
+<ol>
+<li>可以添加任务依赖, 方便控制执行顺序</li>
+<li>可以设置任务的优先级</li>
+<li>可以设置最大并发数</li>
+<li>可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</details></li>
+</ol>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>iOS 逆向-脱壳</title>
+    <url>/2017/06/20/ios/ios-reverse-4/</url>
+    <content><![CDATA[<h2 id="加壳"><a href="#加壳" class="headerlink" title="加壳"></a>加壳</h2><ul>
+<li>默认上传到AppStore 的ipa安装包内的可执行文件都会被苹果进行一次加密操作, 然后执行的时候直接执行加密后的壳程序, 然后再动态解密可执行文件</li>
+</ul>
+<h2 id="如何校验可执行文件是否被加壳"><a href="#如何校验可执行文件是否被加壳" class="headerlink" title="如何校验可执行文件是否被加壳"></a>如何校验可执行文件是否被加壳</h2><ol>
+<li><p>通过 <code>MachOView</code> GUI工具查看 <code>Load Conmmands</code> -&gt; <code>LC_ENCRYPTION_INFO</code> -&gt; <code>Crypt ID</code> </p>
+</li>
+<li><p>通过 <code>otool -l &lt;可执行文件路径&gt; | grep cript</code> 查看 <code>Crypt ID</code></p>
+</li>
+</ol>
+<p>其中 <code>Crypt ID</code> 0代表未加壳, 否则代表加壳</p>
+<ol start="3">
+<li>或者通过<code>Clutch -i</code>来查看</li>
+</ol>
+<h2 id="脱壳工具"><a href="#脱壳工具" class="headerlink" title="脱壳工具"></a>脱壳工具</h2><ul>
+<li><p><a href="https://github.com/KJCracks/Clutch" target="_blank" rel="noopener">Clutch</a> (脱壳部分程序可能会失败)</p>
+<ol>
+<li><p>下载最新release包</p>
+</li>
+<li><p>将可执行文件 <code>Clutch</code> 放到越狱设备的 <code>/usr/bin</code> 目录下</p>
+</li>
+<li><p>赋予可执行权限: <code>chmod +x /usr/bin/Clutch</code>  </p>
+<p>使用:</p>
+</li>
+</ol>
+<ul>
+<li><code>Clutch -i</code> 列出加壳的程序</li>
+<li><code>Clutch -d &lt;可执行文件bundleid&gt;</code> 脱壳后会生成脱壳后的ipa文件<blockquote>
+<p>目前来说可能部分app已失效, 脱壳失败</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p><a href="https://github.com/stefanesser/dumpdecrypted/" target="_blank" rel="noopener">dumpdecrypted</a></p>
+<ol>
+<li><p>下载源码, 然后在源码根目录执行<code>make</code>操作编译生成动态库dylib</p>
+</li>
+<li><p>将dylib拷贝到越狱设备的 <code>/var/root</code> 目录中</p>
+<p>使用:</p>
+</li>
+</ol>
+<ul>
+<li>终端进入越狱设备 <code>/var/root</code> 目录中</li>
+<li><code>DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib   可执行文件路径</code></li>
+<li>.decrypted文件就是脱壳后的可执行文件</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>部分app也会脱壳失败</p>
+</blockquote>
+<ul>
+<li><a href="https://github.com/AloneMonkey/frida-ios-dump" target="_blank" rel="noopener">frida-ios-dump</a><ol>
+<li>根据官网提示进行安装frida <code>pip3 install frida-tools</code></li>
+<li><code>sudo pip3 install -r requirements.txt --upgrade</code></li>
+<li>进行端口转发, 可以使用之前的<code>tcprelay.py</code>脚本进行转发或者使用 <code>iproxy 2222 22</code> 将本地的 2222 端口转发到手机的 22 端口</li>
+<li>下载frida-ios-dump进行脱壳:<br> <code>python3 ./dump.py 应用的名字或者应用的Bundle ID</code><blockquote>
+<p>以上操作会导出脱壳后的ipa文件</p>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+  </entry>
+  <entry>
     <title>iOS Runtime</title>
     <url>/2018/04/15/ios/ios-runtime/</url>
     <content><![CDATA[<h3 id="什么是Runtime"><a href="#什么是Runtime" class="headerlink" title="什么是Runtime"></a>什么是Runtime</h3><ul>
@@ -647,369 +1039,6 @@
 <p>另外: AFNetWorking内部单独创建了一个线程，并在这个线程中启动了一个 RunLoop, RunLoop 启动前内部必须要有至少一个 Timer/Observer/Source，所以 AFNetworking 在 [runLoop run] 之前先创建了一个新的 NSMachPort 添加进去了。通常情况下，调用者需要持有这个 NSMachPort (mach_port) 并在外部线程通过这个 port 发送消息到 loop 内；但此处添加 port 只是为了让 RunLoop 不至于退出，并没有用于实际的发送消息。</p>
 <hr>
 <p>参考链接:<br><a href="https://blog.ibireme.com/2015/05/18/runloop/#more-41710" target="_blank" rel="noopener">深入理解RunLoop</a><br><a href="https://ke.qq.com/course/314526" target="_blank" rel="noopener">iOS底层原理讲解</a></p>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 逆向 Mach-O 格式文件</title>
-    <url>/2017/05/20/ios/ios-reverse-3/</url>
-    <content><![CDATA[<h2 id="Mach-O-介绍"><a href="#Mach-O-介绍" class="headerlink" title="Mach-O 介绍"></a>Mach-O 介绍</h2><p><code>Mach-O</code> 其实是 <code>Mach Object</code> 文件格式的缩写, 属于<code>Mach-O</code>格式的常见文件有</p>
-<ul>
-<li>目标文件.o</li>
-<li>库文件<ul>
-<li>.a 静态库其实就是多个.o链接到一起</li>
-<li>.dylib </li>
-<li>.framework</li>
-</ul>
-</li>
-<li>可执行文件</li>
-<li>dyld (动态链接器)</li>
-<li>.dsym( 符号表)</li>
-</ul>
-<p>如图所示:<br><img src="https://s1.ax1x.com/2020/07/11/Ul8OaR.png" alt="Ul8OaR.png"></p>
-<h3 id="在Xcode中可查看-Mach-O-文件类型"><a href="#在Xcode中可查看-Mach-O-文件类型" class="headerlink" title="在Xcode中可查看 Mach-O 文件类型"></a>在Xcode中可查看 Mach-O 文件类型</h3><ul>
-<li>如图<br>  <img src="https://s1.ax1x.com/2020/07/11/UlGdL4.png" alt="UlGdL4.png"></li>
-</ul>
-<h2 id="Mach-O-的基本结构"><a href="#Mach-O-的基本结构" class="headerlink" title="Mach-O 的基本结构"></a>Mach-O 的基本结构</h2><ul>
-<li>Header<ul>
-<li>文件类型、目标架构类型等</li>
-</ul>
-</li>
-<li>Load commands<ul>
-<li>描述文件在虚拟内存中的逻辑结构、布局</li>
-</ul>
-</li>
-<li>Raw segment data<ul>
-<li>在Load commands 中定义的 Segment 原始数据</li>
-</ul>
-</li>
-</ul>
-<p>如图所示:<br>    <img src="https://s1.ax1x.com/2020/07/11/UlGvwj.png" alt="UlGvwj.png"></p>
-<h2 id="查看-Mach-O-文件结构"><a href="#查看-Mach-O-文件结构" class="headerlink" title="查看 Mach-O 文件结构"></a>查看 Mach-O 文件结构</h2><ul>
-<li><p>命令行工具</p>
-<ul>
-<li>file  查看文件类型</li>
-<li>otool  用来查看特定部分和段的内容</li>
-<li>lipo  用于多架构文件的处理<ul>
-<li>lipo -info &lt;文件路径&gt;</li>
-<li>lipo &lt;文件路径&gt; -thin &lt;架构类型&gt; -output &lt;导出的文件目录&gt;</li>
-<li>lipo &lt;文件路径1&gt; &lt;文件路径2&gt; -output &lt;输出的文件路径&gt; </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>GUI 工具</p>
-<ul>
-<li><a href="https://github.com/gdbinit/MachOView" target="_blank" rel="noopener">MachOView</a></li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>dyld 用于加载以下几种<code>Mach-O</code>格式文件:</p>
-<ol>
-<li>可执行文件</li>
-<li>dylib 动态库</li>
-<li>bundle </li>
-</ol>
-</blockquote>
-<h2 id="App从开发到安装到手机上的过程"><a href="#App从开发到安装到手机上的过程" class="headerlink" title="App从开发到安装到手机上的过程"></a>App从开发到安装到手机上的过程</h2><ol>
-<li>编写代码</li>
-<li>编译、链接、签名 生成 .app 包</li>
-<li>.app包内包含<strong>可执行文件</strong>和一些资源</li>
-<li>压缩.app包为ipa文件</li>
-<li>ipa文件可以上传到 AppStore 或者 其他商店</li>
-<li>用户从AppStore 或其他商店 安装ipa</li>
-</ol>
-<h2 id="逆向App思路"><a href="#逆向App思路" class="headerlink" title="逆向App思路"></a>逆向App思路</h2><ol>
-<li>界面分析<ul>
-<li><code>Cycript</code>、<code>Reveal</code></li>
-</ul>
-</li>
-<li>代码分析<ul>
-<li>对<code>Mach-O</code>文件静态分析</li>
-<li>主要工具有: <code>MachOView</code>、<a href="http://stevenygard.com/projects/class-dump/" target="_blank" rel="noopener">class-dump</a>、<code>Hopper Disassembler</code>、<code>ida</code></li>
-</ul>
-</li>
-<li>动态调试<ul>
-<li><code>debugserver</code>、<code>LLDB</code></li>
-</ul>
-</li>
-<li>编写代码注入到App中<ul>
-<li><code>theos</code> hook方式编写deb安装包 Cydia安装deb插件(已越狱)</li>
-<li>重签名、打包ipa(未越狱)</li>
-</ul>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 线程以及线程同步方案</title>
-    <url>/2018/06/15/ios/ios-thread/</url>
-    <content><![CDATA[<h3 id="iOS-中常见的多线程方案"><a href="#iOS-中常见的多线程方案" class="headerlink" title="iOS 中常见的多线程方案"></a>iOS 中常见的多线程方案</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2Xe58.png" alt="N2Xe58.png"></p>
-<h3 id="同步、异步、串行、并发"><a href="#同步、异步、串行、并发" class="headerlink" title="同步、异步、串行、并发"></a>同步、异步、串行、并发</h3><ul>
-<li><em>同步</em> 和 <em>异步</em> 主要是能否开启新的线程<ol>
-<li>同步: 在当前线程中执行任务, 不具备开启新线程的能力</li>
-<li>异步: 在新的线程中执行任务, 具备开启新线程的能力</li>
-</ol>
-</li>
-<li><em>串行</em> 和 <em>并发</em> 主要决定任务的执行方式<ol>
-<li>串行: 一个任务执行完毕再执行下一个任务</li>
-<li>并发: 多个任务同时执行</li>
-</ol>
-</li>
-</ul>
-<h3 id="各种情况的执行效果"><a href="#各种情况的执行效果" class="headerlink" title="各种情况的执行效果"></a>各种情况的执行效果</h3><p><img src="https://s1.ax1x.com/2020/06/28/N2v1A0.png" alt="N2v1A0.png"></p>
-<h3 id="队列组的应用"><a href="#队列组的应用" class="headerlink" title="队列组的应用"></a>队列组的应用</h3><blockquote>
-<p>通过dispatch_group_t 队列组可以实现 所有异步任务共同并发, 任务都处理完毕, 统一触发 通过dispatch_group_notify来进行接下来的任务</p>
-</blockquote>
-<h3 id="多线程同步方案"><a href="#多线程同步方案" class="headerlink" title="多线程同步方案"></a>多线程同步方案</h3><ul>
-<li><p><font color=grey>OSSpinLock</font> </p>
-<ul>
-<li><code>#import &lt;libkern/OSAtomic.h&gt;</code></li>
-<li>自旋, 不推荐使用, 会有优先级反转的问题, 如果等待锁的线程优先级较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁</li>
-</ul>
-</li>
-<li><p><font color=blue>os_unfair_lock</font> </p>
-<ul>
-<li>互斥, 推荐效率较高</li>
-<li><code>os_unfair_lock</code>用于取代不安全的<code>OSSpinLock</code> ，从iOS10开始才支持</li>
-</ul>
-</li>
-<li><p><font color=blue>pthread_mutex</font>  </p>
-<ul>
-<li><code>#import &lt;pthread.h&gt;</code></li>
-<li>互斥, 推荐跨平台</li>
-</ul>
-</li>
-<li><p><font color=blue>dispatch_semaphore</font></p>
-<ul>
-<li>互斥, 推荐, 兼容性好</li>
-</ul>
-</li>
-<li><p>dispatch_queue(DISPATCH_QUEUE_SERIAL)</p>
-<ul>
-<li>串行队列同样可以线程同步</li>
-</ul>
-</li>
-<li><p>NSLock</p>
-<ul>
-<li>对pthread_mutex的OC包装</li>
-</ul>
-</li>
-<li><p>NSRecursiveLock</p>
-<ul>
-<li>对pthread_mutex递归锁的OC包装</li>
-</ul>
-</li>
-<li><p>NSCondition</p>
-<ul>
-<li>对pthread_mutex条件锁的OC包装</li>
-</ul>
-</li>
-<li><p>NSConditionLock</p>
-</li>
-<li><p>@synchronized </p>
-<ul>
-<li>对pthread_mutex递归锁的OC包装</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>死锁<br>当线程加锁之后忘记解锁, 那么这把锁就相当于死锁<br> 如果当前加锁采用的是自旋锁方式, 那么就会一直占用着CPU资源,让其他线程处于忙等状态<br> 如果当前加锁采用的是互斥锁方式, 那么就会让再次获取锁的线程处于休眠状态</p>
-</blockquote>
-<h3 id="iOS中的多读单写方案"><a href="#iOS中的多读单写方案" class="headerlink" title="iOS中的多读单写方案"></a>iOS中的多读单写方案</h3><ul>
-<li><p>场景</p>
-<ul>
-<li>同一时间，只能有1个线程进行写的操作</li>
-<li>同一时间，允许有多个线程进行读的操作</li>
-<li>同一时间，不允许既有写的操作，又有读的操作</li>
-</ul>
-</li>
-<li><p>解决方案:</p>
-<ul>
-<li><code>pthread_rwlock</code> 读写锁</li>
-<li><code>dispatch_barrier_async</code> GCD异步栅栏</li>
-</ul>
-</li>
-</ul>
-<h3 id="NSOperationQueue有哪些优点"><a href="#NSOperationQueue有哪些优点" class="headerlink" title="NSOperationQueue有哪些优点?"></a>NSOperationQueue有哪些优点?</h3><details>
-<summary>参考内容</summary>
-
-<ol>
-<li>可以添加任务依赖, 方便控制执行顺序</li>
-<li>可以设置任务的优先级</li>
-<li>可以设置最大并发数</li>
-<li>可以控制任务执行状态: isReady,isExecuting,isFinished,isCancelled</details></li>
-</ol>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 逆向-脱壳</title>
-    <url>/2017/06/20/ios/ios-reverse-4/</url>
-    <content><![CDATA[<h2 id="加壳"><a href="#加壳" class="headerlink" title="加壳"></a>加壳</h2><ul>
-<li>默认上传到AppStore 的ipa安装包内的可执行文件都会被苹果进行一次加密操作, 然后执行的时候直接执行加密后的壳程序, 然后再动态解密可执行文件</li>
-</ul>
-<h2 id="如何校验可执行文件是否被加壳"><a href="#如何校验可执行文件是否被加壳" class="headerlink" title="如何校验可执行文件是否被加壳"></a>如何校验可执行文件是否被加壳</h2><ol>
-<li><p>通过 <code>MachOView</code> GUI工具查看 <code>Load Conmmands</code> -&gt; <code>LC_ENCRYPTION_INFO</code> -&gt; <code>Crypt ID</code> </p>
-</li>
-<li><p>通过 <code>otool -l &lt;可执行文件路径&gt; | grep cript</code> 查看 <code>Crypt ID</code></p>
-</li>
-</ol>
-<p>其中 <code>Crypt ID</code> 0代表未加壳, 否则代表加壳</p>
-<ol start="3">
-<li>或者通过<code>Clutch -i</code>来查看</li>
-</ol>
-<h2 id="脱壳工具"><a href="#脱壳工具" class="headerlink" title="脱壳工具"></a>脱壳工具</h2><ul>
-<li><p><a href="https://github.com/KJCracks/Clutch" target="_blank" rel="noopener">Clutch</a> (脱壳部分程序可能会失败)</p>
-<ol>
-<li><p>下载最新release包</p>
-</li>
-<li><p>将可执行文件 <code>Clutch</code> 放到越狱设备的 <code>/usr/bin</code> 目录下</p>
-</li>
-<li><p>赋予可执行权限: <code>chmod +x /usr/bin/Clutch</code>  </p>
-<p>使用:</p>
-</li>
-</ol>
-<ul>
-<li><code>Clutch -i</code> 列出加壳的程序</li>
-<li><code>Clutch -d &lt;可执行文件bundleid&gt;</code> 脱壳后会生成脱壳后的ipa文件<blockquote>
-<p>目前来说可能部分app已失效, 脱壳失败</p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li><p><a href="https://github.com/stefanesser/dumpdecrypted/" target="_blank" rel="noopener">dumpdecrypted</a></p>
-<ol>
-<li><p>下载源码, 然后在源码根目录执行<code>make</code>操作编译生成动态库dylib</p>
-</li>
-<li><p>将dylib拷贝到越狱设备的 <code>/var/root</code> 目录中</p>
-<p>使用:</p>
-</li>
-</ol>
-<ul>
-<li>终端进入越狱设备 <code>/var/root</code> 目录中</li>
-<li><code>DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib   可执行文件路径</code></li>
-<li>.decrypted文件就是脱壳后的可执行文件</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>部分app也会脱壳失败</p>
-</blockquote>
-<ul>
-<li><a href="https://github.com/AloneMonkey/frida-ios-dump" target="_blank" rel="noopener">frida-ios-dump</a><ol>
-<li>根据官网提示进行安装frida <code>pip3 install frida-tools</code></li>
-<li><code>sudo pip3 install -r requirements.txt --upgrade</code></li>
-<li>进行端口转发, 可以使用之前的<code>tcprelay.py</code>脚本进行转发或者使用 <code>iproxy 2222 22</code> 将本地的 2222 端口转发到手机的 22 端口</li>
-<li>下载frida-ios-dump进行脱壳:<br> <code>python3 ./dump.py 应用的名字或者应用的Bundle ID</code><blockquote>
-<p>以上操作会导出脱壳后的ipa文件</p>
-</blockquote>
-</li>
-</ol>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>iOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>iOS 内存布局以及管理</title>
-    <url>/2018/07/13/ios/ios-memory/</url>
-    <content><![CDATA[<h3 id="iOS应用程序的内存布局"><a href="#iOS应用程序的内存布局" class="headerlink" title="iOS应用程序的内存布局"></a>iOS应用程序的内存布局</h3><h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><ul>
-<li>编译之后的代码存储的区域</li>
-</ul>
-<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><ul>
-<li>字符串常量</li>
-<li>已初始化的全局变量, 静态变量</li>
-<li>未初始化的全局变量, 静态变量</li>
-</ul>
-<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
-<li>通过 <code>alloc</code>、<code>malloc</code>、<code>calloc</code> 等动态分配的空间, 内存地址越来越大</li>
-</ul>
-<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
-<li>函数调用开销, 比如局部变量, 分配的内存越来越小</li>
-</ul>
-<h3 id="Tagged-Pointer"><a href="#Tagged-Pointer" class="headerlink" title="Tagged Pointer"></a>Tagged Pointer</h3><ul>
-<li>从64位开始, 有了此项技术, 主要是通过指针来直接存储 <code>NSString、NSNumber、NSDate</code> 等小对象.<br>当指针存储不下时,才会动态分配空间来存储到堆中</li>
-<li>在iOS平台指针的最高有效位是1 则证明是Tagged Pointer技术</li>
-</ul>
-<h3 id="Objective-C-对象的内存管理"><a href="#Objective-C-对象的内存管理" class="headerlink" title="Objective-C 对象的内存管理"></a>Objective-C 对象的内存管理</h3><ul>
-<li>OC对象的内存管理是通过引用计数来管理的, 当一个对象创建的时候引用计数为1, 每当对其进行<code>retain</code>操作时, 引用计数(retainCount)会+1, 进行<code>release</code>时引用计数(retainCount)会-1</li>
-<li>当一个对象的引用计数为0时, 则系统会销毁该对象<code>dealloc</code></li>
-</ul>
-<h3 id="拷贝"><a href="#拷贝" class="headerlink" title="拷贝"></a>拷贝</h3><h4 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h4><ul>
-<li>也就是指针拷贝, 指针存储的地址值相同, 相当于对同一个对象进行<code>retain</code>操作</li>
-</ul>
-<h4 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h4><ul>
-<li>内容拷贝, 真实的拷贝两份内容, 指针存储的地址值不同.</li>
-</ul>
-<h3 id="copy-和-MutableCopy"><a href="#copy-和-MutableCopy" class="headerlink" title="copy 和 MutableCopy"></a>copy 和 MutableCopy</h3><table>
-<thead>
-<tr>
-<th></th>
-<th>copy操作</th>
-<th>mutableCopy操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>NSString</code></td>
-<td><code>NSString</code>浅拷贝</td>
-<td><code>NSMutableString</code>深拷贝</td>
-</tr>
-<tr>
-<td><code>NSMutableString</code></td>
-<td><code>NSMutableString</code>深拷贝</td>
-<td><code>NSMutableString</code>深拷贝</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p><code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 的拷贝情况跟上面<code>NSString</code>一样</p>
-</blockquote>
-<h3 id="引用计数的存储"><a href="#引用计数的存储" class="headerlink" title="引用计数的存储"></a>引用计数的存储</h3><ul>
-<li><p>在64位架构下, 对象的引用计数可能存储在isa指针中, 当isa指针存储不下的时候会存储在一个全局<code>SideTables</code>(hash表)这种结构里面</p>
-</li>
-<li><p>SideTables里根据对象的地址为key, value为 <code>SideTable</code> 结构</p>
-</li>
-<li><p>SideTable结构如下:</p>
-<ul>
-<li>spinlock_t 一把自旋锁(防止多线程抢占数据错误)</li>
-<li>RefcountMap (hash表) 表里面存着对象的引用计数</li>
-<li>weak_table_t 对象的弱引用计数表里面维护了一个数组存储所有指向当前对象的弱指针</li>
-</ul>
-</li>
-</ul>
-<h3 id="dealloc-做了哪些"><a href="#dealloc-做了哪些" class="headerlink" title="dealloc 做了哪些?"></a>dealloc 做了哪些?</h3><ul>
-<li>_objc_rootDealloc()<ol>
-<li>内部会判断是否有c++析构函数</li>
-<li>是否有关联对象</li>
-<li>是否有弱指针指向<br>如果有的话分别处理上述操作(清除C++变量, 清除关联对象, 清理弱指针为nil)</li>
-</ol>
-</li>
-</ul>
-<h3 id="自动释放池-autoReleasePool"><a href="#自动释放池-autoReleasePool" class="headerlink" title="自动释放池 autoReleasePool"></a>自动释放池 autoReleasePool</h3><ul>
-<li>自动释放池的底层结构主要是 <code>AutoreleasePoolPage</code></li>
-<li>每个<code>AutoreleasePoolPage</code>占用4096字节内存, 前面56个字节用来存储它的内部成员变量, 后面的则会存储着调用<code>autorelease</code>对象地址</li>
-<li>当一个<code>AutoreleasePoolPage</code>不够存储时则会创建一个新的<code>AutoreleasePoolPage</code>, 每个<code>AutoreleasePoolPage</code>之间通过指针连接形成‘双向链表’结构</li>
-</ul>
-<ol>
-<li>调用push方法会将一个POOL_BOUNDARY入栈，并且返回其存放的内存地址</li>
-<li>调用pop方法时传入一个POOL_BOUNDARY的内存地址，会从最后一个入栈的对象开始发送<code>release</code>消息，直到遇到这个POOL_BOUNDARY</li>
-<li><code>id *next</code>指向了下一个能存放<code>autorelease</code>对象地址的区域  </li>
-</ol>
-<p>如图所示</p>
-<p><img src="https://s1.ax1x.com/2020/06/30/N4a02Q.png" alt="N4a02Q.png"></p>
-<h3 id="Runloop和Autorelease"><a href="#Runloop和Autorelease" class="headerlink" title="Runloop和Autorelease"></a>Runloop和Autorelease</h3><ul>
-<li>iOS在主线程的Runloop中注册了2个Observer<br>第1个Observer监听了<code>kCFRunLoopEntry</code>事件，会调用<code>objc_autoreleasePoolPush()</code><br>第2个Observer<br>监听了<code>kCFRunLoopBeforeWaiting</code>事件，会调用<code>objc_autoreleasePoolPop()、objc_autoreleasePoolPush()</code><br>监听了<code>kCFRunLoopBeforeExit</code>事件，会调用<code>objc_autoreleasePoolPop()</code></li>
-</ul>
 ]]></content>
       <categories>
         <category>iOS</category>
